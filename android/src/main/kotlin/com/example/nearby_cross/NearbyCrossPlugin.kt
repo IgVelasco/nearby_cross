@@ -32,14 +32,30 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
-  var listOfNearbyDevices: List<String> = listOf()
   private lateinit var context: Context
-
+  private lateinit var endpointDiscoveryCallback: EndpointDiscoveryCallback
+  
+  var listOfNearbyDevices: List<String> = listOf()
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "nearby_cross")
     channel.setMethodCallHandler(this)
     context = flutterPluginBinding.applicationContext
+    endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+      override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+          // A nearby device with the same service ID was found
+          // You can now initiate a connection with this device using its endpoint ID
+          Log.d("INFO", "A nearby device with the same service ID was found")
+          listOfNearbyDevices = listOfNearbyDevices + endpointId
+          channel.invokeMethod("onEndpointFound", endpointId);
+      }
+
+      override fun onEndpointLost(endpointId: String) {
+          // The nearby device with the given endpoint ID is no longer available
+          Log.d("INFO", "The nearby device with the given endpoint ID is no longer available $endpointId")
+          listOfNearbyDevices = listOfNearbyDevices - endpointId
+      }
+    }
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -63,22 +79,6 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
       }
       else -> result.notImplemented()
     }
-  }
-
-  private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-      override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-          // A nearby device with the same service ID was found
-          // You can now initiate a connection with this device using its endpoint ID
-          Log.d("INFO", "A nearby device with the same service ID was found")
-          listOfNearbyDevices = listOfNearbyDevices + endpointId
-          // this.channel.invokeMethod("onEndpointFound", endpointId);
-      }
-
-      override fun onEndpointLost(endpointId: String) {
-          // The nearby device with the given endpoint ID is no longer available
-          Log.d("INFO", "The nearby device with the given endpoint ID is no longer available $endpointId")
-          listOfNearbyDevices = listOfNearbyDevices - endpointId
-      }
   }
 
   private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {

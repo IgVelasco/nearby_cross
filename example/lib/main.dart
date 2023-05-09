@@ -18,6 +18,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
+  String _endpointId = 'Unknown 2';
   Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
 
@@ -35,6 +36,16 @@ class _MyAppState extends State<MyApp> {
     try {
       platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
           'Unknown platform version';
+
+      _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
+        if (call.method == 'onEndpointFound') {
+          var color = call.arguments;
+          setState(() {
+            _endpointId = call.arguments;
+          });
+          print('Endpoint found: $_endpointId');
+        }
+      });
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -58,7 +69,7 @@ class _MyAppState extends State<MyApp> {
           backgroundColor: _bgColor,
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Text('Running on: $_platformVersion\n found: $_endpointId'),
         ),
         floatingActionButton: Stack(
           children: [

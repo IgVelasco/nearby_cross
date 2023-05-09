@@ -6,12 +6,14 @@ import 'package:permission_handler/permission_handler.dart';
 class NearbyCross {
   static const MethodChannel _channel = MethodChannel('nearby_cross');
 
+  get methodChannel => _channel;
+
   static Future<void> requestPermissions() async {
     // Request permission to access location
     Map<Permission, PermissionStatus> permissionStatus = await [
       Permission.location,
       Permission.bluetooth,
-      Permission.nearbyWifiDevices,
+      // Permission.nearbyWifiDevices,
       Permission.bluetoothScan,
       Permission.bluetoothAdvertise
     ].request();
