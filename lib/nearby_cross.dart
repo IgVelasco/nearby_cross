@@ -13,7 +13,7 @@ class NearbyCross {
     Map<Permission, PermissionStatus> permissionStatus = await [
       Permission.location,
       Permission.bluetooth,
-      // Permission.nearbyWifiDevices,
+      Permission.nearbyWifiDevices,
       Permission.bluetoothScan,
       Permission.bluetoothAdvertise
     ].request();

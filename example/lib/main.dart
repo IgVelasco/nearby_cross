@@ -109,7 +109,8 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await NearbyCross.requestPermissions();
-      await NearbyCross.startDiscovery('my_service_id');
+      await NearbyCross.startDiscovery(
+          'com.google.location.nearby.apps.helloconnections');
     } catch (e) {
       print('Error starting discovery: $e');
     }
@@ -126,7 +127,8 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await NearbyCross.requestPermissions();
-      await NearbyCross.advertise('my_service_id');
+      await NearbyCross.advertise(
+          'com.google.location.nearby.apps.helloconnections');
     } catch (e) {
       print('Error starting discovery: $e');
     }

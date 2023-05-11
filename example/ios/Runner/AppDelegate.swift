@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import NearbyConnections
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {

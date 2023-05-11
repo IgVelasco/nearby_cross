@@ -17,6 +17,11 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
       let randomColor = generateColor();
       result(randomColor);
       break;
+    case "startDiscovering":
+      
+      let randomColor = generateColor();
+      result(randomColor);
+      break;
     default:
       result("Not implemented");
       break;
