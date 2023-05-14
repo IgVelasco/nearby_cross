@@ -19,13 +19,13 @@ class NearbyCross {
     ].request();
 
     // Check the permission status after the request
-    if (permissionStatus[Permission.location] != PermissionStatus.granted) {
-      throw Exception('Location permission not granted');
-    }
+    // if (permissionStatus[Permission.location] != PermissionStatus.granted) {
+    //   throw Exception('Location permission not granted');
+    // }
 
-    if (permissionStatus[Permission.bluetooth] != PermissionStatus.granted) {
-      throw Exception('Bluetooth permission not granted');
-    }
+    // if (permissionStatus[Permission.bluetooth] != PermissionStatus.granted) {
+    //   throw Exception('Bluetooth permission not granted');
+    // }
   }
 
   Future<String?> getPlatformVersion() {
