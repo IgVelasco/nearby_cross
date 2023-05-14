@@ -4,6 +4,8 @@ import UIKit
 
 public class NearbyCrossPlugin: NSObject, FlutterPlugin {
   let channel: FlutterMethodChannel
+    var advertiser: NearbyConnectAdvertiser?
+    var discoverer: NearbyConnectDiscoverer?
 
   init(channel: FlutterMethodChannel) {
     self.channel = channel
@@ -25,12 +27,12 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
       result(randomColor);
       break;
     case "startAdvertising":
-      let _ = NearbyConnectAdvertiser();
+      advertiser = NearbyConnectAdvertiser();
       let randomColor = generateColor();
       result(randomColor);
       break;
     case "startDiscovery":
-      let _ = NearbyConnectDiscoverer(action: announceDiscoveredService);
+      discoverer = NearbyConnectDiscoverer(channel);
       result("Done")
       break
     default:
@@ -39,7 +41,7 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
     }
   }
 
-    private func announceDiscoveredService(_ endpointId: EndpointID) {
+    func announceDiscoveredService(_ endpointId: EndpointID) {
         channel.invokeMethod("onEndpointFound", arguments: endpointId)
     }
 
@@ -66,14 +68,14 @@ class NearbyConnectAdvertiser {
 class NearbyConnectDiscoverer {
     let connectionManager: ConnectionManager
     var discoverer: Discoverer? = Optional.none
-//    var discovererAction: (EndpointID) -> Void
+    var channel: FlutterMethodChannel
     var listOfNearbyDevices: [String] = [String]()
     
-    init(action discoverAction: @escaping (EndpointID) -> Void) {
+    init(_ chn: FlutterMethodChannel) {
+        channel = chn
         connectionManager = ConnectionManager(serviceID: "com.example.nearbyCrossExample", strategy: .star)
         connectionManager.delegate = self
         
-//        discovererAction = discoverAction
         discoverer = Discoverer(connectionManager: connectionManager)
         discoverer?.delegate = self
         discoverer?.startDiscovery()
@@ -81,46 +83,13 @@ class NearbyConnectDiscoverer {
     
 }
 
-
-//class NearbyConnect {
-//  let connectionManager: ConnectionManager
-//  var advertiser: Advertiser? = Optional.none
-//  var discoverer: Discoverer? = Optional.none
-//  var discovererAction: Optional<(EndpointID) -> Void> = Optional.none
-//
-//  var listOfNearbyDevices: [String] = [String]()
-//
-//  enum INIT_TYPE: String {
-//    case ADVERTISER = "ADVERTISER"
-//    case DISCOVERER = "DISCOVERER"
-//  }
-//
-//    init(type initType: INIT_TYPE, action discoverAction: Optional<(EndpointID) -> Void>) {
-//        connectionManager = ConnectionManager(serviceID: "com.example.nearbyCrossExample", strategy: .star)
-//        connectionManager.delegate = self
-//        switch initType {
-//            case .ADVERTISER:
-//                advertiser = Advertiser(connectionManager: connectionManager)
-//                advertiser?.delegate = self
-//                advertiser?.startAdvertising(using: "My Device".data(using: .utf8)!)
-//                break
-//            case .DISCOVERER:
-//                discovererAction = discoverAction!
-//                discoverer = Discoverer(connectionManager: connectionManager)
-//                discoverer?.delegate = self
-//                discoverer?.startDiscovery()
-//                break
-//        }
-//    }
-//}
-
 extension NearbyConnectDiscoverer: DiscovererDelegate {
   func discoverer(
     _ discoverer: Discoverer, didFind endpointID: EndpointID, with context: Data) {
     // An endpoint was found.
         listOfNearbyDevices.append(String(endpointID))
         print(String(endpointID))
-//        discovererAction(endpointID)
+        channel.invokeMethod("onEndpointFound", arguments: endpointID)
   }
 
   func discoverer(_ discoverer: Discoverer, didLose endpointID: EndpointID) {
