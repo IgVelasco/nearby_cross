@@ -67,8 +67,7 @@ public class Advertiser {
   }
 
   deinit {
-//    stopAdvertising()
-  }
+x     }
 }
 
 extension Advertiser: InternalConnectionDelegate {
