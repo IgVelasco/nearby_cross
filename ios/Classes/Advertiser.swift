@@ -67,7 +67,7 @@ public class Advertiser {
   }
 
   deinit {
-//    stopAdvertising()
+    //stopAdvertising()
   }
 }
 
