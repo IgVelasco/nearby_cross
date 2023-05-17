@@ -6,6 +6,10 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
   let channel: FlutterMethodChannel
     var advertiser: NearbyConnectAdvertiser?
     var discoverer: NearbyConnectDiscoverer?
+    var advertising: Bool = false
+    var discovering: Bool = false
+
+
 
   init(channel: FlutterMethodChannel) {
     self.channel = channel
@@ -28,13 +32,27 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
       break;
     case "startAdvertising":
       advertiser = NearbyConnectAdvertiser();
-      let randomColor = generateColor();
-      result(randomColor);
+      advertising = true;
+      result("Done");
       break;
     case "startDiscovery":
       discoverer = NearbyConnectDiscoverer(channel);
+      discovering = true
       result("Done")
-      break
+      break;
+    case "disconnect":
+        // TODO: something wrong, when disconnecting and connecting on advertise endpoint doesnt change
+        // I believe ios mantains endpointId
+        if(discovering){
+            discoverer?.discoverer?.stopDiscovery()
+            discovering = false
+        }
+        if(advertising){
+            advertiser?.advertiser?.stopAdvertising()
+            advertising = false
+        }
+        result("Done")
+        break;
     default:
       result("Not implemented");
       break;
