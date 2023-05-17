@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final TextEditingController _textFieldController = TextEditingController();
   bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
   String _endpointId = 'Unknown 2';
@@ -74,14 +75,16 @@ class _MyAppState extends State<MyApp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Running on: $_platformVersion\n found: $_endpointId'),
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              decoration: const InputDecoration(
                 hintText: 'Type something...',
               ),
+              controller: _textFieldController, // Add this line
             ),
             ElevatedButton(
               onPressed: () {
-                // Perform the send action here
+                String inputData = _textFieldController.text;
+                sendData(inputData);
               },
               child: const Text('Send'),
             ),
@@ -156,6 +159,14 @@ class _MyAppState extends State<MyApp> {
   void _disconnect() async {
     try {
       await NearbyCross.disconnect(serviceId);
+    } catch (e) {
+      print('Error disconnecting: $e');
+    }
+  }
+
+  void sendData(String data) async {
+    try {
+      await NearbyCross.sendData(data);
     } catch (e) {
       print('Error disconnecting: $e');
     }
