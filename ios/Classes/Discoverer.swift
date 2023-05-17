@@ -85,7 +85,8 @@ public class Discoverer {
   }
 
   deinit {
-    stopDiscovery()
+      print("ASDAJKSDNAJKSDN")
+    //stopDiscovery()
   }
 }
 

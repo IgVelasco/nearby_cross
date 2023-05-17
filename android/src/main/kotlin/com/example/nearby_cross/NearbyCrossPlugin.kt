@@ -10,6 +10,19 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.connection.Strategy;
+import com.google.android.gms.nearby.connection.DiscoveryOptions;
+import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback;
+import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo;
+import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
+import com.google.android.gms.nearby.connection.ConnectionInfo;
+import com.google.android.gms.nearby.connection.ConnectionResolution;
+import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
+import android.content.Context;
+import android.os.Build
+import android.util.Log
+import com.google.android.gms.nearby.connection.AdvertisingOptions
 import java.nio.charset.Charset
 
 
@@ -59,7 +72,7 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when(call.method) {
       "getPlatformVersion" -> {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
+            result.success("Android ${Build.VERSION.RELEASE}")
       }
       "generateColor" -> {
         val randomColor = generateColor()
