@@ -15,7 +15,10 @@ class NearbyCross {
       Permission.bluetooth,
       Permission.nearbyWifiDevices,
       Permission.bluetoothScan,
-      Permission.bluetoothAdvertise
+      Permission.bluetoothAdvertise,
+      Permission.bluetoothConnect,
+      Permission.locationAlways,
+      Permission.locationWhenInUse
     ].request();
 
     // Check the permission status after the request
@@ -47,5 +50,9 @@ class NearbyCross {
 
   static Future<void> disconnect(String serviceId) async {
     await _channel.invokeMethod('disconnect', serviceId);
+  }
+
+  static Future<void> sendData(String data) async {
+    await _channel.invokeMethod('sendData', data);
   }
 }

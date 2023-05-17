@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -30,6 +28,7 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var userName: ByteArray
 
   var listOfNearbyDevices: List<String> = listOf()
+  var listOfConnectedEndpoints: List<String> = listOf()
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "nearby_cross")
@@ -81,6 +80,11 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
         disconnect(context, serviceId)
         result.success(null)
       }
+      "sendData" -> {
+        val data = call.arguments as String
+        sendData(context, data)
+        result.success(null)
+      }
       else -> result.notImplemented()
     }
   }
@@ -90,6 +94,9 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
             // This always gets the full data of the payload. Is null if it's not a BYTES payload.
             if (payload.type == Payload.Type.BYTES) {
                 val receivedBytes = payload.asBytes()
+                val stringRecieved = receivedBytes?.let { String(it) }
+                channel.invokeMethod("onEndpointFound", stringRecieved);
+                Log.d("INFO", "$stringRecieved")
             }
         }
 
@@ -115,6 +122,10 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
             ConnectionsStatusCodes.STATUS_OK -> {
                 // Connection was successful!
                 // You can now start sending and receiving data using the provided EndpointDiscoveryCallback
+
+                // Add to connected endpoints
+                listOfConnectedEndpoints = listOfConnectedEndpoints + endpointId
+
             }
             ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
                 // The connection request was rejected by the remote endpoint
@@ -157,17 +168,26 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   fun disconnect(context: Context, serviceId: String)  {
-      val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
       Nearby.getConnectionsClient(context).stopAllEndpoints()
+      listOfConnectedEndpoints = listOf()
+      listOfNearbyDevices = listOf()
       Log.v("INFO", "Stopped all endpoints")
+  }
+
+  fun sendData(context: Context, data: String)  {
+      val bytesPayload = Payload.fromBytes(data.toByteArray())
+      for (connectedDevice in listOfConnectedEndpoints){
+        Nearby.getConnectionsClient(context).sendPayload(connectedDevice, bytesPayload)
+        Log.v("INFO", "Send'$data' to $connectedDevice")
+      }
   }
 
 
   fun startAdvertising(context: Context, serviceId: String, userName: String)  {
-      val discoveryOptions = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+      val advertisingOptions = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
       setUsername(userName)
       val usernameBytes:ByteArray = this.userName
-      Nearby.getConnectionsClient(context).startAdvertising(usernameBytes, serviceId, this.connectionLifecycleCallback, discoveryOptions)
+      Nearby.getConnectionsClient(context).startAdvertising(usernameBytes, serviceId, this.connectionLifecycleCallback, advertisingOptions)
           .addOnSuccessListener {
               // We're discovering! Using service id: $serviceId
             Log.d("INFO", "We're advertising! Using service id: $serviceId")
