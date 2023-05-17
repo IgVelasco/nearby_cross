@@ -22,6 +22,8 @@ class _MyAppState extends State<MyApp> {
   Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
 
+  String serviceId = 'com.example.nearbyCrossExample';
+
   @override
   void initState() {
     super.initState();
@@ -68,29 +70,44 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
           backgroundColor: _bgColor,
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n found: $_endpointId'),
-        ),
-        floatingActionButton: Stack(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Positioned(
-              bottom: 16.0,
-              left: 16,
-              child: FloatingActionButton(
-                onPressed: _advertise,
-                child: const Icon(Icons.menu),
+            Text('Running on: $_platformVersion\n found: $_endpointId'),
+            const TextField(
+              decoration: InputDecoration(
+                hintText: 'Type something...',
               ),
             ),
-            Positioned(
-              bottom: 16.0,
-              right: 16,
-              child: FloatingActionButton(
-                onPressed: _startDiscovery,
-                child: const Icon(Icons.color_lens),
-              ),
+            ElevatedButton(
+              onPressed: () {
+                // Perform the send action here
+              },
+              child: const Text('Send'),
             ),
           ],
         ),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: _advertise,
+                child: const Text('Advertise'),
+              ),
+              ElevatedButton(
+                onPressed: _disconnect,
+                child: const Text('Disconnect'),
+              ),
+              ElevatedButton(
+                onPressed: _startDiscovery,
+                child: const Text('Discovery'),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
@@ -109,7 +126,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await NearbyCross.requestPermissions();
-      await NearbyCross.startDiscovery('com.example.nearbyCrossExample');
+      await NearbyCross.startDiscovery(serviceId);
     } catch (e) {
       print('Error starting discovery: $e');
     }
@@ -126,7 +143,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await NearbyCross.requestPermissions();
-      await NearbyCross.advertise('com.example.nearbyCrossExample');
+      await NearbyCross.advertise(serviceId);
     } catch (e) {
       print('Error starting discovery: $e');
     }
@@ -134,5 +151,13 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _isDiscovering = false;
     });
+  }
+
+  void _disconnect() async {
+    try {
+      await NearbyCross.disconnect(serviceId);
+    } catch (e) {
+      print('Error disconnecting: $e');
+    }
   }
 }
