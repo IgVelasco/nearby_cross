@@ -44,4 +44,8 @@ class NearbyCross {
   static Future<void> advertise(String serviceId) async {
     await _channel.invokeMethod('startAdvertising', serviceId);
   }
+
+  static Future<void> disconnect(String serviceId) async {
+    await _channel.invokeMethod('disconnect', serviceId);
+  }
 }

@@ -76,6 +76,11 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
         startAdvertising(context, serviceId, "test")
         result.success(null)
       }
+      "disconnect" -> {
+        val serviceId = call.arguments as String
+        disconnect(context, serviceId)
+        result.success(null)
+      }
       else -> result.notImplemented()
     }
   }
@@ -149,6 +154,12 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
               // We were unable to start discovery.
             Log.d("INFO", "We were unable to start discovery.")
           }
+  }
+
+  fun disconnect(context: Context, serviceId: String)  {
+      val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+      Nearby.getConnectionsClient(context).stopAllEndpoints()
+      Log.v("INFO", "Stopped all endpoints")
   }
 
 
