@@ -127,15 +127,21 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
 
                 // Add to connected endpoints
                 listOfConnectedEndpoints = listOfConnectedEndpoints + endpointId
+                Log.d("INFO", "Connected")
+
 
             }
             ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
                 // The connection request was rejected by the remote endpoint
                 // You may want to notify the user that the connection was rejected
+                Log.d("ERROR", "Connection rejected")
+
             }
             ConnectionsStatusCodes.STATUS_ERROR -> {
                 // There was an error connecting to the remote endpoint
                 // You may want to notify the user that the connection was unsuccessful
+                Log.d("ERROR", "Failed to connect")
+
             }
             else -> {
                 Log.d("ERROR", "Failed to connect")
