@@ -85,8 +85,8 @@ public class Discoverer {
   }
 
   deinit {
-      print("ASDAJKSDNAJKSDN")
-    //stopDiscovery()
+    print("INFO: Discoverer deinitiado")
+    stopDiscovery()
   }
 }
 

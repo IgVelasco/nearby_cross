@@ -110,6 +110,7 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
 
   private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
     override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
+        Log.v("INFO", connectionInfo.endpointName)
         Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback);
         // A connection to another device has been initiated by the remote endpoint
         // You can now accept or reject the connection request using the provided ConnectionInfo

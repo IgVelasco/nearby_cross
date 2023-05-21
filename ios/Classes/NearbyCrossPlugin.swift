@@ -24,32 +24,37 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
     switch call.method {
     case "getPlatformVersion":
       result("iOS " + UIDevice.current.systemVersion)
-      break;
     case "generateColor":
       let randomColor = generateColor()
       result(randomColor)
-      break;
     case "startAdvertising":
       advertiser = NearbyConnectAdvertiser(channel, self)
-      advertising = true
-      result("Done")
-      break;
+      if let advertiser_instance = advertiser?.advertiser {
+        advertiser_instance.startAdvertising(using: "My Device".data(using: .utf8)!)
+        advertising = true
+        result("Done")
+      } else {
+        result("Failed to start advertising")
+      }
     case "startDiscovery":
-      discoverer = NearbyConnectDiscoverer(channel, self)
-      discovering = true
-      result("Done")
-      break;
+      if(discoverer == nil){
+        discoverer = NearbyConnectDiscoverer(channel, self)
+      }
+      if let discoverer_instance = discoverer?.discoverer {
+        discoverer_instance.startDiscovery()
+        discovering = true
+        result("Done")
+      } else {
+        result("Failed to start discovery")
+      }
     case "sendData":
-      if discovering {
-        discoverer?.discoverer?.stopDiscovery()
-        discovering = false
-      }
-      if advertising {
-        advertiser?.advertiser?.stopAdvertising()
-        advertising = false
-      }
-      result("Done")
-      break;
+        if let data = call.arguments as? String {
+            sendData(receivedString: data)
+            result("Done")
+        } else {
+            print("No data sent")
+            result("Failed") // or any other appropriate result value
+        }
     case "disconnect":
       // TODO: something wrong, when disconnecting and connecting on advertise endpoint doesnt change
       // I believe ios mantains endpointId
@@ -76,6 +81,26 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
       Int.random(in: 0 ... 255)
     }
   }
+    
+    
+    
+    
+    func sendData( receivedString: String) {
+//        TODO: make connection manager getter
+        if let bytesPayload = receivedString.data(using: .utf8) {
+            // Use the data here
+            // The 'data' variable now contains the bytes representing the string in UTF-8 encoding
+            if let discoverer_instance = discoverer?.discoverer {
+                discoverer_instance.connectionManager.send(bytesPayload, to: listOfConnectedDevices)
+            } else if let advertiser_instance = advertiser?.advertiser {
+                advertiser_instance.connectionManager.send(bytesPayload, to: listOfConnectedDevices)
+            } else {
+                print("No instance for sending available")
+            }
+        } else {
+            print("Error parsing string to bytes")
+        }
+    }
 }
 
 class NearbyConnectAdvertiser {
@@ -101,7 +126,7 @@ class NearbyConnectDiscoverer {
   var discoverer: Discoverer? = Optional.none
   var channel: FlutterMethodChannel
   var nearbyConnector: NearbyCrossPlugin
-  
+
   init(_ chn: FlutterMethodChannel, _ nearbyConnector: NearbyCrossPlugin) {
     channel = chn
     self.nearbyConnector = nearbyConnector
@@ -123,7 +148,6 @@ extension NearbyConnectDiscoverer: DiscovererDelegate {
     print(String(endpointID))
     channel.invokeMethod("onEndpointFound", arguments: endpointID)
     discoverer.requestConnection(to: endpointID, using: "My Device".data(using: .utf8)!)
-
   }
 
   func discoverer(_: Discoverer, didLose endpointId: EndpointID) {
@@ -140,20 +164,21 @@ extension NearbyConnectAdvertiser: AdvertiserDelegate {
   ) {
     // Accept or reject any incoming connection requests. The connection will still need to
     // be verified in the connection manager delegate.
-      nearbyConnector.listOfConnectedDevices.append(String(endpointId))
-      connectionRequestHandler(true)
+    nearbyConnector.listOfConnectedDevices.append(String(endpointId))
+    connectionRequestHandler(true)
   }
 }
 
 extension NearbyConnectAdvertiser: ConnectionManagerDelegate {
-    func connectionManager(
-      _ connectionManager: ConnectionManager, didReceive verificationCode: String,
-      from endpointID: EndpointID, verificationHandler: @escaping (Bool) -> Void) {
-      // Optionally show the user the verification code. Your app should call this handler
-      // with a value of `true` if the nearby endpoint should be trusted, or `false`
-      // otherwise.
-      verificationHandler(true)
-    }
+  func connectionManager(
+    _: ConnectionManager, didReceive _: String,
+    from _: EndpointID, verificationHandler: @escaping (Bool) -> Void
+  ) {
+    // Optionally show the user the verification code. Your app should call this handler
+    // with a value of `true` if the nearby endpoint should be trusted, or `false`
+    // otherwise.
+    verificationHandler(true)
+  }
 
   func connectionManager(
     _: ConnectionManager, didReceive data: Data, withID _: PayloadID,
@@ -192,7 +217,6 @@ extension NearbyConnectAdvertiser: ConnectionManagerDelegate {
     from _: EndpointID, forPayload _: PayloadID
   ) {
     // Handle the transfer update for an incoming or outgoing transfer.
-      
   }
 
   func connectionManager(
@@ -222,9 +246,10 @@ extension NearbyConnectAdvertiser: ConnectionManagerDelegate {
 extension NearbyConnectDiscoverer: ConnectionManagerDelegate {
   func connectionManager(
     _: ConnectionManager, didReceive _: String,
-    from _: EndpointID, verificationHandler: @escaping (Bool) -> Void
+    from endpointId: EndpointID, verificationHandler: @escaping (Bool) -> Void
   ) {
-    verificationHandler(true)
+      nearbyConnector.listOfConnectedDevices.append(String(endpointId))
+      verificationHandler(true)
   }
 
   func connectionManager(
@@ -232,7 +257,7 @@ extension NearbyConnectDiscoverer: ConnectionManagerDelegate {
     from _: EndpointID
   ) {
     // Handle the received data from the nearby endpoint.
-        if let receivedString = String(data: data, encoding: .utf8) {
+    if let receivedString = String(data: data, encoding: .utf8) {
       // Use the receivedString here
       channel.invokeMethod("onEndpointFound", arguments: receivedString)
       print(receivedString)
