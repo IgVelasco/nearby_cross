@@ -116,7 +116,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleGenerateColorPressed() async {
-    final randomColor = await NearbyCross.generateColor();
+    final randomColor = await _nearbyCrossPlugin.generateColor();
     setState(() {
       _bgColor = randomColor;
     });
@@ -129,7 +129,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await NearbyCross.requestPermissions();
-      await NearbyCross.startDiscovery(serviceId);
+      await _nearbyCrossPlugin.startDiscovery(serviceId);
     } catch (e) {
       print('Error starting discovery: $e');
     }
@@ -146,7 +146,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       await NearbyCross.requestPermissions();
-      await NearbyCross.advertise(serviceId);
+      await _nearbyCrossPlugin.advertise(serviceId);
     } catch (e) {
       print('Error starting discovery: $e');
     }
@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
 
   void _disconnect() async {
     try {
-      await NearbyCross.disconnect(serviceId);
+      await _nearbyCrossPlugin.disconnect(serviceId);
     } catch (e) {
       print('Error disconnecting: $e');
     }
@@ -166,7 +166,7 @@ class _MyAppState extends State<MyApp> {
 
   void sendData(String data) async {
     try {
-      await NearbyCross.sendData(data);
+      await _nearbyCrossPlugin.sendData(data);
     } catch (e) {
       print('Error disconnecting: $e');
     }
