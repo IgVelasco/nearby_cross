@@ -1,12 +1,12 @@
 import 'package:flutter/services.dart';
-
-import 'nearby_cross_platform_interface.dart';
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class NearbyCross {
-  static const MethodChannel _channel = MethodChannel('nearby_cross');
+import 'nearby_cross_method_channel.dart';
 
-  get methodChannel => _channel;
+class NearbyCross {
+  static final MethodChannelNearbyCross _methodChannel =
+      MethodChannelNearbyCross();
 
   static Future<void> requestPermissions() async {
     // Request permission to access location
@@ -31,28 +31,27 @@ class NearbyCross {
     // }
   }
 
-  Future<String?> getPlatformVersion() {
-    return NearbyCrossPlatform.instance.getPlatformVersion();
+  Future<String?> getPlatformVersion() async {
+    return _methodChannel.getPlatformVersion();
   }
 
-  static Future<Color> generateColor() async {
-    final randomColor = await _channel.invokeMethod('generateColor');
-    return Color.fromRGBO(randomColor[0], randomColor[1], randomColor[2], 1.0);
+  Future<Color> generateColor() async {
+    return await _methodChannel.generateColor();
   }
 
-  static Future<void> startDiscovery(String serviceId) async {
-    await _channel.invokeMethod('startDiscovery', serviceId);
+  Future<void> startDiscovery(String serviceId) async {
+    await _methodChannel.startDiscovery(serviceId);
   }
 
-  static Future<void> advertise(String serviceId) async {
-    await _channel.invokeMethod('startAdvertising', serviceId);
+  Future<void> advertise(String serviceId) async {
+    await _methodChannel.advertise(serviceId);
   }
 
-  static Future<void> disconnect(String serviceId) async {
-    await _channel.invokeMethod('disconnect', serviceId);
+  Future<void> disconnect(String serviceId) async {
+    await _methodChannel.disconnect(serviceId);
   }
 
-  static Future<void> sendData(String data) async {
-    await _channel.invokeMethod('sendData', data);
+  Future<void> sendData(String data) async {
+    await _methodChannel.sendData(data);
   }
 }

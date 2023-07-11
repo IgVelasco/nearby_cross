@@ -7,7 +7,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockNearbyCrossPlatform
     with MockPlatformInterfaceMixin
     implements NearbyCrossPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
@@ -24,6 +23,6 @@ void main() {
     MockNearbyCrossPlatform fakePlatform = MockNearbyCrossPlatform();
     NearbyCrossPlatform.instance = fakePlatform;
 
-    expect(await nearbyCrossPlugin.getPlatformVersion(), '42');
+    expect(await NearbyCross.getPlatformVersion(), '42');
   });
 }

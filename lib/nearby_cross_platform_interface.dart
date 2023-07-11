@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'nearby_cross_method_channel.dart';
@@ -26,4 +28,10 @@ abstract class NearbyCrossPlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  Future<Color> generateColor();
+  Future<void> startDiscovery(String serviceId);
+  Future<void> advertise(String serviceId);
+  Future<void> disconnect(String serviceId);
+  Future<void> sendData(String data);
 }
