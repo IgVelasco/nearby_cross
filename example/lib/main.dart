@@ -42,7 +42,6 @@ class _MyAppState extends State<MyApp> {
 
       _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
         if (call.method == 'onEndpointFound') {
-          var color = call.arguments;
           setState(() {
             _endpointId = call.arguments;
           });
