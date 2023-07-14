@@ -1,6 +1,6 @@
-# nearby_cross
+# Nearby Cross
 
-A new Flutter plugin project.
+A flutter plugin that uses Google's Nearby Connections to connect devices across multiple operative systems
 
 ## Getting Started
 
