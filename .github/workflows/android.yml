@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: LS to see if is in right place
+        run: cd example
+        
+      - name: PWD to see if is in right place
+        run: cd example
+        
       - name: Run tests
         run: flutter test
 
