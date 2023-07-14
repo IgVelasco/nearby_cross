@@ -25,6 +25,5 @@ jobs:
         flutter-version: '3.7.12'
     - run: cd example
     - run: flutter pub get
-    - run: flutter pub get
     - run: flutter build apk
     - run: flutter build appbundle
