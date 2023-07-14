@@ -27,23 +27,18 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Navigate to example directory
-        run: cd example
-
       - name: Install dependencies
         run: flutter pub get
-
-      - name: LS to see if is in right place
-        run: cd example
-        
-      - name: PWD to see if is in right place
-        run: cd example
         
       - name: Run tests
         run: flutter test
 
       - name: Build Android app
-        run: flutter build apk
+        run: |
+          cd example
+          flutter build apk
 
       - name: Build iOS app
-        run: flutter build ios --no-codesign
+        run: |
+          cd example
+          flutter build ios --no-codesign
