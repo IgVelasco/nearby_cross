@@ -7,9 +7,11 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/build_steps.yml
 
     steps:
+      - name: Build and test
+        uses: ./.github/workflows/build_steps.yml
+
       - name: Build Android app
         run: |
           cd example

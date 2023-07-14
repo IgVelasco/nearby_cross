@@ -1,4 +1,9 @@
-jobs:
+name: Build Test Steps
+
+on:
+  workflow_call:
+
+jobs: 
   build:
     runs-on: macos-latest
 
