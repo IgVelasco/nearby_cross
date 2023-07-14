@@ -10,8 +10,9 @@ on:
       - develop
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
+
+  build:
+    runs-on: macos-latest
 
     steps:
       - name: Set up Flutter
