@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Build and test
-        uses: ./.github/workflows/build_steps.yml
+        uses: ./.github/workflows/build_test.yml
 
       - name: Build Android app
         run: |
