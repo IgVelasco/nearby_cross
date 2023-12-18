@@ -27,8 +27,8 @@ class NearbyCross {
     await nearbyChannel.startDiscovery(serviceId);
   }
 
-  Future<void> advertise(String serviceId) async {
-    await nearbyChannel.advertise(serviceId);
+  Future<void> advertise(String serviceId, String? username) async {
+    await nearbyChannel.advertise(serviceId, username);
   }
 
   Future<void> disconnect(String serviceId) async {

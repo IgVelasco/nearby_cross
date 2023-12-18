@@ -31,7 +31,7 @@ abstract class NearbyCrossPlatform extends PlatformInterface {
 
   Future<Color> generateColor();
   Future<void> startDiscovery(String serviceId);
-  Future<void> advertise(String serviceId);
+  Future<void> advertise(String serviceId, String? username);
   Future<void> disconnect(String serviceId);
   Future<void> sendData(String data);
 }

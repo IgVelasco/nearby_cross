@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -17,6 +19,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final TextEditingController _textFieldController = TextEditingController();
+  final TextEditingController _advertiserName = TextEditingController();
   bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
   String _endpointId = 'Unknown 2';
@@ -73,6 +76,12 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TextField(
+              decoration: const InputDecoration(
+                hintText: 'Declare advertiser name...',
+              ),
+              controller: _advertiserName, // Add this line
+            ),
             Text('Running on: $_platformVersion\n found: $_endpointId'),
             TextField(
               decoration: const InputDecoration(
@@ -143,11 +152,13 @@ class _MyAppState extends State<MyApp> {
       _isDiscovering = true;
     });
 
+    var advName = _advertiserName.text.isNotEmpty ? _advertiserName.text : null;
+
     try {
       await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.advertise(serviceId);
+      await _nearbyCrossPlugin.advertise(serviceId, advName);
     } catch (e) {
-      print('Error starting discovery: $e');
+      print('Error starting advertising: $e');
     }
 
     setState(() {
