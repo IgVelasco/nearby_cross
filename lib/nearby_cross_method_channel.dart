@@ -19,16 +19,6 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
   }
 
   @override
-  Future<Color> generateColor() async {
-    final randomColor =
-        await methodChannel.invokeMethod<List<int>>('generateColor');
-    if (randomColor == null) {
-      throw Exception('Invalid color format');
-    }
-    return Color.fromRGBO(randomColor[0], randomColor[1], randomColor[2], 1.0);
-  }
-
-  @override
   Future<void> startDiscovery(String serviceId) async {
     await methodChannel.invokeMethod('startDiscovery', serviceId);
   }

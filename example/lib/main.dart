@@ -123,13 +123,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _handleGenerateColorPressed() async {
-    final randomColor = await _nearbyCrossPlugin.generateColor();
-    setState(() {
-      _bgColor = randomColor;
-    });
-  }
-
   void _startDiscovery() async {
     setState(() {
       _isDiscovering = true;

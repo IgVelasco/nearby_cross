@@ -66,10 +66,6 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             "getPlatformVersion" -> {
                 result.success("Android ${Build.VERSION.RELEASE}")
             }
-            "generateColor" -> {
-                val randomColor = generateColor()
-                result.success(randomColor)
-            }
             "startDiscovery" -> {
                 val serviceId = call.arguments as String
                 startDiscovery(context, serviceId)
@@ -200,11 +196,6 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             Nearby.getConnectionsClient(context).sendPayload(connectedDevice, bytesPayload)
             Log.v("INFO", "Send'$data' to $connectedDevice")
         }
-    }
-
-
-    private fun generateColor(): List<Int> {
-        return arrayOf(0, 0, 0).map { (Math.random() * 256).toInt() }
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

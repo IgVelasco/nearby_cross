@@ -19,10 +19,6 @@ class NearbyCross {
     return nearbyChannel.getPlatformVersion();
   }
 
-  Future<Color> generateColor() async {
-    return await nearbyChannel.generateColor();
-  }
-
   Future<void> startDiscovery(String serviceId) async {
     await nearbyChannel.startDiscovery(serviceId);
   }

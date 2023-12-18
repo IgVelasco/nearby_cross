@@ -29,7 +29,6 @@ abstract class NearbyCrossPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<Color> generateColor();
   Future<void> startDiscovery(String serviceId);
   Future<void> advertise(String serviceId, String? username);
   Future<void> disconnect(String serviceId);
