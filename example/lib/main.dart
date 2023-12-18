@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.advertise(serviceId, advName);
     } catch (e) {
-      print('Error starting discovery: $e');
+      print('Error starting advertising: $e');
     }
 
     setState(() {

@@ -164,6 +164,7 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
 
   fun startDiscovery(context: Context, serviceId: String)  {
       val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+      setUsername("nacho")
       Nearby.getConnectionsClient(context)
           .startDiscovery(serviceId, this.endpointDiscoveryCallback, discoveryOptions)
           .addOnSuccessListener {
