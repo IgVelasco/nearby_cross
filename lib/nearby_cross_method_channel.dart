@@ -34,8 +34,9 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
   }
 
   @override
-  Future<void> advertise(String serviceId) async {
-    await methodChannel.invokeMethod('startAdvertising', serviceId);
+  Future<void> advertise(String serviceId, String? username) async {
+    await methodChannel.invokeMethod('startAdvertising',
+        {'serviceId': serviceId, 'username': username ?? 'generic_name'});
   }
 
   @override

@@ -35,7 +35,6 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "nearby_cross")
     channel.setMethodCallHandler(this)
     context = flutterPluginBinding.applicationContext
-    setUsername("test")
     endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
       override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
           // A nearby device with the same service ID was found
@@ -72,8 +71,9 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
         result.success(null)
       }
       "startAdvertising" -> {
-        val serviceId = call.arguments as String
-        startAdvertising(context, serviceId, "test")
+        val serviceId = call.argument<String>("serviceId")
+        val userName = call.argument<String>("username")
+        startAdvertising(context, serviceId as String, userName as String)
         result.success(null)
       }
       "disconnect" -> {
@@ -199,7 +199,7 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
       Nearby.getConnectionsClient(context).startAdvertising(usernameBytes, serviceId, this.connectionLifecycleCallback, advertisingOptions)
           .addOnSuccessListener {
               // We're discovering! Using service id: $serviceId
-            Log.d("INFO", "We're advertising! Using service id: $serviceId")
+            Log.d("INFO", "We're advertising! Using service id: $serviceId and username $userName")
           }
           .addOnFailureListener { e ->
               // We were unable to start discovery.
