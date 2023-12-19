@@ -19,14 +19,19 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
   }
 
   @override
-  Future<void> startDiscovery(String serviceId) async {
-    await methodChannel.invokeMethod('startDiscovery', serviceId);
+  Future<void> startDiscovery(String serviceId, String? username) async {
+    await methodChannel.invokeMethod('startDiscovery', {
+      'serviceId': serviceId,
+      'username': username ?? 'generic_discoverer_name'
+    });
   }
 
   @override
   Future<void> advertise(String serviceId, String? username) async {
-    await methodChannel.invokeMethod('startAdvertising',
-        {'serviceId': serviceId, 'username': username ?? 'generic_name'});
+    await methodChannel.invokeMethod('startAdvertising', {
+      'serviceId': serviceId,
+      'username': username ?? 'generic_advertiser_name'
+    });
   }
 
   @override

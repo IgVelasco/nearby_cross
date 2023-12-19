@@ -17,7 +17,7 @@ class Advertiser(
     context: Context,
     channel: MethodChannel,
     userName: String = "generic_name"
-) : Connector() {
+) : Connector(userName) {
 
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -25,22 +25,16 @@ class Advertiser(
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
     /// when the Flutter Engine is detached from the Activity
     private var channel: MethodChannel
-    private val userName: ByteArray
     private val serviceId: String
     private val context: Context
 
-//    var listOfNearbyDevices: List<String> = listOf()
-//    var listOfConnectedEndpoints: List<String> = listOf()
-
 
     init {
-        this.userName = userName.toByteArray(Charset.forName("UTF-8"))
         this.serviceId = serviceId
         this.channel = channel
         this.context = context
 
-
-        Log.d("info", "Test")
+        Log.d("info", "Advertiser init completed")
     }
 
     private val payloadCallback = object : PayloadCallback() {

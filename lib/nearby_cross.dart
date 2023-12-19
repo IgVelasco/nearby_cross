@@ -19,8 +19,8 @@ class NearbyCross {
     return nearbyChannel.getPlatformVersion();
   }
 
-  Future<void> startDiscovery(String serviceId) async {
-    await nearbyChannel.startDiscovery(serviceId);
+  Future<void> startDiscovery(String serviceId, String? username) async {
+    await nearbyChannel.startDiscovery(serviceId, username);
   }
 
   Future<void> advertise(String serviceId, String? username) async {

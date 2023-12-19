@@ -29,7 +29,7 @@ abstract class NearbyCrossPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<void> startDiscovery(String serviceId);
+  Future<void> startDiscovery(String serviceId, String? username);
   Future<void> advertise(String serviceId, String? username);
   Future<void> disconnect(String serviceId);
   Future<void> sendData(String data);

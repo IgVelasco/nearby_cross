@@ -4,15 +4,23 @@ import android.content.Context
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.Payload
+import java.nio.charset.Charset
 
 
 // import com.google.android.gms.nearby.connection.AdvertisingOptions;
 
 
 /** NearbyCrossPlugin */
-open class Connector() {
+open class Connector(
+    userName: String = "generic_name"
+) {
+    var userName: ByteArray
     var listOfNearbyDevices: List<String> = listOf()
     var listOfConnectedEndpoints: List<String> = listOf()
+
+    init {
+        this.userName = userName.toByteArray(Charset.forName("UTF-8"))
+    }
 
     fun disconnect(context: Context, serviceId: String) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
