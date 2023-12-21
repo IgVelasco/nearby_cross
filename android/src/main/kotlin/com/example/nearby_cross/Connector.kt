@@ -107,6 +107,7 @@ open class Connector(
         override fun onDisconnected(endpointId: String) {
             // The connection to the remote endpoint has been disconnected
             // You may want to notify the user that the connection was lost
+            listOfConnectedEndpoints = listOfConnectedEndpoints - endpointId
         }
     }
 
