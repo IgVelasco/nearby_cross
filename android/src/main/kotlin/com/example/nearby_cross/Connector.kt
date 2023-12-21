@@ -23,7 +23,9 @@ open class Connector(
 ) {
     var userName: ByteArray
     var strategy: Strategy
-    var listOfConnectedEndpoints: List<String> = listOf()
+    var listOfConnectedDevices: MutableMap<String, Device> = mutableMapOf()
+    var listOfInitiatedConnections: MutableMap<String, Device> = mutableMapOf()
+
 
     init {
         this.userName = userName.toByteArray(Charset.forName("UTF-8"))
@@ -33,14 +35,15 @@ open class Connector(
     open fun disconnect(context: Context, serviceId: String) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
         Log.v("INFO", "Stopped all endpoints")
-        listOfConnectedEndpoints = listOf()
+        listOfConnectedDevices.clear()
+        listOfInitiatedConnections.clear()
     }
 
     fun sendData(context: Context, data: String) {
         val bytesPayload = Payload.fromBytes(data.toByteArray())
-        for (connectedDevice in listOfConnectedEndpoints) {
-            Nearby.getConnectionsClient(context).sendPayload(connectedDevice, bytesPayload)
-            Log.v("INFO", "Send'$data' to $connectedDevice")
+        for (connection in listOfConnectedDevices) {
+            Nearby.getConnectionsClient(context).sendPayload(connection.key, bytesPayload)
+            Log.v("INFO", "Send'$data' to $connection")
         }
     }
 
@@ -65,6 +68,10 @@ open class Connector(
     val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
             Log.v("INFO", connectionInfo.endpointName)
+
+            val newInitiatedConnection = Device(endpointId, connectionInfo.endpointName)
+            listOfInitiatedConnections[endpointId] = newInitiatedConnection
+
             Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback);
             // A connection to another device has been initiated by the remote endpoint
             // You can now accept or reject the connection request using the provided ConnectionInfo
@@ -81,24 +88,37 @@ open class Connector(
                     // You can now start sending and receiving data using the provided EndpointDiscoveryCallback
 
                     // Add to connected endpoints
-                    listOfConnectedEndpoints = listOfConnectedEndpoints + endpointId
-                    Log.d("INFO", "Connected")
+                    val newConnection =
+                        listOfInitiatedConnections[endpointId]
+                    if (newConnection == null) {
+                        Log.d("ERROR", "Connection not found")
+                        return
+                    }
+
+                    listOfInitiatedConnections.remove(endpointId)
+                    listOfConnectedDevices[endpointId] = newConnection
+                    Log.d("INFO", "Connected to ${newConnection.endpointName}")
 
 
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
+                    listOfInitiatedConnections.remove(endpointId)
+
                     // The connection request was rejected by the remote endpoint
                     // You may want to notify the user that the connection was rejected
                     Log.d("ERROR", "Connection rejected")
 
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
+                    listOfInitiatedConnections.remove(endpointId)
+
                     // There was an error connecting to the remote endpoint
                     // You may want to notify the user that the connection was unsuccessful
                     Log.d("ERROR", "Failed to connect")
 
                 }
                 else -> {
+                    listOfInitiatedConnections.remove(endpointId)
                     Log.d("ERROR", "Failed to connect")
                 }
                 // Other status codes can be handled here as well
@@ -108,7 +128,7 @@ open class Connector(
         override fun onDisconnected(endpointId: String) {
             // The connection to the remote endpoint has been disconnected
             // You may want to notify the user that the connection was lost
-            listOfConnectedEndpoints = listOfConnectedEndpoints - endpointId
+            listOfConnectedDevices.remove(endpointId)
         }
     }
 
