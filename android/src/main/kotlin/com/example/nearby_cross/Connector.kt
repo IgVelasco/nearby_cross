@@ -15,17 +15,20 @@ import java.nio.charset.Charset
 /** NearbyCrossPlugin */
 open class Connector(
     protected val serviceId: String,
+    strategy: String,
     protected val context: Context,
-    protected val callbacks: PayloadReceivedCallbacks,
+    callbacks: PayloadReceivedCallbacks,
     userName: String = Constants.DEFAULT_USERNAME
 
 ) {
     var userName: ByteArray
+    var strategy: Strategy
     var listOfNearbyDevices: List<String> = listOf()
     var listOfConnectedEndpoints: List<String> = listOf()
 
     init {
         this.userName = userName.toByteArray(Charset.forName("UTF-8"))
+        this.strategy = getStrategy(strategy)
     }
 
     fun disconnect(context: Context, serviceId: String) {
@@ -108,6 +111,15 @@ open class Connector(
             // The connection to the remote endpoint has been disconnected
             // You may want to notify the user that the connection was lost
             listOfConnectedEndpoints = listOfConnectedEndpoints - endpointId
+        }
+    }
+
+    fun getStrategy(strategy: String): Strategy {
+        return when (strategy) {
+            "P2P_CLUSTER" -> Strategy.P2P_CLUSTER
+            "P2P_STAR" -> Strategy.P2P_STAR
+            "P2P_POINT_TO_POINT" -> Strategy.P2P_POINT_TO_POINT
+            else -> Strategy.P2P_STAR
         }
     }
 

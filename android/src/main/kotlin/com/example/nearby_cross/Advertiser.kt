@@ -6,18 +6,18 @@ import com.example.nearby_cross.callbacks.AdvertiserCallbacks
 import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
-import com.google.android.gms.nearby.connection.Strategy
 
 /** NearbyCrossPlugin */
 class Advertiser(
     serviceId: String,
+    strategy: String,
     context: Context,
     callbacks: AdvertiserCallbacks,
     userName: String = Constants.DEFAULT_USERNAME,
-) : Connector(serviceId, context, callbacks, userName) {
+) : Connector(serviceId, strategy, context, callbacks, userName) {
 
     fun startAdvertising(context: Context) {
-        val advertisingOptions = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        val advertisingOptions = AdvertisingOptions.Builder().setStrategy(this.strategy).build()
         val usernameBytes: ByteArray = userName
         Nearby.getConnectionsClient(context).startAdvertising(
             usernameBytes,

@@ -40,8 +40,10 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             ChannelMethods.START_DISCOVERY -> {
                 val serviceId = call.argument<String>("serviceId")
                 val userName = call.argument<String>("username")
+                val strategy = call.argument<String>("strategy")
                 this.discoverer = Discoverer(
                     serviceId as String,
+                    strategy as String,
                     context,
                     callbacks.discoverer,
                     userName as String,
@@ -52,8 +54,10 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             ChannelMethods.START_ADVERTISING -> {
                 val serviceId = call.argument<String>("serviceId")
                 val userName = call.argument<String>("username")
+                val strategy = call.argument<String>("strategy")
                 this.advertiser = Advertiser(
                     serviceId as String,
+                    strategy as String,
                     context,
                     callbacks.advertiser,
                     userName as String,

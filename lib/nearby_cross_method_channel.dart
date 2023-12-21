@@ -22,7 +22,8 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
   Future<void> startDiscovery(String serviceId, String? username) async {
     await methodChannel.invokeMethod('startDiscovery', {
       'serviceId': serviceId,
-      'username': username ?? 'generic_discoverer_name'
+      'username': username ?? 'generic_discoverer_name',
+      'strategy': 'P2P_STAR'
     });
   }
 
@@ -30,7 +31,8 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
   Future<void> advertise(String serviceId, String? username) async {
     await methodChannel.invokeMethod('startAdvertising', {
       'serviceId': serviceId,
-      'username': username ?? 'generic_advertiser_name'
+      'username': username ?? 'generic_advertiser_name',
+      'strategy': 'P2P_STAR'
     });
   }
 

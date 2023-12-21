@@ -8,7 +8,6 @@ import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
-import com.google.android.gms.nearby.connection.Strategy
 
 
 // import com.google.android.gms.nearby.connection.AdvertisingOptions;
@@ -16,10 +15,11 @@ import com.google.android.gms.nearby.connection.Strategy
 /** NearbyCrossPlugin */
 class Discoverer(
     serviceId: String,
+    strategy: String,
     context: Context,
     callbacks: DiscovererCallbacks,
     userName: String = Constants.DEFAULT_USERNAME,
-) : Connector(serviceId, context, callbacks, userName) {
+) : Connector(serviceId, strategy, context, callbacks, userName) {
 
     private var endpointDiscoveryCallback: EndpointDiscoveryCallback
 
@@ -51,7 +51,7 @@ class Discoverer(
     }
 
     fun startDiscovery(context: Context) {
-        val discoveryOptions = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        val discoveryOptions = DiscoveryOptions.Builder().setStrategy(this.strategy).build()
         Nearby.getConnectionsClient(context)
             .startDiscovery(this.serviceId, this.endpointDiscoveryCallback, discoveryOptions)
             .addOnSuccessListener {
