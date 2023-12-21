@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:7.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -45,6 +45,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.gms:play-services-nearby:18.5.0'
+        implementation 'com.google.android.gms:play-services-nearby:19.0.0'
     }
 }

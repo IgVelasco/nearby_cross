@@ -245,15 +245,19 @@ extension NearbyConnectAdvertiser: ConnectionManagerDelegate {
 
 extension NearbyConnectDiscoverer: ConnectionManagerDelegate {
   func connectionManager(
-    _: ConnectionManager, didReceive _: String,
-    from endpointId: EndpointID, verificationHandler: @escaping (Bool) -> Void
+    _: ConnectionManager, 
+    didReceive _: String,
+    from endpointId: EndpointID, 
+    verificationHandler: @escaping (Bool) -> Void
   ) {
       nearbyConnector.listOfConnectedDevices.append(String(endpointId))
       verificationHandler(true)
   }
 
   func connectionManager(
-    _: ConnectionManager, didReceive data: Data, withID _: PayloadID,
+    _: ConnectionManager, 
+    didReceive data: Data, 
+    withID _: PayloadID,
     from _: EndpointID
   ) {
     // Handle the received data from the nearby endpoint.
@@ -268,16 +272,21 @@ extension NearbyConnectDiscoverer: ConnectionManagerDelegate {
   }
 
   func connectionManager(
-    _: ConnectionManager, didReceive _: InputStream,
-    withID _: PayloadID, from _: EndpointID,
+    _: ConnectionManager, 
+    didReceive _: InputStream,
+    withID _: PayloadID, 
+    from _: EndpointID,
     cancellationToken _: CancellationToken
   ) {
     // Handle the received byte stream from the nearby endpoint.
   }
 
   func connectionManager(
-    _: ConnectionManager, didStartReceivingResourceWithID _: PayloadID,
-    from _: EndpointID, at _: URL, withName _: String,
+    _: ConnectionManager, 
+    didStartReceivingResourceWithID _: PayloadID,
+    from _: EndpointID, 
+    at _: URL, 
+    withName _: String,
     cancellationToken _: CancellationToken
   ) {
     // Handle the start of receiving a resource from the nearby endpoint.

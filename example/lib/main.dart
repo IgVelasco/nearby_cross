@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
-  }
+    }
 
   void _handleGenerateColorPressed() async {
     final randomColor = await _nearbyCrossPlugin.generateColor();
