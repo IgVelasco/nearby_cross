@@ -39,6 +39,10 @@ class NearbyCross {
     await nearbyChannel.sendData(data);
   }
 
+  Future<void> sendDataUsername(String username,String data) async {
+    await nearbyChannel.sendDataUsername(username, data);
+  }
+
   Future<void> setMethodCallHandler(
       Future<dynamic> Function(MethodCall) handler) async {
     await nearbyChannel.setMethodCallHandler(handler);

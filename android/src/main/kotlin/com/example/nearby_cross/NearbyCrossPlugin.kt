@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
+import com.google.android.gms.nearby.connection.ConnectionsClient;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -27,25 +28,30 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var context: Context
   private lateinit var endpointDiscoveryCallback: EndpointDiscoveryCallback
   private lateinit var userName: ByteArray
+  private lateinit var connectionsClient: ConnectionsClient
 
   var listOfNearbyDevices: List<String> = listOf()
   var listOfConnectedEndpoints: List<String> = listOf()
+  
+  data class ConnectedEndpoint(val id: String, val name: String)
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "nearby_cross")
     channel.setMethodCallHandler(this)
     context = flutterPluginBinding.applicationContext
+    connectionsClient = Nearby.getConnectionsClient(context)
     setUsername("test")
     endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
       override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
           // A nearby device with the same service ID was found
           // You can now initiate a connection with this device using its endpoint ID
           Log.d("INFO", "A nearby device with the same service ID was found")
+          Log.d("INFO", "$info")
           listOfNearbyDevices = listOfNearbyDevices + endpointId
           channel.invokeMethod("onEndpointFound", endpointId);
 
 
-          Nearby.getConnectionsClient(context)
+          connectionsClient
               .requestConnection(userName, endpointId, connectionLifecycleCallback)
       }
 
@@ -85,6 +91,17 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
         val data = call.arguments as String
         sendData(context, data)
         result.success(null)
+      }
+      "sendDataUsername" -> {
+        val data = call.arguments as String
+        sendDataUsername(context,"AA12", data)
+        result.success(null)
+      }
+      "endpointConnect" -> {
+        val data = call.arguments as String
+        Nearby.getConnectionsClient(context)
+        .requestConnection(userName, data, connectionLifecycleCallback)
+        result.success(true)
       }
       else -> result.notImplemented()
     }
@@ -190,6 +207,13 @@ class NearbyCrossPlugin: FlutterPlugin, MethodCallHandler {
         Log.v("INFO", "Send'$data' to $connectedDevice")
       }
   }
+
+
+  fun sendDataUsername(context: Context, username: String, data: String)  {
+    val bytesPayload = Payload.fromBytes(data.toByteArray())
+    Nearby.getConnectionsClient(context).sendPayload(username, bytesPayload)
+    Log.v("INFO", "Send'$data' to $username")
+}
 
 
   fun startAdvertising(context: Context, serviceId: String, userName: String)  {

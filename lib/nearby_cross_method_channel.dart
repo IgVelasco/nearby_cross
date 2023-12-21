@@ -48,6 +48,11 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
     await methodChannel.invokeMethod('sendData', data);
   }
 
+  @override
+  Future<void> sendDataUsername(String username, String data) async {
+    await methodChannel.invokeMethod('sendDataUsername', {data, username });
+  }
+
   setMethodCallHandler(Future<dynamic> Function(MethodCall) handler) {
     methodChannel.setMethodCallHandler(handler);
   }
