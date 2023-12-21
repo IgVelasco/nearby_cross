@@ -2,6 +2,7 @@ package com.example.nearby_cross
 
 import android.content.Context
 import android.util.Log
+import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.Payload
 import java.nio.charset.Charset
@@ -12,7 +13,7 @@ import java.nio.charset.Charset
 
 /** NearbyCrossPlugin */
 open class Connector(
-    userName: String = "generic_name"
+    userName: String = Constants.DEFAULT_USERNAME
 ) {
     var userName: ByteArray
     var listOfNearbyDevices: List<String> = listOf()

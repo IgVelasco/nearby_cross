@@ -2,49 +2,27 @@ package com.example.nearby_cross
 
 import android.content.Context
 import android.util.Log
+import com.example.nearby_cross.callbacks.AdvertiserCallbacks
+import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import io.flutter.plugin.common.MethodChannel
-import java.nio.charset.Charset
-
-
-// import com.google.android.gms.nearby.connection.AdvertisingOptions;
-
 
 /** NearbyCrossPlugin */
 class Advertiser(
-    serviceId: String,
-    context: Context,
-    channel: MethodChannel,
-    userName: String = "generic_name"
+    private val serviceId: String,
+    private val context: Context,
+    private val callbacks: AdvertiserCallbacks,
+    userName: String = Constants.DEFAULT_USERNAME,
 ) : Connector(userName) {
-
-
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
-    private var channel: MethodChannel
-    private val serviceId: String
-    private val context: Context
-
-
-    init {
-        this.serviceId = serviceId
-        this.channel = channel
-        this.context = context
-
-        Log.d("info", "Advertiser init completed")
-    }
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             // This always gets the full data of the payload. Is null if it's not a BYTES payload.
             if (payload.type == Payload.Type.BYTES) {
                 val receivedBytes = payload.asBytes()
-                val stringRecieved = receivedBytes?.let { String(it) }
-                channel.invokeMethod("onEndpointFound", stringRecieved);
-                Log.d("INFO", "$stringRecieved")
+                val stringReceived = receivedBytes?.let { String(it) }
+                callbacks.onPayloadReceived(stringReceived as String)
+                Log.d("INFO", "$stringReceived")
             }
         }
 

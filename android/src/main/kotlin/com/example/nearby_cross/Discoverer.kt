@@ -2,42 +2,34 @@ package com.example.nearby_cross
 
 import android.content.Context
 import android.util.Log
+import com.example.nearby_cross.constants.Constants
+import com.example.nearby_cross.callbacks.DiscovererCallbacks
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import io.flutter.plugin.common.MethodChannel
-import java.nio.charset.Charset
 
 
 // import com.google.android.gms.nearby.connection.AdvertisingOptions;
 
-
 /** NearbyCrossPlugin */
 class Discoverer(
-    serviceId: String,
-    context: Context,
-    channel: MethodChannel,
-    userName: String = "generic_name"
+    private val serviceId: String,
+    private val context: Context,
+    private val callbacks: DiscovererCallbacks,
+    userName: String = Constants.DEFAULT_USERNAME,
 ) : Connector(userName) {
 
-    private var channel: MethodChannel
-    private val serviceId: String
-    private val context: Context
     private var endpointDiscoveryCallback: EndpointDiscoveryCallback
 
     init {
-        this.serviceId = serviceId
-        this.channel = channel
-        this.context = context
-
         this.endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
             override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
                 // A nearby device with the same service ID was found
                 // You can now initiate a connection with this device using its endpoint ID
                 Log.d("INFO", "A nearby device with the same service ID was found")
                 listOfNearbyDevices = listOfNearbyDevices + endpointId
-                channel.invokeMethod("onEndpointFound", endpointId);
+                callbacks.onEndpointFound(endpointId)
 
-
+                // TODO: Allow user to accept an incoming connection
                 Nearby.getConnectionsClient(context)
                     .requestConnection(userName, endpointId, connectionLifecycleCallback)
             }
@@ -61,7 +53,7 @@ class Discoverer(
             if (payload.type == Payload.Type.BYTES) {
                 val receivedBytes = payload.asBytes()
                 val stringReceived = receivedBytes?.let { String(it) }
-                channel.invokeMethod("onEndpointFound", stringReceived);
+                callbacks.onPayloadReceived(stringReceived as String)
                 Log.d("INFO", "$stringReceived")
             }
         }
