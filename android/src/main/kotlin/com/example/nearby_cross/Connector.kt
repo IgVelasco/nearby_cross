@@ -23,7 +23,6 @@ open class Connector(
 ) {
     var userName: ByteArray
     var strategy: Strategy
-    var listOfNearbyDevices: List<String> = listOf()
     var listOfConnectedEndpoints: List<String> = listOf()
 
     init {
@@ -31,11 +30,10 @@ open class Connector(
         this.strategy = getStrategy(strategy)
     }
 
-    fun disconnect(context: Context, serviceId: String) {
+    open fun disconnect(context: Context, serviceId: String) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
-        listOfConnectedEndpoints = listOf()
-        listOfNearbyDevices = listOf()
         Log.v("INFO", "Stopped all endpoints")
+        listOfConnectedEndpoints = listOf()
     }
 
     fun sendData(context: Context, data: String) {

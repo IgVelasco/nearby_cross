@@ -21,6 +21,8 @@ class Discoverer(
     userName: String = Constants.DEFAULT_USERNAME,
 ) : Connector(serviceId, strategy, context, callbacks, userName) {
 
+    var listOfNearbyDevices: List<String> = listOf()
+
     private var endpointDiscoveryCallback: EndpointDiscoveryCallback
 
     init {
@@ -62,6 +64,11 @@ class Discoverer(
                 // We were unable to start discovery.
                 Log.d("INFO", "We were unable to start discovery.")
             }
+    }
+
+    override fun disconnect(context: Context, serviceId: String) {
+        super.disconnect(context, serviceId)
+        listOfNearbyDevices = listOf()
     }
 }
 
