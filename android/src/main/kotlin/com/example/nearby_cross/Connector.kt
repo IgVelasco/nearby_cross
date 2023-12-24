@@ -3,6 +3,7 @@ package com.example.nearby_cross
 import android.content.Context
 import android.util.Log
 import com.example.nearby_cross.callbacks.PayloadReceivedCallbacks
+import com.example.nearby_cross.constants.ConnectionStrategies
 import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
@@ -132,11 +133,11 @@ open class Connector(
         }
     }
 
-    fun getStrategy(strategy: String): Strategy {
+    private fun getStrategy(strategy: String): Strategy {
         return when (strategy) {
-            "P2P_CLUSTER" -> Strategy.P2P_CLUSTER
-            "P2P_STAR" -> Strategy.P2P_STAR
-            "P2P_POINT_TO_POINT" -> Strategy.P2P_POINT_TO_POINT
+            ConnectionStrategies.P2P_CLUSTER.name -> Strategy.P2P_CLUSTER
+            ConnectionStrategies.P2P_STAR.name -> Strategy.P2P_STAR
+            ConnectionStrategies.P2P_POINT_TO_POINT.name -> Strategy.P2P_POINT_TO_POINT
             else -> Strategy.P2P_STAR
         }
     }
