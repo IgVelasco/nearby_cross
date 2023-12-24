@@ -20,3 +20,9 @@ class ChannelMethods {
         const val ON_ENDPOINT_FOUND = "onEndpointFound";
     }
 }
+
+enum class ConnectionStrategies {
+    P2P_CLUSTER,
+    P2P_STAR,
+    P2P_POINT_TO_POINT
+}
