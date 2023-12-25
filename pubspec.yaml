@@ -1,22 +1,21 @@
 name: nearby_cross
 description: A new Flutter plugin project.
 version: 0.0.1
-homepage:
+homepage: 'https://github.com/IgVelasco/nearby_cross'
 
 environment:
-  sdk: '>=2.19.6 <3.0.0'
-  flutter: ">=2.5.0"
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  permission_handler: ^10.2.0
+  permission_handler: ^11.1.0
   plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
