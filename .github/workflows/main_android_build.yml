@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Build and test
@@ -17,9 +18,8 @@ jobs:
           cd example
           flutter build apk
 
-
-# Broken since NearbyCoreAdapter needs to be installed manually with SPM 
-      # - name: Build iOS app
-      #   run: |
-      #     cd example
-      #     flutter build ios --no-codesign
+# Broken since NearbyCoreAdapter needs to be installed manually with SPM
+# - name: Build iOS app
+#   run: |
+#     cd example
+#     flutter build ios --no-codesign
