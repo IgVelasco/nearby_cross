@@ -9,14 +9,15 @@ class Constants {
 
 class ChannelMethods {
     companion object {
-        // Receive
+        // Receive in native code
         const val GET_PLATFORM_VERSION = "getPlatformVersion";
         const val START_DISCOVERY = "startDiscovery";
         const val START_ADVERTISING = "startAdvertising";
-        const val DISCONNECT = "disconnect";
         const val SEND_DATA = "sendData";
+        const val CONNECT = "connect";
+        const val DISCONNECT = "disconnect";
 
-        // Send
+        // Send from native code
         const val ON_ENDPOINT_FOUND = "onEndpointFound";
         const val PAYLOAD_RECEIVED = "payloadReceived";
     }

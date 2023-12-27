@@ -22,10 +22,11 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
   bool _isDiscovering = false;
+  bool _connectionStarted = false;
   String _platformVersion = 'Unknown';
-  String _endpointId = 'Unknown 2';
-  String _endpointName = 'Unknown 3';
-  String _message = 'Unknown message';
+  String _endpointId = '';
+  String _endpointName = '';
+  String _message = '';
   Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
 
@@ -91,9 +92,19 @@ class _MyAppState extends State<MyApp> {
               ),
               controller: _deviceName, // Add this line
             ),
-            Text(
-                'Running on: $_platformVersion\n found: $_endpointId and name $_endpointName'),
-            Text('Message: $_message'),
+            if (_endpointId.isEmpty)
+              Text('Running on: $_platformVersion\n')
+            else
+              Text('Found: $_endpointId and name $_endpointName'),
+            if (_endpointId.isNotEmpty && !_connectionStarted)
+              ElevatedButton(
+                onPressed: () {
+                  print('CONNECT');
+                  _connect();
+                },
+                child: const Text('Connect'),
+              ),
+            if (_message.isNotEmpty) Text('Message: $_message'),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Type something...',
@@ -132,6 +143,14 @@ class _MyAppState extends State<MyApp> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
+  }
+
+  void _connect() async {
+    setState(() {
+      _connectionStarted = true;
+    });
+
+    await _nearbyCrossPlugin.connect(_endpointId);
   }
 
   void _startDiscovery() async {

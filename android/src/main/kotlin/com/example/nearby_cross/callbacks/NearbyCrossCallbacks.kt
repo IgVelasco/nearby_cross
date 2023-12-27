@@ -5,10 +5,10 @@ import io.flutter.plugin.common.MethodChannel
 
 class NearbyCrossCallbacks(private val channel: MethodChannel) {
     val advertiser = object : AdvertiserCallbacks() {
-        override fun onPayloadReceived(stringReceived: String, endpointName: String) {
+        override fun onPayloadReceived(stringReceived: String, endpointId: String) {
             val hashmap = HashMap<String,String>()
             hashmap["message"] = stringReceived
-            hashmap["endpointName"] = endpointName
+            hashmap["endpointId"] = endpointId
             channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, hashmap)
         }
     }
@@ -21,10 +21,10 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             channel.invokeMethod(ChannelMethods.ON_ENDPOINT_FOUND, hashmap)
         }
 
-        override fun onPayloadReceived(stringReceived: String, endpointName: String) {
+        override fun onPayloadReceived(stringReceived: String, endpointId: String) {
             val hashmap = HashMap<String,String>()
             hashmap["message"] = stringReceived
-            hashmap["endpointName"] = endpointName
+            hashmap["endpointId"] = endpointId
             channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, hashmap)
         }
     }
