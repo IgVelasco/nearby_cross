@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ class _MyAppState extends State<MyApp> {
   bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
   String _endpointId = 'Unknown 2';
+  String _endpointName = 'Unknown 3';
+  String _message = 'Unknown message';
   Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
 
@@ -45,10 +48,16 @@ class _MyAppState extends State<MyApp> {
 
       _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
         if (call.method == 'onEndpointFound') {
+          var arguments = call.arguments as Map<Object?, Object?>;
           setState(() {
-            _endpointId = call.arguments;
+            _endpointId = arguments["endpointId"] as String;
+            _endpointName = arguments["endpointName"] as String;
           });
-          print('Endpoint found: $_endpointId');
+        } else if (call.method == 'payloadReceived') {
+          var arguments = call.arguments as Map<Object?, Object?>;
+          setState(() {
+            _message = arguments["message"] as String;
+          });
         }
       });
     } on PlatformException {
@@ -82,7 +91,9 @@ class _MyAppState extends State<MyApp> {
               ),
               controller: _deviceName, // Add this line
             ),
-            Text('Running on: $_platformVersion\n found: $_endpointId'),
+            Text(
+                'Running on: $_platformVersion\n found: $_endpointId and name $_endpointName'),
+            Text('Message: $_message'),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Type something...',

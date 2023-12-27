@@ -54,8 +54,8 @@ open class Connector(
             if (payload.type == Payload.Type.BYTES) {
                 val receivedBytes = payload.asBytes()
                 val stringReceived = receivedBytes?.let { String(it) }
-                callbacks.onPayloadReceived(stringReceived as String)
-                Log.d("INFO", "$stringReceived")
+                val device = listOfConnectedDevices[endpointId]
+                callbacks.onPayloadReceived(stringReceived as String, device!!.endpointName)
             }
         }
 

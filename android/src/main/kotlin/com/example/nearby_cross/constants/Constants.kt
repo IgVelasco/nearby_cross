@@ -18,6 +18,7 @@ class ChannelMethods {
 
         // Send
         const val ON_ENDPOINT_FOUND = "onEndpointFound";
+        const val PAYLOAD_RECEIVED = "payloadReceived";
     }
 }
 

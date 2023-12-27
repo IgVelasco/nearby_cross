@@ -31,7 +31,7 @@ class Discoverer(
                 // You can now initiate a connection with this device using its endpoint ID
                 Log.d("INFO", "A nearby device with the same service ID was found")
                 listOfNearbyDevices[endpointId] = Device(endpointId, info.endpointName)
-                callbacks.onEndpointFound(endpointId)
+                callbacks.onEndpointFound(endpointId, info.endpointName)
 
                 // TODO: Allow user to accept an incoming connection
                 Nearby.getConnectionsClient(context)
