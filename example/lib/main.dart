@@ -97,13 +97,7 @@ class _MyAppState extends State<MyApp> {
             else
               Text('Found: $_endpointId and name $_endpointName'),
             if (_endpointId.isNotEmpty && !_connectionStarted)
-              ElevatedButton(
-                onPressed: () {
-                  print('CONNECT');
-                  _connect();
-                },
-                child: const Text('Connect'),
-              ),
+              DiscoveredDevices(),
             if (_message.isNotEmpty) Text('Message: $_message'),
             TextField(
               decoration: const InputDecoration(
@@ -145,12 +139,33 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _connect() async {
-    setState(() {
-      _connectionStarted = true;
-    });
+  Widget DiscoveredDevices() {
+    return SizedBox(
+      height: 200,
+      width: 100,
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              print('CONNECT');
+              _connect(_endpointId)();
+            },
+            child: const Text('Connect'),
+          ),
+        ],
+      ),
+    );
+  }
 
-    await _nearbyCrossPlugin.connect(_endpointId);
+  Future<Null> Function() _connect(String epId) {
+    return () async {
+      setState(() {
+        _connectionStarted = true;
+      });
+
+      await _nearbyCrossPlugin.connect(epId);
+    };
   }
 
   void _startDiscovery() async {
