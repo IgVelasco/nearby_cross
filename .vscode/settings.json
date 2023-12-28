@@ -1,6 +1,7 @@
 {
     "conventionalCommits.scopes": [
         "android",
-        "ios"
+        "ios",
+        "dart"
     ]
 }

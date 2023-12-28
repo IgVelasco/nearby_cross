@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:nearby_cross/nearby_cross.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,12 +16,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _advertiserName = TextEditingController();
-  bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
   String _endpointId = 'Unknown 2';
-  Color _bgColor = Colors.white;
+  final Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
 
   String serviceId = 'com.example.nearbyCrossExample';
@@ -48,7 +46,7 @@ class _MyAppState extends State<MyApp> {
           setState(() {
             _endpointId = call.arguments;
           });
-          print('Endpoint found: $_endpointId');
+          logger.i('Endpoint found: $_endpointId');
         }
       });
     } on PlatformException {
@@ -123,34 +121,21 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _handleGenerateColorPressed() async {
-    final randomColor = await _nearbyCrossPlugin.generateColor();
-    setState(() {
-      _bgColor = randomColor;
-    });
-  }
-
   void _startDiscovery() async {
-    setState(() {
-      _isDiscovering = true;
-    });
+    setState(() {});
 
     try {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.startDiscovery(serviceId);
     } catch (e) {
-      print('Error starting discovery: $e');
+      logger.i('Error starting discovery: $e');
     }
 
-    setState(() {
-      _isDiscovering = false;
-    });
+    setState(() {});
   }
 
   void _advertise() async {
-    setState(() {
-      _isDiscovering = true;
-    });
+    setState(() {});
 
     var advName = _advertiserName.text.isNotEmpty ? _advertiserName.text : null;
 
@@ -158,19 +143,17 @@ class _MyAppState extends State<MyApp> {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.advertise(serviceId, advName);
     } catch (e) {
-      print('Error starting advertising: $e');
+      logger.i('Error starting advertising: $e');
     }
 
-    setState(() {
-      _isDiscovering = false;
-    });
+    setState(() {});
   }
 
   void _disconnect() async {
     try {
       await _nearbyCrossPlugin.disconnect(serviceId);
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.i('Error disconnecting: $e');
     }
   }
 
@@ -178,7 +161,7 @@ class _MyAppState extends State<MyApp> {
     try {
       await _nearbyCrossPlugin.sendData(data);
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.i('Error disconnecting: $e');
     }
   }
 }
