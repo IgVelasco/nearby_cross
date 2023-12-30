@@ -16,6 +16,8 @@ class ChannelMethods {
         const val SEND_DATA = "sendData";
         const val CONNECT = "connect";
         const val DISCONNECT = "disconnect";
+        const val DISCONNECT_FROM_EP_NAME = "disconnectFromEndpointName";
+        const val DISCONNECT_FROM_EP_ID = "disconnectFromEndpointId";
 
         // Send from native code
         const val ON_ENDPOINT_FOUND = "onEndpointFound";

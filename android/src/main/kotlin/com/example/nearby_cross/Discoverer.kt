@@ -8,6 +8,7 @@ import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
+
 /** NearbyCrossPlugin */
 class Discoverer(
     serviceId: String,
@@ -62,8 +63,8 @@ class Discoverer(
             .requestConnection(userName, endpointId, connectionLifecycleCallback)
     }
 
-    override fun disconnect(context: Context, serviceId: String) {
-        super.disconnect(context, serviceId)
+    override fun disconnect(context: Context) {
+        super.disconnect(context)
         listOfNearbyDevices.clear()
     }
 }

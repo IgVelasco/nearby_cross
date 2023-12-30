@@ -33,11 +33,25 @@ open class Connector(
         this.strategy = getStrategy(strategy)
     }
 
-    open fun disconnect(context: Context, serviceId: String) {
+    open fun disconnect(context: Context) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
         Log.v("INFO", "Stopped all endpoints")
         listOfConnectedDevices.clear()
         listOfInitiatedConnections.clear()
+    }
+
+    fun disconnectFromEndpointId(context: Context, endpointsId: String) {
+        Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointsId)
+        listOfConnectedDevices.remove(endpointsId)
+    }
+
+    fun disconnectFromEndpointName(context: Context, endpointName: String) {
+        val device = listOfConnectedDevices.values.find { it.endpointName == endpointName }
+        if (device == null) {
+            Log.d("ERROR", "Device not found")
+        } else {
+            disconnectFromEndpointId(context, device.endpointId)
+        }
     }
 
     fun sendData(context: Context, data: String) {
