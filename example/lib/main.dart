@@ -5,7 +5,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:nearby_cross/nearby_cross.dart';
-import 'package:nearby_cross_example/widgets/nc_appBar.dart';
+import 'widgets/nc_drawer.dart';
+
+import 'widgets/nc_appBar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -71,6 +73,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: const NCAppBar(),
+        drawer: const NCDrawer(),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
