@@ -5,6 +5,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:nearby_cross/nearby_cross.dart';
+import 'widgets/nc_drawer.dart';
+
+import 'widgets/nc_appBar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -69,10 +72,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-          backgroundColor: _bgColor,
-        ),
+        appBar: const NCAppBar(),
+        drawer: const NCDrawer(),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -121,7 +122,7 @@ class _MyAppState extends State<MyApp> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
-    }
+  }
 
   void _startDiscovery() async {
     setState(() {
