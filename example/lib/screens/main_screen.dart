@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross_example/screens/AdvertisingList.dart';
+import 'package:nearby_cross_example/screens/advertising_list.dart';
 import 'package:nearby_cross_example/widgets/nc_appBar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -7,29 +7,26 @@ class MainScreen extends StatefulWidget {
 
   @override
   State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  bool _isDiscovering = false;
+
+  void _startDiscovery() async {
+    setState(() {
+      _isDiscovering = true;
+      print('Discovery changed to $_isDiscovering');
+    });
   }
 
-  class _MainScreenState extends State<MainScreen> {
+  void _stopDiscovery() async {
+    setState(() {
+      _isDiscovering = false;
+      print('Discovery changed to $_isDiscovering');
+    });
+  }
 
-    bool _isDiscovering = false;
-
-    void _startDiscovery() async {
-      setState(() {
-        _isDiscovering = true;
-        print('Discovery changed to $_isDiscovering');
-
-      });
-    }
-
-    void _stopDiscovery() async {
-      setState(() {
-        _isDiscovering = false;
-        print('Discovery changed to $_isDiscovering');
-
-      });
-    }
-
-      @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
@@ -161,13 +158,11 @@ class MainScreen extends StatefulWidget {
                   title: const Text(
                     "DIscovery",
                   ),
-                  onChanged: (value) => { if (value == false) {
-                    _stopDiscovery()
-                  }
-                  else {
-                      _startDiscovery()
-
-                    }
+                  onChanged: (value) => {
+                    if (value == false)
+                      {_stopDiscovery()}
+                    else
+                      {_startDiscovery()}
                   },
                 ),
                 const Divider(
