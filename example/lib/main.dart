@@ -5,12 +5,19 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:nearby_cross/nearby_cross.dart';
+import 'package:provider/provider.dart';
+import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
 
 import 'widgets/nc_appBar.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross_example/models/app_model.dart';
 import 'package:nearby_cross_example/screens/advertising_list.dart';
 import 'package:nearby_cross_example/widgets/nc_appBar.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -55,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
                         "https://image.freepik.com/free-photo/pleasant-looking-serious-man-stands-profile-has-confident-expression-wears-casual-white-t-shirt_273609-16959.jpg",
                         fit: BoxFit.cover),
                   ),
-                  const Expanded(
+                  Expanded(
                     flex: 1,
                     child: Padding(
                       padding:
@@ -65,33 +67,34 @@ class _MainScreenState extends State<MainScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text(
-                            "Philip Ramirez",
-                            textAlign: TextAlign.start,
-                            maxLines: 1,
-                            overflow: TextOverflow.clip,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontStyle: FontStyle.normal,
-                              fontSize: 18,
-                              color: Color(0xff000000),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: Text(
-                              "Username",
+                          Consumer<AppModel>(builder: (context, app, child) {
+                            return Text(
+                              app.username,
                               textAlign: TextAlign.start,
                               maxLines: 1,
                               overflow: TextOverflow.clip,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
                                 fontStyle: FontStyle.normal,
-                                fontSize: 14,
-                                color: Color(0xff9e9e9e),
+                                fontSize: 18,
+                                color: Color(0xff000000),
                               ),
-                            ),
-                          ),
+                            );
+                          }),
+                          const Padding(
+                              padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              child: Text(
+                                "Username",
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                overflow: TextOverflow.clip,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 14,
+                                  color: Color(0xff9e9e9e),
+                                ),
+                              )),
                         ],
                       ),
                     ),
@@ -153,17 +156,19 @@ class _MainScreenState extends State<MainScreen> {
                   indent: 0,
                   endIndent: 0,
                 ),
-                SwitchListTile(
-                  value: _isDiscovering,
-                  title: const Text(
-                    "DIscovery",
+                Consumer<AppModel>(
+                  builder: (context, app, child) => SwitchListTile(
+                    value: app.isDiscovering,
+                    title: const Text(
+                      "Discovery",
+                    ),
+                    onChanged: (value) => {
+                      if (value == false)
+                        {app.stopDiscovery()}
+                      else
+                        {app.startDiscovery()}
+                    },
                   ),
-                  onChanged: (value) => {
-                    if (value == false)
-                      {_stopDiscovery()}
-                    else
-                      {_startDiscovery()}
-                  },
                 ),
                 const Divider(
                   color: Color(0x4d9e9e9e),
