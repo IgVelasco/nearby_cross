@@ -47,7 +47,7 @@ class AdvertiserList extends StatelessWidget {
                         String username =
                             item["username"] ?? "Default username";
                         String endpointId = item["endpointId"] ?? "ABCX";
-                        return AdvertisingListItem(username, endpointId);
+                        return AdvertisingListItem(item);
                       })),
             ],
           ),

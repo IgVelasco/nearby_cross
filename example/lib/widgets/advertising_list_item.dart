@@ -4,9 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/app_model.dart';
 
 class AdvertisingListItem extends StatelessWidget {
-  final String username;
-  final String endpointId;
-  const AdvertisingListItem(this.username, this.endpointId, {super.key});
+  final Item item;
+  const AdvertisingListItem(this.item, {super.key});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -50,7 +49,7 @@ class AdvertisingListItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Text(
-                      username,
+                      item["username"]!,
                       textAlign: TextAlign.start,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
@@ -64,7 +63,7 @@ class AdvertisingListItem extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                       child: Text(
-                        endpointId,
+                        item["endpointId"]!,
                         textAlign: TextAlign.start,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -91,7 +90,7 @@ class AdvertisingListItem extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     Provider.of<AppModel>(context, listen: false)
-                        .connectToAdvertiser(endpointId);
+                        .connectToAdvertiser(item);
                     Navigator.pop(context);
                   },
                   icon: const Icon(

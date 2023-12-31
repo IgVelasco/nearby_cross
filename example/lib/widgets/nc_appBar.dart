@@ -26,7 +26,11 @@ class NCAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
           child: Icon(Icons.notifications, color: Color(0xff212435), size: 24),
         ),
-        Padding(padding: EdgeInsets.fromLTRB(0, 0, 15, 0), child: BackButton()
+        Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+            child: BackButton(
+                // onPressed: () => Navigator.pop(context),
+                )
             // Icon(Icons.arrow_back, color: Color(0xff212435), size: 24),
             ),
       ],

@@ -41,10 +41,10 @@ class AppModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void connectToAdvertiser(String endpointId) {
-    print("Connecting to advertiser $endpointId");
-    _connectedAdvertiser =
-        HashMap.from({"endpointId": endpointId, "name": "ADVERTISER #1"});
+  void connectToAdvertiser(Item item) {
+    print(
+        "Connecting to advertiser ${item["endpointId"]} name ${item["username"]}");
+    _connectedAdvertiser = item;
     _connected = true;
     // _username = newUsername;
     notifyListeners();
