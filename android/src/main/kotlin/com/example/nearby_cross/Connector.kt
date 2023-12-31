@@ -33,11 +33,16 @@ open class Connector(
         this.strategy = getStrategy(strategy)
     }
 
-    open fun disconnect(context: Context, serviceId: String) {
+    open fun disconnect(context: Context) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
         Log.v("INFO", "Stopped all endpoints")
         listOfConnectedDevices.clear()
         listOfInitiatedConnections.clear()
+    }
+
+    fun disconnectFromEndpointId(context: Context, endpointsId: String) {
+        Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointsId)
+        listOfConnectedDevices.remove(endpointsId)
     }
 
     fun sendData(context: Context, data: String) {
