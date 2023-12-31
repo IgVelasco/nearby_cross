@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               onPressed: () {
                 String inputData = _textFieldController.text;
-                sendData(inputData);
+                broadcastData(inputData);
               },
               child: const Text('Send'),
             ),
@@ -169,9 +169,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void sendData(String data) async {
+  void broadcastData(String data) async {
     try {
-      await _nearbyCrossPlugin.sendData(data);
+      await _nearbyCrossPlugin.broadcastData(data);
     } catch (e) {
       print('Error disconnecting: $e');
     }

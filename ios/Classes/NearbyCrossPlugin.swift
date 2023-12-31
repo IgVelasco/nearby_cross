@@ -47,7 +47,7 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
       } else {
         result("Failed to start discovery")
       }
-    case "sendData":
+    case "broadcastData":
         if let data = call.arguments as? String {
             sendData(receivedString: data)
             result("Done")

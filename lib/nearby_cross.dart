@@ -31,8 +31,8 @@ class NearbyCross {
     await nearbyChannel.disconnect(serviceId);
   }
 
-  Future<void> sendData(String data) async {
-    await nearbyChannel.sendData(data);
+  Future<void> broadcastData(String data) async {
+    await nearbyChannel.broadcastData(data);
   }
 
   Future<void> setMethodCallHandler(

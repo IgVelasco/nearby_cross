@@ -14,7 +14,7 @@ class ChannelMethods {
         const val START_DISCOVERY = "startDiscovery";
         const val START_ADVERTISING = "startAdvertising";
         const val DISCONNECT = "disconnect";
-        const val SEND_DATA = "sendData";
+        const val SEND_DATA = "broadcastData";
 
         // Send
         const val ON_ENDPOINT_FOUND = "onEndpointFound";
