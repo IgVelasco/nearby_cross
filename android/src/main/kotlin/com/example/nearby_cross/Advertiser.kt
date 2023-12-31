@@ -27,9 +27,7 @@ class Advertiser(
         )
             .addOnSuccessListener {
                 // We're discovering! Using service id: $serviceId
-                Log.d(
-                    "INFO",
-                    "We're advertising! Using service id: $serviceId and username $userName"
+                Log.d( "INFO","We're advertising! Using service id: $serviceId and username $userName"
                 )
             }
             .addOnFailureListener { e ->

@@ -40,12 +40,16 @@ open class Connector(
         listOfInitiatedConnections.clear()
     }
 
-    fun sendData(context: Context, data: String) {
-        val bytesPayload = Payload.fromBytes(data.toByteArray())
+    fun broadcastBytes(context: Context, data: String) {
         for (connection in listOfConnectedDevices) {
-            Nearby.getConnectionsClient(context).sendPayload(connection.key, bytesPayload)
-            Log.v("INFO", "Send'$data' to $connection")
+            this.sendDataToEpId(context, data, connection.key)
         }
+    }
+
+    fun sendDataToEpId(context: Context, data: String, endpointId: String) {
+        val bytesPayload = Payload.fromBytes(data.toByteArray())
+        Nearby.getConnectionsClient(context).sendPayload(endpointId, bytesPayload)
+        Log.v("INFO", "Send'$data' to $endpointId")
     }
 
     val payloadCallback = object : PayloadCallback() {
