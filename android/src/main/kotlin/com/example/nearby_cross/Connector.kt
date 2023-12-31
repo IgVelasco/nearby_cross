@@ -55,7 +55,11 @@ open class Connector(
                 val receivedBytes = payload.asBytes()
                 val stringReceived = receivedBytes?.let { String(it) }
                 val device = listOfConnectedDevices[endpointId]
-                callbacks.onPayloadReceived(stringReceived as String, device!!.endpointName)
+                if (device == null) {
+                    Log.d("ERROR", "Device not found")
+                    return
+                }
+                callbacks.onPayloadReceived(stringReceived as String, device.endpointName)
             }
         }
 
