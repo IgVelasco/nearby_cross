@@ -9,9 +9,6 @@ import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 
-
-// import com.google.android.gms.nearby.connection.AdvertisingOptions;
-
 /** NearbyCrossPlugin */
 class Discoverer(
     serviceId: String,
@@ -31,11 +28,7 @@ class Discoverer(
                 // You can now initiate a connection with this device using its endpoint ID
                 Log.d("INFO", "A nearby device with the same service ID was found")
                 listOfNearbyDevices[endpointId] = Device(endpointId, info.endpointName)
-                callbacks.onEndpointFound(endpointId)
-
-                // TODO: Allow user to accept an incoming connection
-                Nearby.getConnectionsClient(context)
-                    .requestConnection(userName, endpointId, connectionLifecycleCallback)
+                callbacks.onEndpointFound(endpointId, info.endpointName)
             }
 
             override fun onEndpointLost(endpointId: String) {
@@ -65,8 +58,13 @@ class Discoverer(
             }
     }
 
-    override fun disconnect(context: Context, serviceId: String) {
-        super.disconnect(context, serviceId)
+    fun connect(endpointId: String) {
+        Nearby.getConnectionsClient(context)
+            .requestConnection(userName, endpointId, connectionLifecycleCallback)
+    }
+
+    override fun disconnect(context: Context) {
+        super.disconnect(context)
         listOfNearbyDevices.clear()
     }
 }
