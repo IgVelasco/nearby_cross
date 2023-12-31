@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/app_model.dart';
 
 class AdvertisingListItem extends StatelessWidget {
-  final String name;
-  const AdvertisingListItem(this.name, {super.key});
+  final String username;
+  final String endpointId;
+  const AdvertisingListItem(this.username, this.endpointId, {super.key});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -46,7 +50,7 @@ class AdvertisingListItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Text(
-                      name,
+                      username,
                       textAlign: TextAlign.start,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
@@ -57,14 +61,14 @@ class AdvertisingListItem extends StatelessWidget {
                         color: Color(0xff000000),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                       child: Text(
-                        "Full Stack developer",
+                        endpointId,
                         textAlign: TextAlign.start,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w400,
                           fontStyle: FontStyle.normal,
                           fontSize: 14,
@@ -77,19 +81,25 @@ class AdvertisingListItem extends StatelessWidget {
               ),
             ),
             Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.all(0),
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: Color(0xff3a57e8),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.login,
-                color: Color(0xffffffff),
-                size: 16,
-              ),
-            ),
+                alignment: Alignment.center,
+                margin: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: Color(0xff3a57e8),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Provider.of<AppModel>(context, listen: false)
+                        .connectToAdvertiser(endpointId);
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.login,
+                    color: Color(0xffffffff),
+                    size: 16,
+                  ),
+                )),
           ],
         ),
       ),

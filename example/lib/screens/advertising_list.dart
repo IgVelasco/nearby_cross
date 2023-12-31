@@ -23,7 +23,7 @@ class AdvertiserList extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.fromLTRB(0, 16, 0, 20),
                 child: Text(
-                  "Connect to a Advertiser",
+                  "Connect to an Advertiser",
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.clip,
                   style: TextStyle(
@@ -44,8 +44,10 @@ class AdvertiserList extends StatelessWidget {
                       itemBuilder: (context, index) {
                         Item item = app.items[index];
                         print(item);
-                        String name = item["name"] ?? "Default Name";
-                        return AdvertisingListItem(name);
+                        String username =
+                            item["username"] ?? "Default username";
+                        String endpointId = item["endpointId"] ?? "ABCX";
+                        return AdvertisingListItem(username, endpointId);
                       })),
             ],
           ),

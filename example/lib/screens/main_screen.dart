@@ -5,29 +5,8 @@ import 'package:nearby_cross_example/widgets/input_dialog.dart';
 import 'package:nearby_cross_example/widgets/nc_appBar.dart';
 import 'package:provider/provider.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  bool _isDiscovering = false;
-
-  void _startDiscovery() async {
-    setState(() {
-      _isDiscovering = true;
-      print('Discovery changed to $_isDiscovering');
-    });
-  }
-
-  void _stopDiscovery() async {
-    setState(() {
-      _isDiscovering = false;
-      print('Discovery changed to $_isDiscovering');
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,22 +26,11 @@ class _MainScreenState extends State<MainScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
-                    height: 60,
-                    width: 60,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.network(
-                        "https://image.freepik.com/free-photo/pleasant-looking-serious-man-stands-profile-has-confident-expression-wears-casual-white-t-shirt_273609-16959.jpg",
-                        fit: BoxFit.cover),
-                  ),
                   Expanded(
                     flex: 1,
                     child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 0, horizontal: 16),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,10 +136,9 @@ class _MainScreenState extends State<MainScreen> {
                       "Discovery",
                     ),
                     onChanged: (value) => {
-                      if (value == false)
-                        {app.stopDiscovery()}
-                      else
-                        {app.startDiscovery()}
+                      value == false
+                          ? app.stopDiscovery()
+                          : app.startDiscovery()
                     },
                   ),
                 ),
@@ -188,6 +155,8 @@ class _MainScreenState extends State<MainScreen> {
                       builder: (context) => const AdvertiserList(),
                     ));
                   },
+                  trailing: const Icon(Icons.arrow_forward_ios,
+                      color: const Color(0xff212435), size: 24),
                   title: const Text(
                     "Search Devices",
                   ),
@@ -202,23 +171,7 @@ class _MainScreenState extends State<MainScreen> {
                 const ListTile(
                   tileColor: Color(0x1fffffff),
                   title: Text(
-                    "Pending Devices",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
-                      fontSize: 14,
-                      color: Color(0xff000000),
-                    ),
-                    textAlign: TextAlign.start,
-                  ),
-                  dense: false,
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                  selected: false,
-                  selectedTileColor: Color(0x42000000),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                    side: BorderSide(color: Color(0x4d9e9e9e), width: 1),
+                    "Connected Devices",
                   ),
                   trailing: Icon(Icons.arrow_forward_ios,
                       color: Color(0xff212435), size: 24),

@@ -9,8 +9,8 @@ class AppModel extends ChangeNotifier {
   bool _isDiscovering = false;
   String _username = 'default username';
   final List<Item> _items = [
-    HashMap.from({"name": "Ric"}),
-    HashMap.from({"name": "NICS"}),
+    HashMap.from({"username": "Ric", "endpointId": "aX09"}),
+    HashMap.from({"username": "NICS", "endpointId": "B2FF"}),
   ];
 
   bool get isDiscovering => _isDiscovering;
@@ -32,6 +32,12 @@ class AppModel extends ChangeNotifier {
 
   void changeUsername(String newUsername) {
     _username = newUsername;
+    notifyListeners();
+  }
+
+  void connectToAdvertiser(String endpointId) {
+    print("Connecting to advertiser $endpointId");
+    // _username = newUsername;
     notifyListeners();
   }
 
