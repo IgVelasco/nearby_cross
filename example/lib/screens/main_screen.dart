@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross_example/models/app_model.dart';
 import 'package:nearby_cross_example/screens/advertising_list.dart';
+import 'package:nearby_cross_example/widgets/input_dialog.dart';
 import 'package:nearby_cross_example/widgets/nc_appBar.dart';
 import 'package:provider/provider.dart';
 
@@ -123,25 +124,29 @@ class _MainScreenState extends State<MainScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-              child: MaterialButton(
-                onPressed: () {},
-                color: const Color(0x343a57e8),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                padding: const EdgeInsets.all(16),
-                textColor: const Color(0xff3a57e8),
-                minWidth: MediaQuery.of(context).size.width,
-                child: const Text(
-                  "Change Username",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
-                ),
-              ),
+              child: Consumer<AppModel>(
+                  builder: (context, app, child) => MaterialButton(
+                        color: const Color(0x343a57e8),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        textColor: const Color(0xff3a57e8),
+                        minWidth: MediaQuery.of(context).size.width,
+                        child: const Text(
+                          "Change Username",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => InputDialog(app.username),
+                        ),
+                      )),
             ),
             ListView(
               scrollDirection: Axis.vertical,
