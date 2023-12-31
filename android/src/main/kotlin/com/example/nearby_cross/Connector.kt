@@ -41,7 +41,6 @@ open class Connector(
     }
 
     fun disconnectFromEndpointId(context: Context, endpointsId: String) {
-        // Check what happens if ep id non existants
         Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointsId)
         listOfConnectedDevices.remove(endpointsId)
     }
