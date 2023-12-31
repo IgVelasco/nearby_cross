@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross_example/screens/MainScreen.dart';
+import 'package:nearby_cross_example/screens/main_screen.dart';
 
 class NCDrawer extends StatelessWidget {
   const NCDrawer({
