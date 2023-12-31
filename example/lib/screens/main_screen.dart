@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross_example/models/app_model.dart';
+import 'package:nearby_cross_example/screens/advertiser_comunication_screen.dart';
 import 'package:nearby_cross_example/screens/advertising_list.dart';
 import 'package:nearby_cross_example/widgets/input_dialog.dart';
 import 'package:nearby_cross_example/widgets/nc_appBar.dart';
@@ -149,55 +150,81 @@ class MainScreen extends StatelessWidget {
                   indent: 0,
                   endIndent: 0,
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const AdvertiserList(),
-                    ));
-                  },
-                  trailing: const Icon(Icons.arrow_forward_ios,
-                      color: const Color(0xff212435), size: 24),
-                  title: const Text(
-                    "Search Devices",
-                  ),
-                ),
-                const Divider(
-                  color: Color(0x4d9e9e9e),
-                  height: 16,
-                  thickness: 1,
-                  indent: 0,
-                  endIndent: 0,
-                ),
-                const ListTile(
-                  tileColor: Color(0x1fffffff),
-                  title: Text(
-                    "Connected Devices",
-                  ),
-                  trailing: Icon(Icons.arrow_forward_ios,
-                      color: Color(0xff212435), size: 24),
-                ),
+                Consumer<AppModel>(
+                    builder: (context, app, child) => app.isDiscovering
+                        ? Wrap(children: [
+                            ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const AdvertiserList(),
+                                ));
+                              },
+                              trailing: const Icon(Icons.arrow_forward_ios,
+                                  color: const Color(0xff212435), size: 24),
+                              title: const Text(
+                                "Search Devices",
+                              ),
+                            ),
+                            const Divider(
+                              color: Color(0x4d9e9e9e),
+                              height: 16,
+                              thickness: 1,
+                              indent: 0,
+                              endIndent: 0,
+                            ),
+                          ])
+                        : Container()),
+                Consumer<AppModel>(
+                    builder: (context, app, child) => app.connected
+                        ? ListTile(
+                            tileColor: const Color(0x1fffffff),
+                            title: Text(
+                              "Connected: Username ${app.connectedAdvertiser["name"]}",
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    AdvertiserComunicationScreen(
+                                        app.connectedAdvertiser),
+                              ));
+                            },
+                            trailing: const Icon(Icons.arrow_forward_ios,
+                                color: Color(0xff212435), size: 24),
+                          )
+                        : const ListTile(
+                            tileColor: Color(0x1fffffff),
+                            title: Text(
+                              "No Connected Device",
+                            ),
+                          ))
               ],
             ),
-            MaterialButton(
-              onPressed: () {},
-              color: const Color(0x343a57e8),
-              elevation: 0,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-              padding: const EdgeInsets.all(16),
-              textColor: const Color(0xff3a57e8),
-              height: 40,
-              minWidth: MediaQuery.of(context).size.width,
-              child: const Text(
-                "Log out",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-            ),
+            Consumer<AppModel>(
+                builder: (context, app, child) => app.connected
+                    ? MaterialButton(
+                        onPressed: () {
+                          Provider.of<AppModel>(context, listen: false)
+                              .disconnect();
+                        },
+                        color: const Color(0x343a57e8),
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        textColor: const Color(0xff3a57e8),
+                        height: 40,
+                        minWidth: MediaQuery.of(context).size.width,
+                        child: const Text(
+                          "Disconnect",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      )
+                    : Container())
           ],
         ),
       ),

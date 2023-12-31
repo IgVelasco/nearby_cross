@@ -10,7 +10,7 @@ class NCAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 4,
       centerTitle: true,
-      // automaticallyImplyLeading: false,
+      automaticallyImplyLeading: true,
       backgroundColor: Colors.blue,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,

@@ -7,26 +7,32 @@ typedef Item = HashMap<String, String>;
 class AppModel extends ChangeNotifier {
   /// Internal, private state of the cart.
   bool _isDiscovering = false;
+  bool _connected = false;
+
   String _username = 'default username';
-  final List<Item> _items = [
+  Item _connectedAdvertiser = HashMap();
+
+  final List<Item> _advertisers = [
     HashMap.from({"username": "Ric", "endpointId": "aX09"}),
     HashMap.from({"username": "NICS", "endpointId": "B2FF"}),
   ];
 
   bool get isDiscovering => _isDiscovering;
+  bool get connected => _connected;
+  Item get connectedAdvertiser => _connectedAdvertiser;
   String get username => _username;
 
-  UnmodifiableListView<Item> get items => UnmodifiableListView(_items);
+  UnmodifiableListView<Item> get items => UnmodifiableListView(_advertisers);
 
-  int get totalAmount => _items.length;
+  int get totalAmount => _advertisers.length;
 
   void add(Item item) {
-    _items.add(item);
+    _advertisers.add(item);
     notifyListeners();
   }
 
   void removeAll() {
-    _items.clear();
+    _advertisers.clear();
     notifyListeners();
   }
 
@@ -37,7 +43,17 @@ class AppModel extends ChangeNotifier {
 
   void connectToAdvertiser(String endpointId) {
     print("Connecting to advertiser $endpointId");
+    _connectedAdvertiser =
+        HashMap.from({"endpointId": endpointId, "name": "ADVERTISER #1"});
+    _connected = true;
     // _username = newUsername;
+    notifyListeners();
+  }
+
+  void disconnect() {
+    _connectedAdvertiser = HashMap();
+    _connected = false;
+    print("Disconnected!");
     notifyListeners();
   }
 
