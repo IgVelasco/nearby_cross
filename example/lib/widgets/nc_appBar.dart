@@ -10,29 +10,22 @@ class NCAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 4,
       centerTitle: true,
-      automaticallyImplyLeading: true,
+      // automaticallyImplyLeading: true,
       backgroundColor: Colors.blue,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),
       // leading: const DrawerButton(),
-      //  const Icon(
+      // const Icon(
       //   Icons.sort,
       //   color: Color(0xff212435),
       //   size: 24,
       // ),
-      actions: const [
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+      actions: [
+        const Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
           child: Icon(Icons.notifications, color: Color(0xff212435), size: 24),
         ),
-        Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-            child: BackButton(
-                // onPressed: () => Navigator.pop(context),
-                )
-            // Icon(Icons.arrow_back, color: Color(0xff212435), size: 24),
-            ),
       ],
       title: const Text(
         "NearbyCross",

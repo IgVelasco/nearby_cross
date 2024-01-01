@@ -26,7 +26,7 @@ class NCDrawer extends StatelessWidget {
             title: const Text('Discoverer'),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => MainScreen(),
+                builder: (context) => const MainScreen(),
               ));
             },
           ),

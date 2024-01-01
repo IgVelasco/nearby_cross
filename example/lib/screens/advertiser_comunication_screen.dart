@@ -8,68 +8,61 @@ import '../widgets/nc_appBar.dart';
 import '../widgets/nc_drawer.dart';
 import '../models/app_model.dart';
 
-class AdvertiserComunicationScreen extends StatefulWidget {
+class AdvertiserComunicationScreen extends StatelessWidget {
   final Item advertiser;
-  const AdvertiserComunicationScreen(this.advertiser, {super.key});
+  AdvertiserComunicationScreen({super.key, required this.advertiser});
 
-  @override
-  State<AdvertiserComunicationScreen> createState() =>
-      _AdvertiserComunicationScreenState();
-}
-
-class _AdvertiserComunicationScreenState
-    extends State<AdvertiserComunicationScreen> {
   final TextEditingController _textFieldController = TextEditingController();
-  bool _isDiscovering = false;
-  String _platformVersion = 'Unknown';
-  String _endpointId = 'Unknown 2';
-  Color _bgColor = Colors.white;
+  final String _platformVersion = 'Unknown';
+  final String _endpointId = 'Unknown 3';
+  final Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
 
-  String serviceId = 'com.example.nearbyCrossExample';
+  final String serviceId = 'com.example.nearbyCrossExample';
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   initPlatformState();
+  // }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
-          'Unknown platform version';
+  // // Platform messages are asynchronous, so we initialize in an async method.
+  // Future<void> initPlatformState() async {
+  //   String platformVersion;
+  //   // Platform messages may fail, so we use a try/catch PlatformException.
+  //   // We also handle the message potentially returning null.
+  //   try {
+  //     platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
+  //         'Unknown platform version';
 
-      _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
-        if (call.method == 'onEndpointFound') {
-          setState(() {
-            _endpointId = call.arguments;
-          });
-          print('Endpoint found: $_endpointId');
-        }
-      });
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+  //     _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
+  //       if (call.method == 'onEndpointFound') {
+  //         setState(() {
+  //           _endpointId = call.arguments;
+  //         });
+  //         print('Endpoint found: $_endpointId');
+  //       }
+  //     });
+  //   } on PlatformException {
+  //     platformVersion = 'Failed to get platform version.';
+  //   }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+  //   // If the widget was removed from the tree while the asynchronous platform
+  //   // message was in flight, we want to discard the reply rather than calling
+  //   // setState to update our non-existent appearance.
+  //   if (!mounted) return;
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
+  //   setState(() {
+  //     _platformVersion = platformVersion;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: const NCAppBar(),
+        drawer: const NCDrawer(),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -125,16 +118,12 @@ class _AdvertiserComunicationScreenState
     } catch (e) {
       print('Error starting advertising: $e');
     }
-
-    setState(() {
-      _isDiscovering = false;
-    });
   }
 
   void _disconnect() async {
     try {
       await _nearbyCrossPlugin.disconnect(serviceId);
-      Navigator.pop(context);
+      // Navigator.pop(context);
     } catch (e) {
       print('Error disconnecting: $e');
     }
