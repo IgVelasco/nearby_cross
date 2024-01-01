@@ -20,7 +20,6 @@ class AdvertiserComunicationScreen extends StatefulWidget {
 class _AdvertiserComunicationScreenState
     extends State<AdvertiserComunicationScreen> {
   final TextEditingController _textFieldController = TextEditingController();
-  final TextEditingController _deviceName = TextEditingController();
   bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
   String _endpointId = 'Unknown 2';
@@ -74,12 +73,6 @@ class _AdvertiserComunicationScreenState
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Declare device name...',
-              ),
-              controller: _deviceName, // Add this line
-            ),
             Text('Running on: $_platformVersion\n found: $_endpointId'),
             TextField(
               decoration: const InputDecoration(
@@ -114,34 +107,21 @@ class _AdvertiserComunicationScreenState
   }
 
   void _startDiscovery() async {
-    setState(() {
-      _isDiscovering = true;
-    });
-
-    var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
+    var appModel = AppModel();
 
     try {
       await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
+      await _nearbyCrossPlugin.startDiscovery(serviceId, appModel.username);
     } catch (e) {
       print('Error starting discovery: $e');
     }
-
-    setState(() {
-      _isDiscovering = false;
-    });
   }
 
   void _advertise() async {
-    setState(() {
-      _isDiscovering = true;
-    });
-
-    var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
-
+    var appModel = AppModel();
     try {
       await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.advertise(serviceId, deviceName);
+      await _nearbyCrossPlugin.advertise(serviceId, appModel.username);
     } catch (e) {
       print('Error starting advertising: $e');
     }
