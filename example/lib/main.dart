@@ -15,7 +15,11 @@ import 'widgets/nc_appBar.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => AppModel(),
+      create: (context) {
+        var appModel = AppModel();
+        appModel.initPlatformState();
+        return appModel;
+      },
       child: const MyApp(),
     ),
   );
@@ -45,50 +49,65 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
-          'Unknown platform version';
-
-      _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
-        if (call.method == 'onEndpointFound') {
-          var arguments = call.arguments as Map<Object?, Object?>;
-          setState(() {
-            devicesFound.add({
-              "endpointId": arguments["endpointId"] as String,
-              "endpointName": arguments["endpointName"] as String
-            });
-          });
-        } else if (call.method == 'payloadReceived') {
-          var arguments = call.arguments as Map<Object?, Object?>;
-          setState(() {
-            _message = arguments["message"] as String;
-          });
-        }
-      });
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    Future<void> Function() _connect(String epId, String epName) {
+      return () async {
+        setState(() {
+          _connectionStarted = true;
+          _connectedEpName = epName;
+        });
+
+        await _nearbyCrossPlugin.connect(epId);
+      };
+    }
+
+    void _startDiscovery() async {
+      var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
+
+      try {
+        await NearbyCross.requestPermissions();
+        await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
+      } catch (e) {
+        print('Error starting discovery: $e');
+      }
+    }
+
+    void _advertise() async {
+      var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
+
+      try {
+        await NearbyCross.requestPermissions();
+        await _nearbyCrossPlugin.advertise(serviceId, deviceName);
+      } catch (e) {
+        print('Error starting advertising: $e');
+      }
+    }
+
+    void _disconnect() async {
+      try {
+        await _nearbyCrossPlugin.disconnect(serviceId);
+        setState(() {
+          _message = "";
+          devicesFound = [];
+          _connectionStarted = false;
+          _connectedEpName = "";
+        });
+      } catch (e) {
+        print('Error disconnecting: $e');
+      }
+    }
+
+    void sendData(String data) async {
+      try {
+        await _nearbyCrossPlugin.sendData(data);
+      } catch (e) {
+        print('Error disconnecting: $e');
+      }
+    }
+
     return MaterialApp(
       home: Scaffold(
         appBar: const NCAppBar(),
@@ -149,6 +168,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget DiscoveredDevices() {
+    Future<void> Function() _connect(String epId, String epName) {
+      return () async {
+        setState(() {
+          _connectionStarted = true;
+          _connectedEpName = epName;
+        });
+
+        await _nearbyCrossPlugin.connect(epId);
+      };
+    }
+
     return SizedBox(
         height: 200,
         child: ListView.separated(
@@ -164,60 +194,5 @@ class _MyAppState extends State<MyApp> {
             return const Divider();
           },
         ));
-  }
-
-  Future<void> Function() _connect(String epId, String epName) {
-    return () async {
-      setState(() {
-        _connectionStarted = true;
-        _connectedEpName = epName;
-      });
-
-      await _nearbyCrossPlugin.connect(epId);
-    };
-  }
-
-  void _startDiscovery() async {
-    var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
-
-    try {
-      await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
-    } catch (e) {
-      print('Error starting discovery: $e');
-    }
-  }
-
-  void _advertise() async {
-    var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
-
-    try {
-      await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.advertise(serviceId, deviceName);
-    } catch (e) {
-      print('Error starting advertising: $e');
-    }
-  }
-
-  void _disconnect() async {
-    try {
-      await _nearbyCrossPlugin.disconnect(serviceId);
-      setState(() {
-        _message = "";
-        devicesFound = [];
-        _connectionStarted = false;
-        _connectedEpName = "";
-      });
-    } catch (e) {
-      print('Error disconnecting: $e');
-    }
-  }
-
-  void sendData(String data) async {
-    try {
-      await _nearbyCrossPlugin.sendData(data);
-    } catch (e) {
-      print('Error disconnecting: $e');
-    }
   }
 }

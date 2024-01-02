@@ -49,7 +49,7 @@ class AdvertisingListItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Text(
-                      item["username"]!,
+                      item["endpointName"]!,
                       textAlign: TextAlign.start,
                       maxLines: 1,
                       overflow: TextOverflow.clip,

@@ -43,9 +43,9 @@ class AdvertiserList extends StatelessWidget {
                       physics: const ScrollPhysics(),
                       itemBuilder: (context, index) {
                         Item item = app.items[index];
-                        print(item);
+                        print("Item in list build $item");
                         String username =
-                            item["username"] ?? "Default username";
+                            item["endpointName"] ?? "Default username";
                         String endpointId = item["endpointId"] ?? "ABCX";
                         return AdvertisingListItem(item);
                       })),

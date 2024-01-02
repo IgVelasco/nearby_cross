@@ -179,7 +179,7 @@ class MainScreen extends StatelessWidget {
                         ? ListTile(
                             tileColor: const Color(0x1fffffff),
                             title: Text(
-                              "Connected: Username ${app.connectedAdvertiser["username"]}",
+                              "Connected: Username ${app.connectedAdvertiser["endpointName"]}",
                             ),
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
