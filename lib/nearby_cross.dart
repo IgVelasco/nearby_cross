@@ -1,7 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
 import 'package:nearby_cross/helpers/permission_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import 'nearby_cross_method_channel.dart';
 

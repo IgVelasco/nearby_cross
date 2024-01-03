@@ -1,11 +1,8 @@
-import 'dart:collection';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:nearby_cross/nearby_cross.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
   String _platformVersion = 'Unknown';
@@ -96,7 +94,7 @@ class _MyAppState extends State<MyApp> {
             ),
             if (devicesFound.isEmpty) Text('Running on: $_platformVersion\n'),
             if (devicesFound.isNotEmpty && !_connectionStarted)
-              DiscoveredDevices(),
+              discoveredDevices(),
             if (_connectionStarted)
               Text("Successfully connected to $_connectedEpName"),
             if (_message.isNotEmpty) Text('Message: $_message'),
@@ -140,7 +138,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget DiscoveredDevices() {
+  Widget discoveredDevices() {
     return SizedBox(
         height: 200,
         child: ListView.separated(
@@ -176,7 +174,7 @@ class _MyAppState extends State<MyApp> {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
     } catch (e) {
-      print('Error starting discovery: $e');
+      logger.i('Error starting discovery: $e');
     }
   }
 
@@ -187,7 +185,7 @@ class _MyAppState extends State<MyApp> {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.advertise(serviceId, deviceName);
     } catch (e) {
-      print('Error starting advertising: $e');
+      logger.i('Error starting advertising: $e');
     }
   }
 
@@ -201,7 +199,7 @@ class _MyAppState extends State<MyApp> {
         _connectedEpName = "";
       });
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.i('Error disconnecting: $e');
     }
   }
 
@@ -209,7 +207,7 @@ class _MyAppState extends State<MyApp> {
     try {
       await _nearbyCrossPlugin.sendData(data);
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.i('Error disconnecting: $e');
     }
   }
 }

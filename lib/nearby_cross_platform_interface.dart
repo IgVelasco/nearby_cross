@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'nearby_cross_method_channel.dart';

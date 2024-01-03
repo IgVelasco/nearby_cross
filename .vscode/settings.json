@@ -1,6 +1,11 @@
 {
     "conventionalCommits.scopes": [
         "android",
-        "ios"
-    ]
+        "ios",
+        "dart"
+    ],
+    "[dart]": {
+        "editor.defaultFormatter": "Dart-Code.dart-code",
+        "editor.formatOnSave": true,
+    }
 }
