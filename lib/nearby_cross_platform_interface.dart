@@ -31,4 +31,5 @@ abstract class NearbyCrossPlatform extends PlatformInterface {
   Future<void> advertise(String serviceId, String? username);
   Future<void> disconnect(String serviceId);
   Future<void> sendData(String data);
+  Future<void> connect(String endpointId);
 }

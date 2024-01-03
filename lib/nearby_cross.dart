@@ -37,4 +37,8 @@ class NearbyCross {
       Future<dynamic> Function(MethodCall) handler) async {
     await nearbyChannel.setMethodCallHandler(handler);
   }
+
+  Future<void> connect(String endpointId) async {
+    await nearbyChannel.connect(endpointId);
+  }
 }
