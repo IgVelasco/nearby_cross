@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_platform_interface.dart';
 import 'package:nearby_cross/nearby_cross_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
