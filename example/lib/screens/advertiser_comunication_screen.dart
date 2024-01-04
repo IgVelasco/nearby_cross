@@ -16,47 +16,43 @@ class AdvertiserComunicationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: const NCAppBar(),
-        drawer: const NCDrawer(),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      appBar: const NCAppBar(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Consumer<AppModel>(
+              builder: (context, app, child) => Text(
+                  'Running on: ${app.platformVersion} \n username: ${app.username}')),
+          TextField(
+            decoration: const InputDecoration(
+              hintText: 'Type something...',
+            ),
+            controller: _textFieldController, // Add this line
+          ),
+          ElevatedButton(
+            onPressed: () {
+              String inputData = _textFieldController.text;
+              Provider.of<AppModel>(context, listen: false).sendData(inputData);
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Consumer<AppModel>(
-                builder: (context, app, child) => Text(
-                    'Running on: ${app.platformVersion} \n username: ${app.username}')),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Type something...',
-              ),
-              controller: _textFieldController, // Add this line
-            ),
             ElevatedButton(
-              onPressed: () {
-                String inputData = _textFieldController.text;
-                Provider.of<AppModel>(context, listen: false)
-                    .sendData(inputData);
-              },
-              child: const Text('Send'),
-            ),
+              onPressed: () =>
+                  Provider.of<AppModel>(context, listen: false).disconnect(),
+              child: const Text('Disconnect'),
+            )
           ],
         ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () =>
-                    Provider.of<AppModel>(context, listen: false).disconnect(),
-                child: const Text('Disconnect'),
-              )
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
