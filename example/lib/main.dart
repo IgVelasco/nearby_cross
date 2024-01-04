@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
@@ -32,9 +33,10 @@ class _MyAppState extends State<MyApp> {
   var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
-  final String _platformVersion = 'Unknown';
+  String? _platformVersion = 'Unknown';
   String _message = '';
   final _nearbyCrossPlugin = NearbyCross();
+  final _connector = Connector();
   List<Map<String, String>> devicesFound = [];
 
   bool _connectionStarted = false;
@@ -49,11 +51,15 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    _connector.getPlatformVersion().then((value) => setState(() {
+          _platformVersion = value;
+        }));
+
     void startDiscovery() async {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await NearbyCross.requestPermissions();
+        await Connector.requestPermissions();
         await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
       } catch (e) {
         logger.e('Error starting discovery: $e');
