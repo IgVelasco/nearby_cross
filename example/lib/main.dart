@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
 
-import 'widgets/nc_appBar.dart';
+import 'widgets/nc_app_bar.dart';
 
 void main() {
   runApp(
@@ -32,9 +32,8 @@ class _MyAppState extends State<MyApp> {
   var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
-  String _platformVersion = 'Unknown';
+  final String _platformVersion = 'Unknown';
   String _message = '';
-  final Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
   List<Map<String, String>> devicesFound = [];
 
@@ -50,40 +49,29 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> Function() _connect(String epId, String epName) {
-      return () async {
-        setState(() {
-          _connectionStarted = true;
-          _connectedEpName = epName;
-        });
-
-        await _nearbyCrossPlugin.connect(epId);
-      };
-    }
-
-    void _startDiscovery() async {
+    void startDiscovery() async {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
         await NearbyCross.requestPermissions();
         await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
       } catch (e) {
-        print('Error starting discovery: $e');
+        logger.e('Error starting discovery: $e');
       }
     }
 
-    void _advertise() async {
+    void advertise() async {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
         await NearbyCross.requestPermissions();
         await _nearbyCrossPlugin.advertise(serviceId, deviceName);
       } catch (e) {
-        print('Error starting advertising: $e');
+        logger.e('Error starting advertising: $e');
       }
     }
 
-    void _disconnect() async {
+    void disconnect() async {
       try {
         await _nearbyCrossPlugin.disconnect(serviceId);
         setState(() {
@@ -93,7 +81,7 @@ class _MyAppState extends State<MyApp> {
           _connectedEpName = "";
         });
       } catch (e) {
-        print('Error disconnecting: $e');
+        logger.e('Error disconnecting: $e');
       }
     }
 
@@ -101,7 +89,7 @@ class _MyAppState extends State<MyApp> {
       try {
         await _nearbyCrossPlugin.sendData(data);
       } catch (e) {
-        print('Error disconnecting: $e');
+        logger.e('Error sending data: $e');
       }
     }
 
@@ -145,15 +133,15 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
-                onPressed: _advertise,
+                onPressed: advertise,
                 child: const Text('Advertise'),
               ),
               ElevatedButton(
-                onPressed: _disconnect,
+                onPressed: disconnect,
                 child: const Text('Disconnect'),
               ),
               ElevatedButton(
-                onPressed: _startDiscovery,
+                onPressed: startDiscovery,
                 child: const Text('Discovery'),
               ),
             ],
@@ -165,7 +153,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget discoveredDevices() {
-    Future<void> Function() _connect(String epId, String epName) {
+    Future<void> Function() connect(String epId, String epName) {
       return () async {
         setState(() {
           _connectionStarted = true;
@@ -183,7 +171,7 @@ class _MyAppState extends State<MyApp> {
           itemBuilder: (context, index) {
             var device = devicesFound[index];
             return ElevatedButton(
-                onPressed: _connect(device["endpointId"] as String,
+                onPressed: connect(device["endpointId"] as String,
                     device["endpointName"] as String),
                 child: Text('Connect ${device["endpointName"]}'));
           },

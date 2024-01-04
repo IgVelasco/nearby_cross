@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross_example/models/app_model.dart';
 import 'package:provider/provider.dart';
 
 class InputDialog extends StatelessWidget {
   final String defaultUsername;
+  static final Logger logger = Logger();
   const InputDialog(this.defaultUsername, {super.key});
 
   @override
@@ -11,22 +13,22 @@ class InputDialog extends StatelessWidget {
     TextEditingController textFieldController = TextEditingController();
 
     return AlertDialog(
-      title: Text('Change Username'),
+      title: const Text('Change Username'),
       content: TextField(
         controller: textFieldController,
         decoration: InputDecoration(hintText: defaultUsername),
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         TextButton(
-          child: Text('OK'),
+          child: const Text('OK'),
           onPressed: () {
-            print(textFieldController.text);
+            logger.i(textFieldController.text);
             Provider.of<AppModel>(context, listen: false)
                 .changeUsername(textFieldController.text);
             Navigator.pop(context);

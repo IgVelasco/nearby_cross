@@ -2,31 +2,34 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 
 typedef Item = HashMap<String, String>;
 
 class AppModel extends ChangeNotifier {
+  // Create logger
+  var logger = Logger();
   Future<void> initPlatformState() async {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
       _platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
           'Unknown platform version';
-      print("Running on  $_platformVersion");
+      logger.i("Running on  $_platformVersion");
       _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
         if (call.method == 'onEndpointFound') {
           var arguments = call.arguments as Map<Object?, Object?>;
-          print("Found Device $arguments");
+          logger.i("Found Device $arguments");
 
           add(Item.from({
             "endpointId": arguments["endpointId"] as String,
             "endpointName": arguments["endpointName"] as String
           }));
-          print("List of devices $devicesFound");
+          logger.i("List of devices $devicesFound");
         } else if (call.method == 'payloadReceived') {
           var arguments = call.arguments as Map<Object?, Object?>;
-          print("Received Payload $arguments");
+          logger.i("Received Payload $arguments");
           messageReceived = arguments["message"] as String;
           notifyListeners();
         }
@@ -35,7 +38,7 @@ class AppModel extends ChangeNotifier {
       _platformVersion = 'Failed to get platform version.';
       notifyListeners();
     } on Exception catch (e) {
-      print("Exception $e");
+      logger.e("Exception $e");
     }
   }
 
@@ -50,7 +53,7 @@ class AppModel extends ChangeNotifier {
   String _username = 'default username';
   Item _connectedAdvertiser = HashMap();
 
-  final List<Item> _advertisers = [
+  final List<Item> advertisers = [
     HashMap.from({"username": "Ric", "endpointId": "aX09"}),
     HashMap.from({"username": "NICS", "endpointId": "B2FF"}),
   ];
@@ -82,7 +85,7 @@ class AppModel extends ChangeNotifier {
 
   void connectToAdvertiser(Item item) async {
     var epId = item["endpointId"] ?? "";
-    print("Connecting to advertiser $epId name ${item["endpointName"]}");
+    logger.i("Connecting to advertiser $epId name ${item["endpointName"]}");
     _connectedAdvertiser = item;
     _connected = true;
     await _nearbyCrossPlugin.connect(epId);
@@ -96,11 +99,11 @@ class AppModel extends ChangeNotifier {
       await _nearbyCrossPlugin.disconnect(serviceId);
       // Navigator.pop(context);
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.e('Error disconnecting: $e');
     }
     _connectedAdvertiser = HashMap();
     _connected = false;
-    print("Disconnected!");
+    logger.i("Disconnected!");
     notifyListeners();
   }
 
@@ -113,21 +116,21 @@ class AppModel extends ChangeNotifier {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
     } catch (e) {
-      print('Error starting discovery: $e');
+      logger.e('Error starting discovery: $e');
     }
 
-    print("Starting discovery!");
+    logger.i("Starting discovery!");
     notifyListeners();
   }
 
   void sendData(data) async {
-    print("sending data $data");
+    logger.i("Sending data $data");
     await _nearbyCrossPlugin.sendData(data);
   }
 
   void stopDiscovery() {
     _isDiscovering = false;
-    print("Stopping discovery!");
+    logger.i("Stopping discovery!");
     notifyListeners();
   }
 }

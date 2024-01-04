@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross_example/models/app_model.dart';
 import 'package:nearby_cross_example/widgets/advertising_list_item.dart';
-import 'package:nearby_cross_example/widgets/nc_appBar.dart';
+import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
 import 'package:provider/provider.dart';
 
 class AdvertiserList extends StatelessWidget {
+  static final logger = Logger();
   const AdvertiserList({super.key});
 
   @override
@@ -43,10 +45,7 @@ class AdvertiserList extends StatelessWidget {
                       physics: const ScrollPhysics(),
                       itemBuilder: (context, index) {
                         Item item = app.items[index];
-                        print("Item in list build $item");
-                        String username =
-                            item["endpointName"] ?? "Default username";
-                        String endpointId = item["endpointId"] ?? "ABCX";
+                        logger.i("Item in list build $item");
                         return AdvertisingListItem(item);
                       })),
             ],

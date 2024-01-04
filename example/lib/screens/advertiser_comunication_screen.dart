@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
-import 'package:nearby_cross/nearby_cross.dart';
 import 'package:provider/provider.dart';
-import '../widgets/nc_appBar.dart';
+import '../widgets/nc_app_bar.dart';
 import '../widgets/nc_drawer.dart';
 import '../models/app_model.dart';
 
