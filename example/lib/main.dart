@@ -1,10 +1,6 @@
-import 'dart:collection';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
@@ -33,6 +29,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
   String _platformVersion = 'Unknown';
@@ -123,7 +120,7 @@ class _MyAppState extends State<MyApp> {
             ),
             if (devicesFound.isEmpty) Text('Running on: $_platformVersion\n'),
             if (devicesFound.isNotEmpty && !_connectionStarted)
-              DiscoveredDevices(),
+              discoveredDevices(),
             if (_connectionStarted)
               Text("Successfully connected to $_connectedEpName"),
             if (_message.isNotEmpty) Text('Message: $_message'),
@@ -167,7 +164,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget DiscoveredDevices() {
+  Widget discoveredDevices() {
     Future<void> Function() _connect(String epId, String epName) {
       return () async {
         setState(() {
