@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross/models/connector_model.dart';
-import 'package:nearby_cross/nearby_cross.dart';
+import 'package:nearby_cross/models/advertiser_model.dart';
+import 'package:nearby_cross/models/discoverer_model.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
@@ -35,8 +35,8 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController _deviceName = TextEditingController();
   String? _platformVersion = 'Unknown';
   String _message = '';
-  final _nearbyCrossPlugin = NearbyCross();
-  final _connector = Connector();
+  final _discoverer = Discoverer();
+  final _advertiser = Advertiser();
   List<Map<String, String>> devicesFound = [];
 
   bool _connectionStarted = false;
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    _connector.getPlatformVersion().then((value) => setState(() {
+    _discoverer.getPlatformVersion().then((value) => setState(() {
           _platformVersion = value;
         }));
 
@@ -59,8 +59,8 @@ class _MyAppState extends State<MyApp> {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await Connector.requestPermissions();
-        await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
+        await _discoverer.requestPermissions(); // Can also be advertiser
+        await _discoverer.startDiscovery(serviceId, deviceName);
       } catch (e) {
         logger.e('Error starting discovery: $e');
       }
@@ -70,8 +70,8 @@ class _MyAppState extends State<MyApp> {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await NearbyCross.requestPermissions();
-        await _nearbyCrossPlugin.advertise(serviceId, deviceName);
+        await _advertiser.requestPermissions(); // Can also be discoverer
+        await _advertiser.advertise(serviceId, deviceName);
       } catch (e) {
         logger.e('Error starting advertising: $e');
       }
@@ -79,7 +79,8 @@ class _MyAppState extends State<MyApp> {
 
     void disconnect() async {
       try {
-        await _nearbyCrossPlugin.disconnect(serviceId);
+        // TODO: Disconect should validate if Device exists first
+        await _advertiser.disconnect(serviceId);
         setState(() {
           _message = "";
           devicesFound = [];
@@ -93,7 +94,7 @@ class _MyAppState extends State<MyApp> {
 
     void sendData(String data) async {
       try {
-        await _nearbyCrossPlugin.sendData(data);
+        await _advertiser.sendData(data);
       } catch (e) {
         logger.e('Error sending data: $e');
       }
@@ -166,7 +167,7 @@ class _MyAppState extends State<MyApp> {
           _connectedEpName = epName;
         });
 
-        await _nearbyCrossPlugin.connect(epId);
+        await _discoverer.connect(epId);
       };
     }
 
