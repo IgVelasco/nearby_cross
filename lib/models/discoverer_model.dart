@@ -23,8 +23,6 @@ class Discoverer extends Connector {
       : super((Connector instance, MethodCall call) {
           if (call.method == 'onEndpointFound') {
             var arguments = call.arguments as Map<Object?, Object?>;
-            instance.logger.i(
-                "Received onEndpointFound from Kotlin: ${arguments["endpointName"] as String}");
             return _handleEndpointFound(
                 instance as Discoverer,
                 arguments["endpointId"] as String,

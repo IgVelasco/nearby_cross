@@ -35,8 +35,8 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController _deviceName = TextEditingController();
   String? _platformVersion = 'Unknown';
   String _message = '';
-  final _discoverer = Discoverer();
   final _advertiser = Advertiser();
+  final _discoverer = Discoverer();
   List<Map<String, String>> devicesFound = [];
 
   bool _connectionStarted = false;

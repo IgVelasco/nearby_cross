@@ -33,8 +33,6 @@ class Connector {
 
   Connector(Function(Connector, MethodCall)? extenseMethodCall) {
     nearbyCross.setMethodCallHandler((call) async {
-      this.logger.i(
-          "Received onEndpointFound from Kotlin: ${call.arguments["endpointName"] as String}");
       if (extenseMethodCall != null) {
         await extenseMethodCall(this, call);
       }

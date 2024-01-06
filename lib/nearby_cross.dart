@@ -4,7 +4,21 @@ import 'package:nearby_cross/helpers/permission_manager.dart';
 
 class NearbyCross {
   @visibleForTesting
-  final methodChannel = const MethodChannel('nearby_cross');
+  late MethodChannel methodChannel;
+  static NearbyCross? _singleton;
+  List<Function(MethodCall)> methodCallHandlers = [];
+
+  factory NearbyCross() {
+    _singleton ??= NearbyCross._internal();
+
+    return _singleton!;
+  }
+
+  NearbyCross._internal() {
+    methodChannel = const MethodChannel('nearby_cross');
+    methodChannel.setMethodCallHandler((call) async => await Future.wait(
+        methodCallHandlers.map((mch) async => await mch(call))));
+  }
 
   static Future<void> requestPermissions() async {
     await PermissionManager.requestPermissions();
@@ -40,9 +54,8 @@ class NearbyCross {
     await methodChannel.invokeMethod('sendData', data);
   }
 
-  Future<void> setMethodCallHandler(
-      Future<dynamic> Function(MethodCall) handler) async {
-    methodChannel.setMethodCallHandler(handler);
+  void setMethodCallHandler(Future<dynamic> Function(MethodCall) handler) {
+    methodCallHandlers.add(handler);
   }
 
   Future<void> connect(String endpointId) async {

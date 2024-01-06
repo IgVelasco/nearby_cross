@@ -8,4 +8,9 @@ class Device {
   void addMessage(String message) {
     messages.add(message);
   }
+
+  @override
+  String toString() {
+    return "{endpointId: $endpointId, endpointName: $endpointName}";
+  }
 }
