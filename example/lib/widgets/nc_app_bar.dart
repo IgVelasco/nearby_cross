@@ -21,9 +21,9 @@ class NCAppBar extends StatelessWidget implements PreferredSizeWidget {
       //   color: Color(0xff212435),
       //   size: 24,
       // ),
-      actions: [
-        const Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+      actions: const [
+        Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
           child: Icon(Icons.notifications, color: Color(0xff212435), size: 24),
         ),
       ],

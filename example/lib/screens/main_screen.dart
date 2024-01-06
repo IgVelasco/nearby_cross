@@ -3,7 +3,7 @@ import 'package:nearby_cross_example/models/app_model.dart';
 import 'package:nearby_cross_example/screens/advertiser_comunication_screen.dart';
 import 'package:nearby_cross_example/screens/advertising_list.dart';
 import 'package:nearby_cross_example/widgets/input_dialog.dart';
-import 'package:nearby_cross_example/widgets/nc_appBar.dart';
+import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatelessWidget {
@@ -160,7 +160,7 @@ class MainScreen extends StatelessWidget {
                                 ));
                               },
                               trailing: const Icon(Icons.arrow_forward_ios,
-                                  color: const Color(0xff212435), size: 24),
+                                  color: Color(0xff212435), size: 24),
                               title: const Text(
                                 "Search Devices",
                               ),
