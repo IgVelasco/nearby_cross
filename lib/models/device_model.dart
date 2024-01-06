@@ -10,6 +10,12 @@ class Device {
   }
 
   @override
+  bool operator ==(other) => other is Device && endpointId == other.endpointId;
+
+  @override
+  int get hashCode => endpointId.hashCode;
+
+  @override
   String toString() {
     return "{endpointId: $endpointId, endpointName: $endpointName}";
   }

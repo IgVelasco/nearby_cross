@@ -3,14 +3,13 @@ import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 
 class Discoverer extends Connector {
-  Map<String, Device> listOfDiscoveredDevices = {};
+  Set<Device> listOfDiscoveredDevices = {};
 
   static void _handleEndpointFound(
       Discoverer instance, String endpointId, String endpointName) {
     instance.logger.i("Found Device $endpointId $endpointName");
 
-    instance.listOfDiscoveredDevices[endpointId] =
-        Device(endpointId, endpointName);
+    instance.listOfDiscoveredDevices.add(Device(endpointId, endpointName));
 
     instance.logger.i("List of devices ${instance.listOfDiscoveredDevices}");
   }
