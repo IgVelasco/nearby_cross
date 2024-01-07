@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'nearby_cross_method_channel.dart';
@@ -32,5 +30,6 @@ abstract class NearbyCrossPlatform extends PlatformInterface {
   Future<void> startDiscovery(String serviceId, String? username);
   Future<void> advertise(String serviceId, String? username);
   Future<void> disconnect(String serviceId);
-  Future<void> broadcastData(String data);
+  Future<void> sendData(String data);
+  Future<void> connect(String endpointId);
 }

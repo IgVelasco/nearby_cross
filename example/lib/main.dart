@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:nearby_cross/nearby_cross.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,13 +16,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
-  bool _isDiscovering = false;
   String _platformVersion = 'Unknown';
-  String _endpointId = 'Unknown 2';
-  Color _bgColor = Colors.white;
+  String _message = '';
+  final Color _bgColor = Colors.white;
   final _nearbyCrossPlugin = NearbyCross();
+  List<Map<String, String>> devicesFound = [];
+
+  bool _connectionStarted = false;
+  String _connectedEpName = "";
 
   String serviceId = 'com.example.nearbyCrossExample';
 
@@ -45,10 +47,18 @@ class _MyAppState extends State<MyApp> {
 
       _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
         if (call.method == 'onEndpointFound') {
+          var arguments = call.arguments as Map<Object?, Object?>;
           setState(() {
-            _endpointId = call.arguments;
+            devicesFound.add({
+              "endpointId": arguments["endpointId"] as String,
+              "endpointName": arguments["endpointName"] as String
+            });
           });
-          print('Endpoint found: $_endpointId');
+        } else if (call.method == 'payloadReceived') {
+          var arguments = call.arguments as Map<Object?, Object?>;
+          setState(() {
+            _message = arguments["message"] as String;
+          });
         }
       });
     } on PlatformException {
@@ -82,7 +92,12 @@ class _MyAppState extends State<MyApp> {
               ),
               controller: _deviceName, // Add this line
             ),
-            Text('Running on: $_platformVersion\n found: $_endpointId'),
+            if (devicesFound.isEmpty) Text('Running on: $_platformVersion\n'),
+            if (devicesFound.isNotEmpty && !_connectionStarted)
+              discoveredDevices(),
+            if (_connectionStarted)
+              Text("Successfully connected to $_connectedEpName"),
+            if (_message.isNotEmpty) Text('Message: $_message'),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Type something...',
@@ -123,49 +138,68 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _startDiscovery() async {
-    setState(() {
-      _isDiscovering = true;
-    });
+  Widget discoveredDevices() {
+    return SizedBox(
+        height: 200,
+        child: ListView.separated(
+          itemCount: devicesFound.length,
+          itemBuilder: (context, index) {
+            var device = devicesFound[index];
+            return ElevatedButton(
+                onPressed: _connect(device["endpointId"] as String,
+                    device["endpointName"] as String),
+                child: Text('Connect ${device["endpointName"]}'));
+          },
+          separatorBuilder: (context, index) {
+            return const Divider();
+          },
+        ));
+  }
 
+  Future<void> Function() _connect(String epId, String epName) {
+    return () async {
+      setState(() {
+        _connectionStarted = true;
+        _connectedEpName = epName;
+      });
+
+      await _nearbyCrossPlugin.connect(epId);
+    };
+  }
+
+  void _startDiscovery() async {
     var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
     try {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.startDiscovery(serviceId, deviceName);
     } catch (e) {
-      print('Error starting discovery: $e');
+      logger.i('Error starting discovery: $e');
     }
-
-    setState(() {
-      _isDiscovering = false;
-    });
   }
 
   void _advertise() async {
-    setState(() {
-      _isDiscovering = true;
-    });
-
     var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
     try {
       await NearbyCross.requestPermissions();
       await _nearbyCrossPlugin.advertise(serviceId, deviceName);
     } catch (e) {
-      print('Error starting advertising: $e');
+      logger.i('Error starting advertising: $e');
     }
-
-    setState(() {
-      _isDiscovering = false;
-    });
   }
 
   void _disconnect() async {
     try {
       await _nearbyCrossPlugin.disconnect(serviceId);
+      setState(() {
+        _message = "";
+        devicesFound = [];
+        _connectionStarted = false;
+        _connectedEpName = "";
+      });
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.i('Error disconnecting: $e');
     }
   }
 
@@ -173,7 +207,7 @@ class _MyAppState extends State<MyApp> {
     try {
       await _nearbyCrossPlugin.broadcastData(data);
     } catch (e) {
-      print('Error disconnecting: $e');
+      logger.i('Error disconnecting: $e');
     }
   }
 }
