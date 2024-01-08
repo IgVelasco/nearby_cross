@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -57,7 +59,7 @@ class _MyAppState extends State<MyApp> {
         } else if (call.method == 'payloadReceived') {
           var arguments = call.arguments as Map<Object?, Object?>;
           setState(() {
-            _message = arguments["message"] as String;
+            _message = utf8.decode(arguments["message"] as Uint8List);
           });
         }
       });
@@ -107,7 +109,7 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               onPressed: () {
                 String inputData = _textFieldController.text;
-                broadcastData(inputData);
+                broadcastData(Uint8List.fromList(inputData.codeUnits));
               },
               child: const Text('Send'),
             ),
@@ -203,7 +205,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void broadcastData(String data) async {
+  void broadcastData(Uint8List data) async {
     try {
       await _nearbyCrossPlugin.broadcastData(data);
     } catch (e) {

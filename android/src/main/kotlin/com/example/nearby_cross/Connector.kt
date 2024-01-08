@@ -45,15 +45,14 @@ open class Connector(
         listOfConnectedDevices.remove(endpointsId)
     }
 
-    fun broadcastData(context: Context, data: String) {
-        val bytesPayload = Payload.fromBytes(data.toByteArray())
+    fun broadcastBytes(context: Context, data: ByteArray) {
         for (connection in listOfConnectedDevices) {
             this.sendDataToEpId(context, data, connection.key)
         }
     }
 
-    fun sendDataToEpId(context: Context, data: String, endpointId: String) {
-        val bytesPayload = Payload.fromBytes(data.toByteArray())
+    fun sendDataToEpId(context: Context, data: ByteArray, endpointId: String) {
+        val bytesPayload = Payload.fromBytes(data)
         Nearby.getConnectionsClient(context).sendPayload(endpointId, bytesPayload)
         Log.v("INFO", "Send'$data' to $endpointId")
     }
@@ -87,7 +86,7 @@ open class Connector(
             val newInitiatedConnection = Device(endpointId, connectionInfo.endpointName)
             listOfInitiatedConnections[endpointId] = newInitiatedConnection
 
-            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback);
+            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
             // A connection to another device has been initiated by the remote endpoint
             // You can now accept or reject the connection request using the provided ConnectionInfo
             // For example, you could show a dialog asking the user to confirm the connection

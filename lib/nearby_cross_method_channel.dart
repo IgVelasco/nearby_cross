@@ -40,7 +40,7 @@ class MethodChannelNearbyCross extends NearbyCrossPlatform {
   }
 
   @override
-  Future<void> broadcastData(String data) async {
+  Future<void> broadcastData(Uint8List data) async {
     await methodChannel.invokeMethod('broadcastData', data);
   }
 

@@ -29,7 +29,7 @@ class NearbyCross {
     await nearbyChannel.disconnect(serviceId);
   }
 
-  Future<void> broadcastData(String data) async {
+  Future<void> broadcastData(Uint8List data) async {
     await nearbyChannel.broadcastData(data);
   }
 
