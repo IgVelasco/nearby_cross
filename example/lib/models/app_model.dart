@@ -45,6 +45,8 @@ class AppModel extends ChangeNotifier {
   String _platformVersion = "";
   String messageReceived = "";
   bool _isDiscovering = false;
+  bool _isAdvertising = false;
+  bool _isAdvertiser = false;
   bool _connected = false;
   final _nearbyCrossPlugin = NearbyCross();
   String serviceId = 'com.example.nearbyCrossExample';
@@ -59,9 +61,11 @@ class AppModel extends ChangeNotifier {
   ];
 
   bool get isDiscovering => _isDiscovering;
+  bool get isAdvertiser => _isAdvertiser;
   bool get connected => _connected;
   Item get connectedAdvertiser => _connectedAdvertiser;
   String get username => _username;
+  String get advertiserMode => _isAdvertiser ? "Advertiser" : "Discoverer";
   String get platformVersion => _platformVersion;
 
   UnmodifiableListView<Item> get items => UnmodifiableListView(devicesFound);
@@ -80,6 +84,11 @@ class AppModel extends ChangeNotifier {
 
   void changeUsername(String newUsername) {
     _username = newUsername;
+    notifyListeners();
+  }
+
+  void toggleAdvertiserMode() {
+    _isAdvertiser = !_isAdvertiser;
     notifyListeners();
   }
 
@@ -105,6 +114,20 @@ class AppModel extends ChangeNotifier {
     _connected = false;
     logger.i("Disconnected!");
     notifyListeners();
+  }
+
+  void toggleAdvertising() async {
+    if (_isAdvertising) {
+      _isAdvertising = false;
+    } else {
+      _isAdvertising = true;
+      try {
+        await NearbyCross.requestPermissions();
+        await _nearbyCrossPlugin.advertise(serviceId, username);
+      } catch (e) {
+        logger.e('Error starting advertising: $e');
+      }
+    }
   }
 
   void startDiscovery() async {

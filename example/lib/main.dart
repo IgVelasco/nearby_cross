@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/nearby_cross.dart';
+import 'package:nearby_cross_example/screens/main_screen.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
@@ -93,91 +94,6 @@ class _MyAppState extends State<MyApp> {
       }
     }
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: const NCAppBar(),
-        drawer: const NCDrawer(),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Declare device name...',
-              ),
-              controller: _deviceName, // Add this line
-            ),
-            if (devicesFound.isEmpty) Text('Running on: $_platformVersion\n'),
-            if (devicesFound.isNotEmpty && !_connectionStarted)
-              discoveredDevices(),
-            if (_connectionStarted)
-              Text("Successfully connected to $_connectedEpName"),
-            if (_message.isNotEmpty) Text('Message: $_message'),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Type something...',
-              ),
-              controller: _textFieldController, // Add this line
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String inputData = _textFieldController.text;
-                sendData(inputData);
-              },
-              child: const Text('Send'),
-            ),
-          ],
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: advertise,
-                child: const Text('Advertise'),
-              ),
-              ElevatedButton(
-                onPressed: disconnect,
-                child: const Text('Disconnect'),
-              ),
-              ElevatedButton(
-                onPressed: startDiscovery,
-                child: const Text('Discovery'),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      ),
-    );
-  }
-
-  Widget discoveredDevices() {
-    Future<void> Function() connect(String epId, String epName) {
-      return () async {
-        setState(() {
-          _connectionStarted = true;
-          _connectedEpName = epName;
-        });
-
-        await _nearbyCrossPlugin.connect(epId);
-      };
-    }
-
-    return SizedBox(
-        height: 200,
-        child: ListView.separated(
-          itemCount: devicesFound.length,
-          itemBuilder: (context, index) {
-            var device = devicesFound[index];
-            return ElevatedButton(
-                onPressed: connect(device["endpointId"] as String,
-                    device["endpointName"] as String),
-                child: Text('Connect ${device["endpointName"]}'));
-          },
-          separatorBuilder: (context, index) {
-            return const Divider();
-          },
-        ));
+    return const MaterialApp(home: MainScreen());
   }
 }
