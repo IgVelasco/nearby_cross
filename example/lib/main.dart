@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross/models/advertiser_model.dart';
-import 'package:nearby_cross/models/discoverer_model.dart';
 import 'package:nearby_cross/viewmodels/advertiser_viewmodel.dart';
+import 'package:nearby_cross/viewmodels/discoverer_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
@@ -18,7 +17,8 @@ void main() {
         appModel.initPlatformState();
         return appModel;
       }),
-      ChangeNotifierProvider(create: (context) => AdvertiserViewModel())
+      ChangeNotifierProvider(create: (context) => AdvertiserViewModel()),
+      ChangeNotifierProvider(create: (context) => DiscovererViewModel())
     ],
     child: const MyApp(),
   ));
@@ -35,16 +35,10 @@ class _MyAppState extends State<MyApp> {
   var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
-  String? _platformVersion;
   String _message = '';
-  final _advertiser = Advertiser();
-  final _discoverer = Discoverer();
-  List<Map<String, String>> devicesFound = [];
 
   bool _connectionStarted = false;
   String _connectedEpName = "";
-
-  String serviceId = 'com.example.nearbyCrossExample';
 
   @override
   void initState() {
@@ -54,8 +48,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final advertiserViewModel = Provider.of<AdvertiserViewModel>(context);
-    _platformVersion = advertiserViewModel.getPlatformVersion();
-    if (_platformVersion == null) {
+    final discovererViewModel = Provider.of<DiscovererViewModel>(context);
+
+    if (advertiserViewModel.getPlatformVersion() == null) {
       advertiserViewModel.findPlatformVersion();
     }
 
@@ -63,8 +58,9 @@ class _MyAppState extends State<MyApp> {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await _discoverer.requestPermissions(); // Can also be advertiser
-        await _discoverer.startDiscovery(serviceId, deviceName);
+        await discovererViewModel
+            .requestPermissions(); // Can also be advertiser
+        await discovererViewModel.startDiscovering(deviceName);
       } catch (e) {
         logger.e('Error starting discovery: $e');
       }
@@ -74,8 +70,9 @@ class _MyAppState extends State<MyApp> {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await _advertiser.requestPermissions(); // Can also be discoverer
-        await _advertiser.advertise(serviceId, deviceName);
+        await advertiserViewModel
+            .requestPermissions(); // Can also be discoverer
+        await advertiserViewModel.startAdvertising(deviceName);
       } catch (e) {
         logger.e('Error starting advertising: $e');
       }
@@ -83,11 +80,10 @@ class _MyAppState extends State<MyApp> {
 
     void disconnect() async {
       try {
-        // TODO: Disconect should validate if Device exists first
-        await _advertiser.disconnect(serviceId);
+        await advertiserViewModel.disconnect();
+        await discovererViewModel.disconnect();
         setState(() {
           _message = "";
-          devicesFound = [];
           _connectionStarted = false;
           _connectedEpName = "";
         });
@@ -98,7 +94,8 @@ class _MyAppState extends State<MyApp> {
 
     void sendData(String data) async {
       try {
-        await _advertiser.sendData(data);
+        await advertiserViewModel.sendData(data);
+        await discovererViewModel.sendData(data);
       } catch (e) {
         logger.e('Error sending data: $e');
       }
@@ -117,9 +114,11 @@ class _MyAppState extends State<MyApp> {
               ),
               controller: _deviceName, // Add this line
             ),
-            if (devicesFound.isEmpty) Text('Running on: $_platformVersion\n'),
-            if (devicesFound.isNotEmpty && !_connectionStarted)
-              discoveredDevices(),
+            if (discovererViewModel.getDiscoveredDevices().isEmpty)
+              Text('Running on: ${advertiserViewModel.getPlatformVersion()}\n'),
+            if (discovererViewModel.getDiscoveredDevices().isNotEmpty &&
+                !_connectionStarted)
+              discoveredDevices(discovererViewModel),
             if (_connectionStarted)
               Text("Successfully connected to $_connectedEpName"),
             if (_message.isNotEmpty) Text('Message: $_message'),
@@ -163,7 +162,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget discoveredDevices() {
+  Widget discoveredDevices(DiscovererViewModel discovererViewModel) {
     Future<void> Function() connect(String epId, String epName) {
       return () async {
         setState(() {
@@ -171,24 +170,26 @@ class _MyAppState extends State<MyApp> {
           _connectedEpName = epName;
         });
 
-        await _discoverer.connect(epId);
+        await discovererViewModel.connect(epId);
       };
     }
 
     return SizedBox(
         height: 200,
-        child: ListView.separated(
-          itemCount: devicesFound.length,
-          itemBuilder: (context, index) {
-            var device = devicesFound[index];
-            return ElevatedButton(
-                onPressed: connect(device["endpointId"] as String,
-                    device["endpointName"] as String),
-                child: Text('Connect ${device["endpointName"]}'));
-          },
-          separatorBuilder: (context, index) {
-            return const Divider();
-          },
-        ));
+        child: Consumer<DiscovererViewModel>(
+            builder: (context, value, child) => ListView.separated(
+                  itemCount: discovererViewModel.getDiscoveredDevices().length,
+                  itemBuilder: (context, index) {
+                    var device =
+                        discovererViewModel.getDiscoveredDevices()[index];
+                    return ElevatedButton(
+                        onPressed:
+                            connect(device.endpointId, device.endpointName),
+                        child: Text('Connect ${device.endpointName}'));
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider();
+                  },
+                )));
   }
 }

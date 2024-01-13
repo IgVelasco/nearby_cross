@@ -9,7 +9,7 @@ class Advertiser extends Connector {
     return _singleton!;
   }
 
-  Future<void> advertise(String serviceId, String? username) async {
+  Future<void> advertise(String? username) async {
     await nearbyCross.advertise(serviceId, username);
   }
 

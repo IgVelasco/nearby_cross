@@ -12,6 +12,8 @@ class Connector {
   Map<String, Device> listOfConnectedDevices = {};
   Map<String, Device> listOfInitiatedConnections = {};
 
+  String serviceId = 'com.example.nearbyCrossExample';
+
   Future<void> requestPermissions() async {
     await PermissionManager.requestPermissions();
   }
@@ -29,7 +31,7 @@ class Connector {
     await nearbyCross.sendData(data);
   }
 
-  Future<void> disconnect(String serviceId) async {
+  Future<void> disconnect() async {
     await nearbyCross.disconnect(serviceId);
   }
 
