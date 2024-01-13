@@ -7,6 +7,7 @@ import '../helpers/permission_manager.dart';
 
 class Connector {
   var logger = Logger();
+  String? platformVersion;
   NearbyCross nearbyCross = NearbyCross();
   Map<String, Device> listOfConnectedDevices = {};
   Map<String, Device> listOfInitiatedConnections = {};
@@ -16,7 +17,8 @@ class Connector {
   }
 
   Future<String?> getPlatformVersion() async {
-    return nearbyCross.getPlatformVersion();
+    platformVersion = await nearbyCross.getPlatformVersion();
+    return platformVersion;
   }
 
   Future<void> connect(String endpointId) async {

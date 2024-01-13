@@ -3,7 +3,14 @@ import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 
 class Discoverer extends Connector {
+  static Discoverer? _singleton;
   Set<Device> listOfDiscoveredDevices = {};
+
+  factory Discoverer() {
+    _singleton ??= Discoverer._internal();
+
+    return _singleton!;
+  }
 
   static void _handleEndpointFound(
       Discoverer instance, String endpointId, String endpointName) {
@@ -18,7 +25,7 @@ class Discoverer extends Connector {
     await nearbyCross.startDiscovery(serviceId, username);
   }
 
-  Discoverer()
+  Discoverer._internal()
       : super((Connector instance, MethodCall call) {
           if (call.method == 'onEndpointFound') {
             var arguments = call.arguments as Map<Object?, Object?>;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
 import 'package:nearby_cross/models/discoverer_model.dart';
+import 'package:nearby_cross/viewmodels/advertiser_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
@@ -10,16 +11,17 @@ import 'widgets/nc_drawer.dart';
 import 'widgets/nc_app_bar.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) {
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) {
         var appModel = AppModel();
         appModel.initPlatformState();
         return appModel;
-      },
-      child: const MyApp(),
-    ),
-  );
+      }),
+      ChangeNotifierProvider(create: (context) => AdvertiserViewModel())
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -33,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
-  String? _platformVersion = 'Unknown';
+  String? _platformVersion;
   String _message = '';
   final _advertiser = Advertiser();
   final _discoverer = Discoverer();
@@ -51,9 +53,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    _discoverer.getPlatformVersion().then((value) => setState(() {
-          _platformVersion = value;
-        }));
+    final advertiserViewModel = Provider.of<AdvertiserViewModel>(context);
+    _platformVersion = advertiserViewModel.getPlatformVersion();
+    if (_platformVersion == null) {
+      advertiserViewModel.findPlatformVersion();
+    }
 
     void startDiscovery() async {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
