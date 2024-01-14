@@ -12,7 +12,25 @@ class Connector {
   Map<String, Device> listOfConnectedDevices = {};
   Map<String, Device> listOfInitiatedConnections = {};
 
+  Function(Device) callbackConnectionInitiated = (_) => {};
+  Function(Device) callbackSuccessfulConnection = (_) => {};
+  Function(Device) callbackReceivedMessage = (_) => {};
+
   String serviceId = 'com.example.nearbyCrossExample';
+
+  void setCallbackConnectionInitiated(
+      Function(Device) callbackConnectionInitiated) {
+    this.callbackConnectionInitiated = callbackConnectionInitiated;
+  }
+
+  void setCallbackSuccessfulConnection(
+      Function(Device) callbackSuccessfulConnection) {
+    this.callbackSuccessfulConnection = callbackSuccessfulConnection;
+  }
+
+  void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
+    this.callbackReceivedMessage = callbackReceivedMessage;
+  }
 
   Future<void> requestPermissions() async {
     await PermissionManager.requestPermissions();
@@ -27,10 +45,6 @@ class Connector {
     await nearbyCross.connect(endpointId);
   }
 
-  Future<void> sendData(String data) async {
-    await nearbyCross.sendData(data);
-  }
-
   Future<void> disconnect() async {
     await nearbyCross.disconnect(serviceId);
   }
@@ -43,11 +57,38 @@ class Connector {
 
       if (call.method == 'payloadReceived') {
         var arguments = call.arguments as Map<Object?, Object?>;
-        logger.i("Received Payload $arguments");
         var messageReceived = arguments["message"] as String;
         var endpointId = arguments["endpointId"] as String;
 
-        listOfConnectedDevices[endpointId]?.addMessage(messageReceived);
+        var device = listOfConnectedDevices[endpointId];
+        if (device == null) {
+          return;
+        }
+
+        device.addMessage(messageReceived);
+        callbackReceivedMessage(device);
+      } else if (call.method == 'connectionInitiated') {
+        var arguments = call.arguments as Map<Object?, Object?>;
+
+        var endpointId = arguments["endpointId"] as String;
+        var endpointName = arguments["endpointName"] as String;
+
+        var device = Device(endpointId, endpointName);
+        listOfInitiatedConnections[endpointId] = device;
+        callbackConnectionInitiated(device);
+      } else if (call.method == 'successfulConnection') {
+        var arguments = call.arguments as Map<Object?, Object?>;
+        var endpointId = arguments["endpointId"] as String;
+        var device = listOfInitiatedConnections[endpointId];
+        if (device == null) {
+          return;
+        }
+
+        listOfConnectedDevices[endpointId] = device;
+        listOfInitiatedConnections.remove(endpointId);
+        callbackSuccessfulConnection(device);
+      } else {
+        logger.i("Received callback: ${call.method}");
       }
     });
   }

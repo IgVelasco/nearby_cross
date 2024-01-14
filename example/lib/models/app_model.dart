@@ -125,7 +125,7 @@ class AppModel extends ChangeNotifier {
 
   void sendData(data) async {
     logger.i("Sending data $data");
-    await _nearbyCrossPlugin.sendData(data);
+    await _nearbyCrossPlugin.sendData(data, '');
   }
 
   void stopDiscovery() {

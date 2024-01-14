@@ -82,9 +82,10 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(null)
             }
             ChannelMethods.SEND_DATA -> {
-                val data = call.arguments as String
-                this.advertiser?.sendData(context, data)
-                this.discoverer?.sendData(context, data)
+                val data = call.argument<String>("data") as String
+                val endpointId = call.argument<String>("endpointId") as String
+                this.advertiser?.sendData(context, data, endpointId)
+                this.discoverer?.sendData(context, data, endpointId)
                 result.success(null)
             }
             else -> result.notImplemented()

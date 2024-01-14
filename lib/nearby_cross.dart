@@ -50,8 +50,9 @@ class NearbyCross {
     await methodChannel.invokeMethod('disconnect', serviceId);
   }
 
-  Future<void> sendData(String data) async {
-    await methodChannel.invokeMethod('sendData', data);
+  Future<void> sendData(String data, String endpointId) async {
+    await methodChannel
+        .invokeMethod('sendData', {"data": data, "endpointId": endpointId});
   }
 
   void setMethodCallHandler(Future<dynamic> Function(MethodCall) handler) {

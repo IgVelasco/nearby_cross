@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross/viewmodels/advertiser_viewmodel.dart';
-import 'package:nearby_cross/viewmodels/discoverer_viewmodel.dart';
+import 'package:nearby_cross_example/viewmodels/main_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
 import 'widgets/nc_drawer.dart';
@@ -17,8 +16,7 @@ void main() {
         appModel.initPlatformState();
         return appModel;
       }),
-      ChangeNotifierProvider(create: (context) => AdvertiserViewModel()),
-      ChangeNotifierProvider(create: (context) => DiscovererViewModel())
+      ChangeNotifierProvider(create: (context) => MainViewModel()),
     ],
     child: const MyApp(),
   ));
@@ -35,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   var logger = Logger();
   final TextEditingController _textFieldController = TextEditingController();
   final TextEditingController _deviceName = TextEditingController();
-  String _message = '';
+  String? _message;
 
   bool _connectionStarted = false;
   String _connectedEpName = "";
@@ -47,20 +45,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final advertiserViewModel = Provider.of<AdvertiserViewModel>(context);
-    final discovererViewModel = Provider.of<DiscovererViewModel>(context);
+    final mainViewModel = Provider.of<MainViewModel>(context);
 
-    if (advertiserViewModel.getPlatformVersion() == null) {
-      advertiserViewModel.findPlatformVersion();
+    if (mainViewModel.getPlatformVersion() == null) {
+      mainViewModel.findPlatformVersion();
     }
+
+    _message = mainViewModel.getLastMessageReceived();
 
     void startDiscovery() async {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await discovererViewModel
-            .requestPermissions(); // Can also be advertiser
-        await discovererViewModel.startDiscovering(deviceName);
+        await mainViewModel.startDiscovering(deviceName);
       } catch (e) {
         logger.e('Error starting discovery: $e');
       }
@@ -70,9 +67,7 @@ class _MyAppState extends State<MyApp> {
       var deviceName = _deviceName.text.isNotEmpty ? _deviceName.text : null;
 
       try {
-        await advertiserViewModel
-            .requestPermissions(); // Can also be discoverer
-        await advertiserViewModel.startAdvertising(deviceName);
+        await mainViewModel.startAdvertising(deviceName);
       } catch (e) {
         logger.e('Error starting advertising: $e');
       }
@@ -80,8 +75,7 @@ class _MyAppState extends State<MyApp> {
 
     void disconnect() async {
       try {
-        await advertiserViewModel.disconnect();
-        await discovererViewModel.disconnect();
+        await mainViewModel.disconnect();
         setState(() {
           _message = "";
           _connectionStarted = false;
@@ -94,8 +88,7 @@ class _MyAppState extends State<MyApp> {
 
     void sendData(String data) async {
       try {
-        await advertiserViewModel.sendData(data);
-        await discovererViewModel.sendData(data);
+        mainViewModel.sendData(data);
       } catch (e) {
         logger.e('Error sending data: $e');
       }
@@ -114,14 +107,14 @@ class _MyAppState extends State<MyApp> {
               ),
               controller: _deviceName, // Add this line
             ),
-            if (discovererViewModel.getDiscoveredDevices().isEmpty)
-              Text('Running on: ${advertiserViewModel.getPlatformVersion()}\n'),
-            if (discovererViewModel.getDiscoveredDevices().isNotEmpty &&
+            if (mainViewModel.getDiscoveredDevices().isEmpty)
+              Text('Running on: ${mainViewModel.getPlatformVersion()}\n'),
+            if (mainViewModel.getDiscoveredDevices().isNotEmpty &&
                 !_connectionStarted)
-              discoveredDevices(discovererViewModel),
+              discoveredDevices(mainViewModel),
             if (_connectionStarted)
               Text("Successfully connected to $_connectedEpName"),
-            if (_message.isNotEmpty) Text('Message: $_message'),
+            if (_message != null) Text('Message: $_message'),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Type something...',
@@ -162,7 +155,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget discoveredDevices(DiscovererViewModel discovererViewModel) {
+  Widget discoveredDevices(MainViewModel mainViewModel) {
     Future<void> Function() connect(String epId, String epName) {
       return () async {
         setState(() {
@@ -170,18 +163,17 @@ class _MyAppState extends State<MyApp> {
           _connectedEpName = epName;
         });
 
-        await discovererViewModel.connect(epId);
+        await mainViewModel.connect(epId);
       };
     }
 
     return SizedBox(
         height: 200,
-        child: Consumer<DiscovererViewModel>(
+        child: Consumer<MainViewModel>(
             builder: (context, value, child) => ListView.separated(
-                  itemCount: discovererViewModel.getDiscoveredDevices().length,
+                  itemCount: mainViewModel.getDiscoveredDevices().length,
                   itemBuilder: (context, index) {
-                    var device =
-                        discovererViewModel.getDiscoveredDevices()[index];
+                    var device = mainViewModel.getDiscoveredDevices()[index];
                     return ElevatedButton(
                         onPressed:
                             connect(device.endpointId, device.endpointName),

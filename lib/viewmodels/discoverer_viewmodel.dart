@@ -6,10 +6,13 @@ class DiscovererViewModel with ChangeNotifier {
   Discoverer discoverer = Discoverer();
 
   DiscovererViewModel() {
-    discoverer.setOnDeviceFoundCallback(_callbackDeviceFound);
+    discoverer.setOnDeviceFoundCallback(_commonCallback);
+    discoverer.setCallbackConnectionInitiated(_commonCallback);
+    discoverer.setCallbackSuccessfulConnection(_commonCallback);
+    discoverer.setCallbackReceivedMessage(_commonCallback);
   }
 
-  void _callbackDeviceFound(Device device) {
+  void _commonCallback(Device device) {
     notifyListeners();
   }
 
@@ -37,10 +40,6 @@ class DiscovererViewModel with ChangeNotifier {
 
   Future<void> disconnect() {
     return discoverer.disconnect();
-  }
-
-  Future<void> sendData(String data) {
-    return discoverer.sendData(data);
   }
 
   Future<void> connect(String endpointId) {
