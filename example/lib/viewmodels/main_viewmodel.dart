@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
+import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/discoverer_model.dart';
 
 class MainViewModel with ChangeNotifier {
   late Discoverer discoverer;
   late Advertiser advertiser;
-
-  Set<Device> connectedDevices = {};
+  late ConnectionsManager connectionsManager;
   Device? lastMessageDevice;
 
   MainViewModel() {
@@ -21,6 +21,8 @@ class MainViewModel with ChangeNotifier {
     advertiser.setCallbackConnectionInitiated(_commonCallback);
     advertiser.setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
     advertiser.setCallbackReceivedMessage(_callbackReceivedMessage);
+
+    connectionsManager = ConnectionsManager();
   }
 
   void _commonCallback(Device device) {
@@ -28,7 +30,6 @@ class MainViewModel with ChangeNotifier {
   }
 
   void _callbackSuccessfulConnection(Device device) {
-    connectedDevices.add(device);
     notifyListeners();
   }
 
@@ -72,9 +73,7 @@ class MainViewModel with ChangeNotifier {
   }
 
   Future<void> sendData(String message) async {
-    for (var device in connectedDevices) {
-      device.sendMessage(message);
-    }
+    connectionsManager.broadcastMessage(message);
   }
 
   String? getLastMessageReceived() {

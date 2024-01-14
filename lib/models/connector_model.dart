@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:logger/logger.dart';
@@ -9,8 +10,7 @@ class Connector {
   var logger = Logger();
   String? platformVersion;
   NearbyCross nearbyCross = NearbyCross();
-  Map<String, Device> listOfConnectedDevices = {};
-  Map<String, Device> listOfInitiatedConnections = {};
+  ConnectionsManager connectionsManager = ConnectionsManager();
 
   Function(Device) callbackConnectionInitiated = (_) => {};
   Function(Device) callbackSuccessfulConnection = (_) => {};
@@ -60,12 +60,12 @@ class Connector {
         var messageReceived = arguments["message"] as String;
         var endpointId = arguments["endpointId"] as String;
 
-        var device = listOfConnectedDevices[endpointId];
+        var device = connectionsManager.addMessageFromDevice(
+            endpointId, messageReceived);
         if (device == null) {
           return;
         }
 
-        device.addMessage(messageReceived);
         callbackReceivedMessage(device);
       } else if (call.method == 'connectionInitiated') {
         var arguments = call.arguments as Map<Object?, Object?>;
@@ -73,19 +73,17 @@ class Connector {
         var endpointId = arguments["endpointId"] as String;
         var endpointName = arguments["endpointName"] as String;
 
-        var device = Device(endpointId, endpointName);
-        listOfInitiatedConnections[endpointId] = device;
+        var device =
+            connectionsManager.addInitiatedConnection(endpointId, endpointName);
         callbackConnectionInitiated(device);
       } else if (call.method == 'successfulConnection') {
         var arguments = call.arguments as Map<Object?, Object?>;
         var endpointId = arguments["endpointId"] as String;
-        var device = listOfInitiatedConnections[endpointId];
+        var device = connectionsManager.addConnectedDevice(endpointId);
         if (device == null) {
           return;
         }
 
-        listOfConnectedDevices[endpointId] = device;
-        listOfInitiatedConnections.remove(endpointId);
         callbackSuccessfulConnection(device);
       } else {
         logger.i("Received callback: ${call.method}");
