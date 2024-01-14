@@ -14,12 +14,8 @@ class Discoverer extends Connector {
   }
 
   void _handleEndpointFound(String endpointId, String endpointName) {
-    logger.i("Found Device $endpointId $endpointName");
-
     var device = Device(endpointId, endpointName);
     listOfDiscoveredDevices.add(Device(endpointId, endpointName));
-
-    logger.i("List of devices $listOfDiscoveredDevices");
 
     callbackOnDeviceFound(device);
   }

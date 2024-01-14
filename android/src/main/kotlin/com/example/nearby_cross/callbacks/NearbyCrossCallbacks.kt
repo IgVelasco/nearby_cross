@@ -19,10 +19,9 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             channel.invokeMethod(ChannelMethods.CONNECTION_INITIATED, hashmap)
         }
 
-        override fun onSuccessfulConnection(endpointId: String, endpointName: String) {
+        override fun onSuccessfulConnection(endpointId: String) {
             val hashmap = HashMap<String, String>()
             hashmap["endpointId"] = endpointId
-            hashmap["endpointName"] = endpointName
             channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, hashmap)
         }
     }
@@ -49,10 +48,9 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             channel.invokeMethod(ChannelMethods.CONNECTION_INITIATED, hashmap)
         }
 
-        override fun onSuccessfulConnection(endpointId: String, endpointName: String) {
+        override fun onSuccessfulConnection(endpointId: String) {
             val hashmap = HashMap<String, String>()
             hashmap["endpointId"] = endpointId
-            hashmap["endpointName"] = endpointName
             channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, hashmap)
         }
     }
