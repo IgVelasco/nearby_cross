@@ -13,5 +13,5 @@ class Advertiser extends Connector {
     await nearbyCross.advertise(serviceId, username);
   }
 
-  Advertiser._internal() : super(null);
+  Advertiser._internal() : super();
 }

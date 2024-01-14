@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/helpers/permission_manager.dart';
+import 'package:nearby_cross/nearby_cross_methods.dart';
 
 class NearbyCross {
   @visibleForTesting
+  var logger = Logger();
   late MethodChannel methodChannel;
   static NearbyCross? _singleton;
-  List<Function(MethodCall)> methodCallHandlers = [];
+  Map<String, List<Function(MethodCall)>> methodCallHandlers = {};
 
   factory NearbyCross() {
     _singleton ??= NearbyCross._internal();
@@ -16,8 +19,20 @@ class NearbyCross {
 
   NearbyCross._internal() {
     methodChannel = const MethodChannel('nearby_cross');
-    methodChannel.setMethodCallHandler((call) async => await Future.wait(
-        methodCallHandlers.map((mch) async => await mch(call))));
+    for (var method in NearbyCrossMethods.values) {
+      methodCallHandlers[method.getString()] = [];
+    }
+
+    methodChannel.setMethodCallHandler((call) async {
+      if (methodCallHandlers.containsKey(call.method)) {
+        var handlers = methodCallHandlers[call.method];
+        await Future.wait(handlers!.map(
+          (e) async => await e(call),
+        ));
+      } else {
+        logger.i("Received unknown method call: ${call.method}");
+      }
+    });
   }
 
   static Future<void> requestPermissions() async {
@@ -55,8 +70,11 @@ class NearbyCross {
         .invokeMethod('sendData', {"data": data, "endpointId": endpointId});
   }
 
-  void setMethodCallHandler(Future<dynamic> Function(MethodCall) handler) {
-    methodCallHandlers.add(handler);
+  void setMethodCallHandler(
+      NearbyCrossMethods method, Future<dynamic> Function(MethodCall) handler) {
+    if (methodCallHandlers.containsKey(method.getString())) {
+      methodCallHandlers[method.getString()]!.add(handler);
+    }
   }
 
   Future<void> connect(String endpointId) async {

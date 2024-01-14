@@ -1,11 +1,18 @@
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross/nearby_cross.dart';
+import 'package:nearby_cross/nearby_cross_methods.dart';
 
 class ConnectionsManager {
   var logger = Logger();
   static ConnectionsManager? _singleton;
+  NearbyCross nearbyCross = NearbyCross();
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
+
+  Function(Device) callbackConnectionInitiated = (_) => {};
+  Function(Device) callbackSuccessfulConnection = (_) => {};
+  Function(Device) callbackReceivedMessage = (_) => {};
 
   factory ConnectionsManager() {
     _singleton ??= ConnectionsManager._internal();
@@ -13,7 +20,57 @@ class ConnectionsManager {
     return _singleton!;
   }
 
-  ConnectionsManager._internal();
+  ConnectionsManager._internal() {
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      var endpointId = arguments["endpointId"] as String;
+      var endpointName = arguments["endpointName"] as String;
+
+      var device = addInitiatedConnection(endpointId, endpointName);
+      callbackConnectionInitiated(device);
+    });
+
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.successfulConnection,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      var endpointId = arguments["endpointId"] as String;
+      var device = addConnectedDevice(endpointId);
+      if (device == null) {
+        return;
+      }
+
+      callbackSuccessfulConnection(device);
+    });
+
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      var messageReceived = arguments["message"] as String;
+      var endpointId = arguments["endpointId"] as String;
+
+      var device = addMessageFromDevice(endpointId, messageReceived);
+      if (device == null) {
+        return;
+      }
+
+      callbackReceivedMessage(device);
+    });
+  }
+
+  void setCallbackConnectionInitiated(
+      Function(Device) callbackConnectionInitiated) {
+    this.callbackConnectionInitiated = callbackConnectionInitiated;
+  }
+
+  void setCallbackSuccessfulConnection(
+      Function(Device) callbackSuccessfulConnection) {
+    this.callbackSuccessfulConnection = callbackSuccessfulConnection;
+  }
+
+  void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
+    this.callbackReceivedMessage = callbackReceivedMessage;
+  }
 
   Device? _findDevice(Iterable iterable, String endpointId) {
     try {

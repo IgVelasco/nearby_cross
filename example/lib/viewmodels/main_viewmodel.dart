@@ -13,16 +13,14 @@ class MainViewModel with ChangeNotifier {
   MainViewModel() {
     discoverer = Discoverer();
     discoverer.setOnDeviceFoundCallback(_commonCallback);
-    discoverer.setCallbackConnectionInitiated(_commonCallback);
-    discoverer.setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
-    discoverer.setCallbackReceivedMessage(_callbackReceivedMessage);
 
     advertiser = Advertiser();
-    advertiser.setCallbackConnectionInitiated(_commonCallback);
-    advertiser.setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
-    advertiser.setCallbackReceivedMessage(_callbackReceivedMessage);
 
     connectionsManager = ConnectionsManager();
+    connectionsManager.setCallbackConnectionInitiated(_commonCallback);
+    connectionsManager
+        .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
+    connectionsManager.setCallbackReceivedMessage(_callbackReceivedMessage);
   }
 
   void _commonCallback(Device device) {
