@@ -3,6 +3,7 @@ import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
+/// Class to manage conections coming from NearbyCross plugin
 class ConnectionsManager {
   var logger = Logger();
   static ConnectionsManager? _singleton;
@@ -14,33 +15,59 @@ class ConnectionsManager {
   Function(Device) callbackSuccessfulConnection = (_) => {};
   Function(Device) callbackReceivedMessage = (_) => {};
 
+  /// ConnectionsManager implements the singleton pattern.
+  /// There will be only one instance of this class
   factory ConnectionsManager() {
     _singleton ??= ConnectionsManager._internal();
 
     return _singleton!;
   }
 
+  /// Handler for [NearbyCrossMethods.connectionInitiated] method call.
+  /// Adds a device as a "initiated connection", waiting for the conection to sucess.
+  void _handleConnectionInitiated(String endpointId, String endpointName) {
+    var device = addInitiatedConnection(endpointId, endpointName);
+    callbackConnectionInitiated(device);
+  }
+
+  /// Handler for [NearbyCrossMethods.successfulConnection] method call.
+  /// Moves device to connectedDevices set, marking it as a completed connection ready to use
+  void _handleSuccessfulConnection(String endpointId) {
+    var device = addConnectedDevice(endpointId);
+    if (device == null) {
+      return;
+    }
+
+    callbackSuccessfulConnection(device);
+  }
+
+  /// Handler for [NearbyCrossMethods.payloadReceived] method call.
+  /// Adds received message to the corresponding device.
+  void _handlePayloadReceived(String endpointId, String messageReceived) {
+    var device = addMessageFromDevice(endpointId, messageReceived);
+    if (device == null) {
+      return;
+    }
+
+    callbackReceivedMessage(device);
+  }
+
+  /// Internal constructor for class [ConnectionsManager].
+  /// Sets method call handlers for [NearbyCrossMethods.connectionInitiated], [NearbyCrossMethods.successfulConnection] and [NearbyCrossMethods.payloadReceived]
   ConnectionsManager._internal() {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
       var endpointId = arguments["endpointId"] as String;
       var endpointName = arguments["endpointName"] as String;
-
-      var device = addInitiatedConnection(endpointId, endpointName);
-      callbackConnectionInitiated(device);
+      return _handleConnectionInitiated(endpointId, endpointName);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.successfulConnection,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
       var endpointId = arguments["endpointId"] as String;
-      var device = addConnectedDevice(endpointId);
-      if (device == null) {
-        return;
-      }
-
-      callbackSuccessfulConnection(device);
+      return _handleSuccessfulConnection(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
@@ -49,29 +76,28 @@ class ConnectionsManager {
       var messageReceived = arguments["message"] as String;
       var endpointId = arguments["endpointId"] as String;
 
-      var device = addMessageFromDevice(endpointId, messageReceived);
-      if (device == null) {
-        return;
-      }
-
-      callbackReceivedMessage(device);
+      return _handlePayloadReceived(endpointId, messageReceived);
     });
   }
 
+  /// Sets callbackConnectionInitiated callback that executes every time a connection is initiated.
   void setCallbackConnectionInitiated(
       Function(Device) callbackConnectionInitiated) {
     this.callbackConnectionInitiated = callbackConnectionInitiated;
   }
 
+  /// Sets callbackSuccessfulConnection callback that executes every time a connection successfully finishes.
   void setCallbackSuccessfulConnection(
       Function(Device) callbackSuccessfulConnection) {
     this.callbackSuccessfulConnection = callbackSuccessfulConnection;
   }
 
+  /// Sets callbackReceivedMessage callback that executes every time a message is received.
   void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
     this.callbackReceivedMessage = callbackReceivedMessage;
   }
 
+  /// Private method to find a Device in a given iterable context.
   Device? _findDevice(Iterable iterable, String endpointId) {
     try {
       Device device =
@@ -82,12 +108,14 @@ class ConnectionsManager {
     }
   }
 
+  /// Adds a device in initiatedConnections set.
   Device addInitiatedConnection(String endpointId, String endpointName) {
     var device = Device(endpointId, endpointName);
     initiatedConnections.add(device);
     return device;
   }
 
+  /// Adds a device in connectedDevices set, removing it from initiatedConnections set after.
   Device? addConnectedDevice(String endpointId) {
     Device? device = _findDevice(initiatedConnections, endpointId);
     if (device == null) {
@@ -102,6 +130,7 @@ class ConnectionsManager {
     return device;
   }
 
+  /// Adds message received to the device where it comes from.
   Device? addMessageFromDevice(String endpointId, String message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
@@ -113,6 +142,7 @@ class ConnectionsManager {
     return device;
   }
 
+  /// Sends message to a given device given its endpointId
   void sendMessageToDevice(String endpointId, String message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
@@ -123,6 +153,7 @@ class ConnectionsManager {
     device.sendMessage(message);
   }
 
+  /// Broadcasts a message to every connected device
   void broadcastMessage(String message) {
     for (var device in connectedDevices) {
       device.sendMessage(message);

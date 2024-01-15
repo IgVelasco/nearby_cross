@@ -1,14 +1,17 @@
 import 'package:nearby_cross/models/connector_model.dart';
 
+/// Class that represent the Advertiser instance of NearbyCross plugin.
 class Advertiser extends Connector {
   static Advertiser? _singleton;
 
+  /// Implements singleton pattern
   factory Advertiser() {
     _singleton ??= Advertiser._internal();
 
     return _singleton!;
   }
 
+  /// Service to start advertising using NearbyCross plugin
   Future<void> advertise(String? username) async {
     await nearbyCross.advertise(serviceId, username);
   }

@@ -1,25 +1,34 @@
 import 'package:nearby_cross/nearby_cross.dart';
 
+/// Class that represent every connected device with NearbyCross plugin
 class Device {
   String endpointId;
   String endpointName;
+  bool isEndpointOnly;
   List<String> messages = [];
   final NearbyCross _nearbyCross = NearbyCross();
 
-  Device(this.endpointId, this.endpointName);
+  Device(this.endpointId, this.endpointName) : isEndpointOnly = false;
+  Device.asEndpoint(this.endpointId, this.endpointName) : isEndpointOnly = true;
 
+  /// Adds message to messages list
   void addMessage(String message) {
-    messages.add(message);
+    if (!isEndpointOnly) {
+      messages.add(message);
+    }
   }
 
+  /// Sends message to the device identified with endpointId
   void sendMessage(String message) {
     _nearbyCross.sendData(message, endpointId);
   }
 
+  /// Retrieves messages list
   List<String> getMessages() {
     return messages;
   }
 
+  /// Retrieves last message received
   String? getLastMessage() {
     try {
       return messages.last;
