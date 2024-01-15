@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 
 import '../models/app_model.dart';
 
 class AdvertisingListItem extends StatelessWidget {
   final Item item;
-  const AdvertisingListItem(this.item, {super.key});
+  final DiscovererViewModel provider;
+  const AdvertisingListItem(this.item, this.provider, {super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -89,8 +91,7 @@ class AdvertisingListItem extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    Provider.of<AppModel>(context, listen: false)
-                        .connectToAdvertiser(item);
+                    provider.connect(item["endpointId"]!);
                     Navigator.pop(context);
                   },
                   icon: const Icon(

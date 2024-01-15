@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:nearby_cross/nearby_cross.dart';
+import 'package:nearby_cross/types/item_type.dart';
 
 /// Class that represent every connected device with NearbyCross plugin
 class Device {
@@ -35,6 +38,11 @@ class Device {
     } catch (_) {
       return null;
     }
+  }
+
+  Item toItem() {
+    return HashMap.from(
+        {"endpointId": endpointId, "endpointName": endpointName});
   }
 
   @override

@@ -35,6 +35,10 @@ class Discoverer extends Connector {
     await nearbyCross.startDiscovery(serviceId, username);
   }
 
+  int getNumberOfDiscoveredDevices() {
+    return listOfDiscoveredDevices.length;
+  }
+
   Discoverer._internal() : super() {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.onEndpointFound,
         (call) async {
