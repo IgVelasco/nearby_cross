@@ -9,15 +9,14 @@ class DiscovererViewModel with ChangeNotifier {
   late Discoverer discoverer;
 
   late ConnectionsManager connectionsManager;
-  String username = "default username";
-  bool isDiscovering = false;
-  bool isConnected = false;
-  Device? connectedDevice;
+  String? _username;
+  bool _isConnected = false;
+  Device? _connectedDevice;
 
   DiscovererViewModel() {
-    print("Creating view Model");
     discoverer = Discoverer();
     discoverer.setOnDeviceFoundCallback(_commonCallback);
+    _username = discoverer.username;
 
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackConnectionInitiated(_commonCallback);
@@ -30,9 +29,21 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   void _callbackSuccessfulConnection(Device device) {
-    connectedDevice = device;
-    isConnected = true;
+    _connectedDevice = device;
+    _isConnected = true;
     _commonCallback(device);
+  }
+
+  bool isConnected() {
+    return _isConnected;
+  }
+
+  bool isDiscovering() {
+    return discoverer.isDiscovering;
+  }
+
+  String getUsername() {
+    return _username ?? discoverer.username ?? "";
   }
 
   String? getPlatformVersion() {
@@ -48,8 +59,7 @@ class DiscovererViewModel with ChangeNotifier {
 
   Future<void> startDiscovering() async {
     await discoverer.requestPermissions();
-    await discoverer.startDiscovery(username);
-    isDiscovering = true;
+    await discoverer.startDiscovery(_username);
   }
 
   Future<void> disconnect() async {
@@ -57,8 +67,7 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   Future<void> stopDiscovery() async {
-    await discoverer.disconnect();
-    isDiscovering = false;
+    await discoverer.stopDiscovery();
     notifyListeners();
   }
 
@@ -67,27 +76,27 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   Future<void> sendData(String message) async {
-    if (connectedDevice != null) {
+    if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
-          connectedDevice!.endpointId, message);
+          _connectedDevice!.endpointId, message);
     }
   }
 
   void setUsername(String username) {
-    this.username = username;
+    _username = username;
     notifyListeners();
   }
 
   String? getConnectedDeviceName() {
-    if (connectedDevice != null) {
-      return connectedDevice!.endpointName;
+    if (_connectedDevice != null) {
+      return _connectedDevice!.endpointName;
     }
 
     return null;
   }
 
   HashMap<String, String> getItem() {
-    final connectedDevice = this.connectedDevice;
+    final connectedDevice = _connectedDevice;
     if (connectedDevice != null) {
       var hm = HashMap<String, String>.from(
           {connectedDevice.endpointId: connectedDevice.endpointName});
@@ -103,5 +112,9 @@ class DiscovererViewModel with ChangeNotifier {
 
   int getDiscoveredDevicesAmount() {
     return discoverer.getNumberOfDiscoveredDevices();
+  }
+
+  Device? getConnectedDevice() {
+    return _connectedDevice;
   }
 }

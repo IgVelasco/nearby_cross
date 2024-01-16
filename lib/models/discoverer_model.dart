@@ -7,6 +7,8 @@ class Discoverer extends Connector {
   static Discoverer? _singleton;
   Set<Device> listOfDiscoveredDevices = {};
   Function(Device) callbackOnDeviceFound = (_) => {};
+  bool isDiscovering = false;
+  String? username;
 
   /// Implements singleton pattern
   factory Discoverer() {
@@ -33,6 +35,13 @@ class Discoverer extends Connector {
   Future<void> startDiscovery(String? username) async {
     listOfDiscoveredDevices.clear();
     await nearbyCross.startDiscovery(serviceId, username);
+    isDiscovering = true;
+    this.username = username;
+  }
+
+  Future<void> stopDiscovery() async {
+    await nearbyCross.disconnect(serviceId);
+    isDiscovering = false;
   }
 
   int getNumberOfDiscoveredDevices() {

@@ -43,9 +43,8 @@ class MainScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Consumer<DiscovererViewModel>(
-                                  builder: (context, app, child) {
-                                return Text(
-                                  app.username,
+                                builder: (context, app, child) => Text(
+                                  app.getUsername(),
                                   textAlign: TextAlign.start,
                                   maxLines: 1,
                                   overflow: TextOverflow.clip,
@@ -55,8 +54,8 @@ class MainScreen extends StatelessWidget {
                                     fontSize: 18,
                                     color: Color(0xff000000),
                                   ),
-                                );
-                              }),
+                                ),
+                              ),
                               const Padding(
                                   padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                   child: Text(
@@ -111,7 +110,7 @@ class MainScreen extends StatelessWidget {
                             textColor: const Color(0xff3a57e8),
                             minWidth: MediaQuery.of(context).size.width,
                             child: const Text(
-                              "Change Username",
+                              "Set Username",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -121,7 +120,7 @@ class MainScreen extends StatelessWidget {
                             onPressed: () => showDialog(
                               context: context,
                               builder: (context) =>
-                                  InputDialog(app.username, (input) {
+                                  InputDialog(app.getUsername(), (input) {
                                 app.setUsername(input);
                               }),
                             ),
@@ -143,12 +142,12 @@ class MainScreen extends StatelessWidget {
                     ),
                     Consumer<DiscovererViewModel>(
                       builder: (context, app, child) => SwitchListTile(
-                        value: app.isDiscovering,
+                        value: app.isDiscovering(),
                         title: const Text(
                           "Discovery",
                         ),
-                        onChanged: (value) => {
-                          value == false
+                        onChanged: (newValue) => {
+                          !newValue
                               ? app.stopDiscovery()
                               : app.startDiscovering()
                         },
@@ -162,7 +161,7 @@ class MainScreen extends StatelessWidget {
                       endIndent: 0,
                     ),
                     Consumer<DiscovererViewModel>(
-                        builder: (context, app, child) => app.isDiscovering
+                        builder: (context, app, child) => app.isDiscovering()
                             ? Wrap(children: [
                                 ListTile(
                                   onTap: () {
@@ -187,7 +186,7 @@ class MainScreen extends StatelessWidget {
                               ])
                             : Container()),
                     Consumer<DiscovererViewModel>(
-                        builder: (context, app, child) => app.isConnected
+                        builder: (context, app, child) => app.isConnected()
                             ? ListTile(
                                 tileColor: const Color(0x1fffffff),
                                 title: Text(
@@ -197,7 +196,7 @@ class MainScreen extends StatelessWidget {
                                   Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
                                         AdvertiserComunicationScreen(
-                                      app.connectedDevice!.toItem(),
+                                      app.getConnectedDevice()!.toItem(),
                                     ),
                                   ));
                                 },
@@ -213,7 +212,7 @@ class MainScreen extends StatelessWidget {
                   ],
                 ),
                 Consumer<DiscovererViewModel>(
-                    builder: (context, app, child) => app.isConnected
+                    builder: (context, app, child) => app.isConnected()
                         ? MaterialButton(
                             onPressed: () {
                               Provider.of<DiscovererViewModel>(context,
