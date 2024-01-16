@@ -9,7 +9,8 @@ class AdvertiserComunicationViewModel extends ChangeNotifier {
     var connectionsManager = ConnectionsManager();
     connectedDevice = connectionsManager.getConnectedDevice(endpointId);
 
-    connectionsManager.setCallbackReceivedMessage(_callbackReceivedMessage);
+    connectionsManager.setCallbackReceivedMessage(
+        endpointId, _callbackReceivedMessage);
   }
 
   void _commonCallback(Device device) {

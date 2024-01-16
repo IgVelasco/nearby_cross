@@ -10,14 +10,21 @@ class Device {
   bool isEndpointOnly;
   List<String> messages = [];
   final NearbyCross _nearbyCross = NearbyCross();
+  Function(Device) callbackReceivedMessage = (_) => {};
 
   Device(this.endpointId, this.endpointName) : isEndpointOnly = false;
   Device.asEndpoint(this.endpointId, this.endpointName) : isEndpointOnly = true;
+
+  /// Sets callbackReceivedMessage callback that executes every time a message is received.
+  void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
+    this.callbackReceivedMessage = callbackReceivedMessage;
+  }
 
   /// Adds message to messages list
   void addMessage(String message) {
     if (!isEndpointOnly) {
       messages.add(message);
+      callbackReceivedMessage(this);
     }
   }
 

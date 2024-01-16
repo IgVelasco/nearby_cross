@@ -2,7 +2,6 @@ import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
-import 'package:nearby_cross/types/item_type.dart';
 
 /// Class to manage conections coming from NearbyCross plugin
 class ConnectionsManager {
@@ -94,8 +93,16 @@ class ConnectionsManager {
   }
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
-  void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
-    this.callbackReceivedMessage = callbackReceivedMessage;
+  void setCallbackReceivedMessage(
+      String endpointId, Function(Device) callbackReceivedMessage) {
+    Device? device = _findDevice(connectedDevices, endpointId);
+    if (device == null) {
+      logger.e(
+          "Could not set callback for received message because device $endpointId is neither connected nor active");
+      return;
+    }
+
+    device.setCallbackReceivedMessage(callbackReceivedMessage);
   }
 
   /// Private method to find a Device in a given iterable context.

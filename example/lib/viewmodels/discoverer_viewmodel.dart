@@ -9,7 +9,6 @@ class DiscovererViewModel with ChangeNotifier {
   late Discoverer discoverer;
 
   late ConnectionsManager connectionsManager;
-  Device? lastMessageDevice;
   String username = "default username";
   bool isDiscovering = false;
   bool isConnected = false;
@@ -24,7 +23,6 @@ class DiscovererViewModel with ChangeNotifier {
     connectionsManager.setCallbackConnectionInitiated(_commonCallback);
     connectionsManager
         .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
-    connectionsManager.setCallbackReceivedMessage(_callbackReceivedMessage);
   }
 
   void _commonCallback(Device device) {
@@ -34,11 +32,6 @@ class DiscovererViewModel with ChangeNotifier {
   void _callbackSuccessfulConnection(Device device) {
     connectedDevice = device;
     isConnected = true;
-    _commonCallback(device);
-  }
-
-  void _callbackReceivedMessage(Device device) {
-    lastMessageDevice = device;
     _commonCallback(device);
   }
 
@@ -78,14 +71,6 @@ class DiscovererViewModel with ChangeNotifier {
       connectionsManager.sendMessageToDevice(
           connectedDevice!.endpointId, message);
     }
-  }
-
-  String? getLastMessageReceived() {
-    if (lastMessageDevice == null) {
-      return null;
-    }
-
-    return lastMessageDevice!.getLastMessage();
   }
 
   void setUsername(String username) {

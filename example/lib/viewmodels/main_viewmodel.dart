@@ -18,17 +18,20 @@ class MainViewModel with ChangeNotifier {
 
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackConnectionInitiated(_commonCallback);
-    connectionsManager.setCallbackSuccessfulConnection(_commonCallback);
-    connectionsManager.setCallbackReceivedMessage(_callbackReceivedMessage);
+    connectionsManager
+        .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
   }
 
   void _commonCallback(Device device) {
     notifyListeners();
   }
 
-  void _callbackReceivedMessage(Device device) {
-    lastMessageDevice = device;
-    _commonCallback(device);
+  void _callbackSuccessfulConnection(Device device) {
+    connectionsManager.setCallbackReceivedMessage(device.endpointId,
+        (Device device) {
+      lastMessageDevice = device;
+      _commonCallback(device);
+    });
   }
 
   void findPlatformVersion() {
