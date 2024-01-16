@@ -197,7 +197,8 @@ class MainScreen extends StatelessWidget {
                                   Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
                                         AdvertiserComunicationScreen(
-                                            advertiser: app.getItem()),
+                                      app.connectedDevice!.toItem(),
+                                    ),
                                   ));
                                 },
                                 trailing: const Icon(Icons.arrow_forward_ios,

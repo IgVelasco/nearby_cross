@@ -1,58 +1,50 @@
 import 'package:flutter/material.dart';
-
+import 'package:nearby_cross/types/item_type.dart';
+import 'package:nearby_cross_example/viewmodels/advertiser_comunication_viewmodel.dart';
 import 'package:provider/provider.dart';
+
 import '../widgets/nc_app_bar.dart';
 import '../widgets/nc_drawer.dart';
-import '../models/app_model.dart';
 
 class AdvertiserComunicationScreen extends StatelessWidget {
-  final Item advertiser;
-  AdvertiserComunicationScreen({super.key, required this.advertiser});
+  final Item connectedDevice;
+  AdvertiserComunicationScreen(this.connectedDevice, {super.key});
 
   final TextEditingController _textFieldController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) => AdvertiserComunicationViewModel(
+                connectedDevice["endpointId"]!)),
+      ],
+      child: Scaffold(
         appBar: const NCAppBar(),
         drawer: const NCDrawer(),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Consumer<AppModel>(
-                builder: (context, app, child) => Text(
-                    'Running on: ${app.platformVersion} \n username: ${app.username}')),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Type something...',
-              ),
-              controller: _textFieldController, // Add this line
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String inputData = _textFieldController.text;
-                Provider.of<AppModel>(context, listen: false)
-                    .sendData(inputData);
-              },
-              child: const Text('Send'),
-            ),
-          ],
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: Consumer<AdvertiserComunicationViewModel>(
+          builder: (context, viewmodel, child) => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text('Username: ${viewmodel.getConnectedDeviceName()}'),
+              Text('Last message received: ${viewmodel.getLastMessage()}'),
+              TextField(
+                decoration: const InputDecoration(
+                  hintText: 'Type something...',
+                ),
+                controller: _textFieldController, // Add this line
+              ),
               ElevatedButton(
-                onPressed: () =>
-                    Provider.of<AppModel>(context, listen: false).disconnect(),
-                child: const Text('Disconnect'),
-              )
+                onPressed: () {
+                  String inputData = _textFieldController.text;
+                  viewmodel.sendData(inputData);
+                },
+                child: const Text('Send'),
+              ),
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }

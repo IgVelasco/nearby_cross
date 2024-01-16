@@ -2,6 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
+import 'package:nearby_cross/types/item_type.dart';
 
 /// Class to manage conections coming from NearbyCross plugin
 class ConnectionsManager {
@@ -158,5 +159,16 @@ class ConnectionsManager {
     for (var device in connectedDevices) {
       device.sendMessage(message);
     }
+  }
+
+  /// Return Device with endpointId
+  Device? getConnectedDevice(String endpointId) {
+    Device? device = _findDevice(connectedDevices, endpointId);
+    if (device == null) {
+      logger.e("Could not find device $endpointId");
+      return null;
+    }
+
+    return device;
   }
 }

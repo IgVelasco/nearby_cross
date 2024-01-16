@@ -42,6 +42,10 @@ class DiscovererViewModel with ChangeNotifier {
     _commonCallback(device);
   }
 
+  String? getPlatformVersion() {
+    return discoverer.platformVersion;
+  }
+
   void findPlatformVersion() {
     // Can also be the discoverer
     discoverer.getPlatformVersion().then((_) {
@@ -55,6 +59,10 @@ class DiscovererViewModel with ChangeNotifier {
     isDiscovering = true;
   }
 
+  Future<void> disconnect() async {
+    return discoverer.disconnect();
+  }
+
   Future<void> stopDiscovery() async {
     await discoverer.disconnect();
     isDiscovering = false;
@@ -66,7 +74,10 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   Future<void> sendData(String message) async {
-    connectionsManager.broadcastMessage(message);
+    if (connectedDevice != null) {
+      connectionsManager.sendMessageToDevice(
+          connectedDevice!.endpointId, message);
+    }
   }
 
   String? getLastMessageReceived() {
