@@ -57,9 +57,14 @@ class DiscovererViewModel with ChangeNotifier {
     });
   }
 
+  bool canStartDiscovererFlow() {
+    return _username != null;
+  }
+
   Future<void> startDiscovering() async {
     await discoverer.requestPermissions();
     await discoverer.startDiscovery(_username);
+    notifyListeners();
   }
 
   Future<void> disconnect() async {

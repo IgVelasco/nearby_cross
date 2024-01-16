@@ -126,90 +126,104 @@ class MainScreen extends StatelessWidget {
                             ),
                           )),
                 ),
-                ListView(
-                  scrollDirection: Axis.vertical,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 16),
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  children: [
-                    const Divider(
-                      color: Color(0x4d9e9e9e),
-                      height: 16,
-                      thickness: 1,
-                      indent: 0,
-                      endIndent: 0,
-                    ),
-                    Consumer<DiscovererViewModel>(
-                      builder: (context, app, child) => SwitchListTile(
-                        value: app.isDiscovering(),
-                        title: const Text(
-                          "Discovery",
-                        ),
-                        onChanged: (newValue) => {
-                          !newValue
-                              ? app.stopDiscovery()
-                              : app.startDiscovering()
-                        },
-                      ),
-                    ),
-                    const Divider(
-                      color: Color(0x4d9e9e9e),
-                      height: 16,
-                      thickness: 1,
-                      indent: 0,
-                      endIndent: 0,
-                    ),
-                    Consumer<DiscovererViewModel>(
-                        builder: (context, app, child) => app.isDiscovering()
-                            ? Wrap(children: [
-                                ListTile(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => AdvertiserList(app),
-                                    ));
-                                  },
-                                  trailing: const Icon(Icons.arrow_forward_ios,
-                                      color: Color(0xff212435), size: 24),
-                                  title: const Text(
-                                    "Search Devices",
-                                  ),
+                Consumer<DiscovererViewModel>(
+                  builder: (context, viewModel, child) => ListView(
+                    scrollDirection: Axis.vertical,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 30, horizontal: 16),
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    children: !viewModel.canStartDiscovererFlow()
+                        ? []
+                        : [
+                            const Divider(
+                              color: Color(0x4d9e9e9e),
+                              height: 16,
+                              thickness: 1,
+                              indent: 0,
+                              endIndent: 0,
+                            ),
+                            Consumer<DiscovererViewModel>(
+                              builder: (context, app, child) => SwitchListTile(
+                                value: app.isDiscovering(),
+                                title: const Text(
+                                  "Discovery",
                                 ),
-                                const Divider(
-                                  color: Color(0x4d9e9e9e),
-                                  height: 16,
-                                  thickness: 1,
-                                  indent: 0,
-                                  endIndent: 0,
-                                ),
-                              ])
-                            : Container()),
-                    Consumer<DiscovererViewModel>(
-                        builder: (context, app, child) => app.isConnected()
-                            ? ListTile(
-                                tileColor: const Color(0x1fffffff),
-                                title: Text(
-                                  "Connected: Username ${app.getConnectedDeviceName()}",
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        AdvertiserComunicationScreen(
-                                      app.getConnectedDevice()!.toItem(),
-                                    ),
-                                  ));
+                                onChanged: (newValue) => {
+                                  !newValue
+                                      ? app.stopDiscovery()
+                                      : app.startDiscovering()
                                 },
-                                trailing: const Icon(Icons.arrow_forward_ios,
-                                    color: Color(0xff212435), size: 24),
-                              )
-                            : const ListTile(
-                                tileColor: Color(0x1fffffff),
-                                title: Text(
-                                  "No Connected Device",
-                                ),
-                              ))
-                  ],
+                              ),
+                            ),
+                            const Divider(
+                              color: Color(0x4d9e9e9e),
+                              height: 16,
+                              thickness: 1,
+                              indent: 0,
+                              endIndent: 0,
+                            ),
+                            Consumer<DiscovererViewModel>(
+                                builder: (context, app, child) =>
+                                    app.isDiscovering()
+                                        ? Wrap(children: [
+                                            ListTile(
+                                              onTap: () {
+                                                Navigator.of(context)
+                                                    .push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AdvertiserList(app),
+                                                ));
+                                              },
+                                              trailing: const Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Color(0xff212435),
+                                                  size: 24),
+                                              title: const Text(
+                                                "Search Devices",
+                                              ),
+                                            ),
+                                            const Divider(
+                                              color: Color(0x4d9e9e9e),
+                                              height: 16,
+                                              thickness: 1,
+                                              indent: 0,
+                                              endIndent: 0,
+                                            ),
+                                          ])
+                                        : Container()),
+                            Consumer<DiscovererViewModel>(
+                                builder: (context, app, child) =>
+                                    app.isConnected()
+                                        ? ListTile(
+                                            tileColor: const Color(0x1fffffff),
+                                            title: Text(
+                                              "Connected: Username ${app.getConnectedDeviceName()}",
+                                            ),
+                                            onTap: () {
+                                              Navigator.of(context)
+                                                  .push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AdvertiserComunicationScreen(
+                                                  app
+                                                      .getConnectedDevice()!
+                                                      .toItem(),
+                                                ),
+                                              ));
+                                            },
+                                            trailing: const Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Color(0xff212435),
+                                                size: 24),
+                                          )
+                                        : const ListTile(
+                                            tileColor: Color(0x1fffffff),
+                                            title: Text(
+                                              "No Connected Device",
+                                            ),
+                                          ))
+                          ],
+                  ),
                 ),
                 Consumer<DiscovererViewModel>(
                     builder: (context, app, child) => app.isConnected()
