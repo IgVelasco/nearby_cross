@@ -65,27 +65,19 @@ class AdvertiserActions extends StatelessWidget {
                     ])
                   : Container()),
           Consumer<AppModel>(
-              builder: (context, app, child) => app.connected
-                  ? ListTile(
-                      tileColor: const Color(0x1fffffff),
-                      title: Text(
-                        "Connected: Username ${app.connectedAdvertiser["endpointName"]}",
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => AdvertiserComunicationScreen(
-                              advertiser: app.connectedAdvertiser),
-                        ));
-                      },
-                      trailing: const Icon(Icons.arrow_forward_ios,
-                          color: Color(0xff212435), size: 24),
-                    )
-                  : const ListTile(
-                      tileColor: Color(0x1fffffff),
-                      title: Text(
-                        "No Connected Devices",
-                      ),
-                    ))
+              builder: (context, app, child) => ListTile(
+                    tileColor: const Color(0x1fffffff),
+                    title: const Text(
+                      "Interact",
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => AdvertiserComunicationScreen(),
+                      ));
+                    },
+                    trailing: const Icon(Icons.arrow_forward_ios,
+                        color: Color(0xff212435), size: 24),
+                  ))
         ],
       ),
       Consumer<AppModel>(

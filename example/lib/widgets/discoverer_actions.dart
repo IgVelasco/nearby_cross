@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/app_model.dart';
-import '../screens/advertiser_comunication_screen.dart';
 import '../screens/advertising_list.dart';
+import '../screens/discoverer_comunication_screen.dart';
 
 class DiscovererActions extends StatelessWidget {
   const DiscovererActions({super.key});
@@ -74,7 +74,7 @@ class DiscovererActions extends StatelessWidget {
                       ),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => AdvertiserComunicationScreen(
+                          builder: (context) => DiscovererComunicationScreen(
                               advertiser: app.connectedAdvertiser),
                         ));
                       },

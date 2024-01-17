@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross_example/screens/main_screen.dart';
 import 'package:provider/provider.dart';
 import 'models/app_model.dart';
-import 'widgets/nc_drawer.dart';
 
-import 'widgets/nc_app_bar.dart';
 
 void main() {
   runApp(

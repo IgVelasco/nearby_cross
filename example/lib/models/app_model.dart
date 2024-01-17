@@ -30,7 +30,7 @@ class AppModel extends ChangeNotifier {
         } else if (call.method == 'payloadReceived') {
           var arguments = call.arguments as Map<Object?, Object?>;
           logger.i("Received Payload $arguments");
-          messageReceived = arguments["message"] as String;
+          _messageReceived = arguments["message"] as String;
           notifyListeners();
         }
       });
@@ -43,7 +43,7 @@ class AppModel extends ChangeNotifier {
   }
 
   String _platformVersion = "";
-  String messageReceived = "";
+  String _messageReceived = "";
   bool _isDiscovering = false;
   bool _isAdvertising = false;
   bool _isAdvertiser = false;
@@ -66,6 +66,7 @@ class AppModel extends ChangeNotifier {
   bool get connected => _connected;
   Item get connectedAdvertiser => _connectedAdvertiser;
   String get username => _username;
+  String get messageReceived => _messageReceived;
   String get advertiserMode => _isAdvertiser ? "Advertiser" : "Discoverer";
   String get platformVersion => _platformVersion;
 

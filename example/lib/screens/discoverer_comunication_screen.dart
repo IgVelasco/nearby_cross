@@ -4,8 +4,9 @@ import 'package:provider/provider.dart';
 import '../widgets/nc_app_bar.dart';
 import '../models/app_model.dart';
 
-class AdvertiserComunicationScreen extends StatelessWidget {
-  AdvertiserComunicationScreen({super.key});
+class DiscovererComunicationScreen extends StatelessWidget {
+  final Item advertiser;
+  DiscovererComunicationScreen({super.key, required this.advertiser});
 
   final TextEditingController _textFieldController = TextEditingController();
 
