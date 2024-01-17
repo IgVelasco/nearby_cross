@@ -61,6 +61,7 @@ class AppModel extends ChangeNotifier {
   ];
 
   bool get isDiscovering => _isDiscovering;
+  bool get isAdvertising => _isAdvertising;
   bool get isAdvertiser => _isAdvertiser;
   bool get connected => _connected;
   Item get connectedAdvertiser => _connectedAdvertiser;
@@ -120,14 +121,16 @@ class AppModel extends ChangeNotifier {
     if (_isAdvertising) {
       _isAdvertising = false;
     } else {
-      _isAdvertising = true;
       try {
         await NearbyCross.requestPermissions();
         await _nearbyCrossPlugin.advertise(serviceId, username);
+        _isAdvertising = true;
       } catch (e) {
         logger.e('Error starting advertising: $e');
+        _isAdvertising = false;
       }
     }
+    notifyListeners();
   }
 
   void startDiscovery() async {

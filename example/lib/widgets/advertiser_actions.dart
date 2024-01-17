@@ -26,7 +26,7 @@ class AdvertiserActions extends StatelessWidget {
           ),
           Consumer<AppModel>(
             builder: (context, app, child) => SwitchListTile(
-              value: app.isDiscovering,
+              value: app.isAdvertising,
               title: const Text(
                 "Advertise",
               ),
@@ -41,7 +41,7 @@ class AdvertiserActions extends StatelessWidget {
             endIndent: 0,
           ),
           Consumer<AppModel>(
-              builder: (context, app, child) => app.isDiscovering
+              builder: (context, app, child) => app.isAdvertising
                   ? Wrap(children: [
                       ListTile(
                         onTap: () {
@@ -52,7 +52,7 @@ class AdvertiserActions extends StatelessWidget {
                         trailing: const Icon(Icons.arrow_forward_ios,
                             color: Color(0xff212435), size: 24),
                         title: const Text(
-                          "Search Devices",
+                          "Pending Devices",
                         ),
                       ),
                       const Divider(
@@ -83,7 +83,7 @@ class AdvertiserActions extends StatelessWidget {
                   : const ListTile(
                       tileColor: Color(0x1fffffff),
                       title: Text(
-                        "No Connected Device",
+                        "No Connected Devices",
                       ),
                     ))
         ],
@@ -104,7 +104,7 @@ class AdvertiserActions extends StatelessWidget {
                   height: 40,
                   minWidth: MediaQuery.of(context).size.width,
                   child: const Text(
-                    "Disconnect",
+                    "Disconnect All",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,

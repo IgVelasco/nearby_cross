@@ -131,8 +131,8 @@ class MainScreen extends StatelessWidget {
             // ignore: prefer_const_constructors
             Consumer<AppModel>(
                 builder: (context, value, child) => value.isAdvertiser
-                    ? AdvertiserActions()
-                    : DiscovererActions())
+                    ? const AdvertiserActions()
+                    : const DiscovererActions())
           ],
         ),
       ),
