@@ -3,10 +3,10 @@ import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 
 import '../models/app_model.dart';
 
-class AdvertisingListItem extends StatelessWidget {
+class DiscoveredListItem extends StatelessWidget {
   final Item item;
   final DiscovererViewModel provider;
-  const AdvertisingListItem(this.item, this.provider, {super.key});
+  const DiscoveredListItem(this.item, this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {

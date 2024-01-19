@@ -8,7 +8,6 @@ class Discoverer extends Connector {
   Set<Device> listOfDiscoveredDevices = {};
   Function(Device) callbackOnDeviceFound = (_) => {};
   bool isDiscovering = false;
-  String? username;
 
   /// Implements singleton pattern
   factory Discoverer() {

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross_example/viewmodels/advertiser_comunication_viewmodel.dart';
+import 'package:nearby_cross_example/viewmodels/discoverer_comunication_viewmodel.dart';
 
 import 'package:provider/provider.dart';
 import '../widgets/nc_app_bar.dart';
+import '../models/app_model.dart';
 
-class AdvertiserComunicationScreen extends StatelessWidget {
-  AdvertiserComunicationScreen({super.key});
+class DiscovererComunicationScreen extends StatelessWidget {
+  final Item connectedDevice;
+  DiscovererComunicationScreen({super.key, required this.connectedDevice});
 
   final TextEditingController _textFieldController = TextEditingController();
 
@@ -14,18 +16,19 @@ class AdvertiserComunicationScreen extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(
-              create: (context) => AdvertiserComunicationViewModel())
+              create: (context) => DiscovererComunicationViewModel(
+                  connectedDevice["endpointId"]!))
         ],
-        child: Consumer<AdvertiserComunicationViewModel>(
-            builder: (context, viewModel, child) => Scaffold(
-                  appBar: const NCAppBar(),
-                  body: Column(
+        child: Scaffold(
+          appBar: const NCAppBar(),
+          body: Consumer<DiscovererComunicationViewModel>(
+              builder: (context, viewModel, child) => Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Column(
                         children: [
                           Text(
-                              'Last message username: ${viewModel.getLastMessageDeviceName()}'),
+                              'Username: ${viewModel.getConnectedDeviceName()}'),
                           Text(
                               'Message Received: ${viewModel.getLastMessage()}')
                         ],
@@ -39,12 +42,12 @@ class AdvertiserComunicationScreen extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           String inputData = _textFieldController.text;
-                          viewModel.sendDataToDevices(inputData);
+                          viewModel.sendData(inputData);
                         },
                         child: const Text('Send'),
                       ),
                     ],
-                  ),
-                )));
+                  )),
+        ));
   }
 }

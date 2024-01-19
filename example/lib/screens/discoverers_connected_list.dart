@@ -4,11 +4,11 @@ import 'package:nearby_cross_example/models/app_model.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/discovered_list_item.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
+import 'package:provider/provider.dart';
 
-class DiscoveredDevicesList extends StatelessWidget {
+class DiscoverersConnectedList extends StatelessWidget {
   static final logger = Logger();
-  final DiscovererViewModel provider;
-  const DiscoveredDevicesList(this.provider, {super.key});
+  const DiscoverersConnectedList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +37,18 @@ class DiscoveredDevicesList extends StatelessWidget {
                   ),
                 ),
               ),
-              ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  padding: const EdgeInsets.all(0),
-                  itemCount: provider.getDiscoveredDevicesAmount(),
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    Item item = provider.getDiscoveredDevices()[index].toItem();
-                    logger.i("Item in list build $item");
-                    return DiscoveredListItem(item, provider);
-                  }),
+              Consumer<DiscovererViewModel>(
+                  builder: (context, app, child) => ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      padding: const EdgeInsets.all(0),
+                      itemCount: app.getDiscoveredDevicesAmount(),
+                      shrinkWrap: true,
+                      physics: const ScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        Item item = app.getDiscoveredDevices()[index].toItem();
+                        logger.i("Item in list build $item");
+                        return DiscoveredListItem(item, app);
+                      })),
             ],
           ),
         ),
