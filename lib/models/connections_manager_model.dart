@@ -178,4 +178,9 @@ class ConnectionsManager {
 
     return device;
   }
+
+  /// Return a list with all connected Devices
+  List<Device> getAllConnectedDevices() {
+    return connectedDevices.toList();
+  }
 }

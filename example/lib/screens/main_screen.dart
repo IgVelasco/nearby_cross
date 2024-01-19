@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross_example/screens/advertiser_comunication_screen.dart';
-import 'package:nearby_cross_example/screens/advertising_list.dart';
-import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
+import 'package:nearby_cross_example/viewmodels/main_viewmodel.dart';
+import 'package:nearby_cross_example/widgets/discoverer_actions.dart';
 import 'package:nearby_cross_example/widgets/input_dialog.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
 import 'package:provider/provider.dart';
+
+import '../widgets/advertiser_actions.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -13,7 +14,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => DiscovererViewModel()),
+          ChangeNotifierProvider(create: (context) => MainViewModel())
         ],
         child: Scaffold(
           backgroundColor: const Color(0xffffffff),
@@ -42,9 +43,10 @@ class MainScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              Consumer<DiscovererViewModel>(
-                                builder: (context, app, child) => Text(
-                                  app.getUsername(),
+                              Consumer<MainViewModel>(
+                                  builder: (context, viewmodel, child) {
+                                return Text(
+                                  viewmodel.username,
                                   textAlign: TextAlign.start,
                                   maxLines: 1,
                                   overflow: TextOverflow.clip,
@@ -54,8 +56,8 @@ class MainScreen extends StatelessWidget {
                                     fontSize: 18,
                                     color: Color(0xff000000),
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                               const Padding(
                                   padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                   child: Text(
@@ -74,33 +76,45 @@ class MainScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      MaterialButton(
-                        onPressed: () {},
-                        color: const Color(0xff3a57e8),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 0, horizontal: 16),
-                        textColor: const Color(0xffffffff),
-                        child: const Text(
-                          "Discoverer",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                      ),
+                      Expanded(
+                          child: Consumer<MainViewModel>(
+                        builder: (context, viewModel, child) =>
+                            Column(children: [
+                          SwitchListTile(
+                              value: viewModel.advertiserMode,
+                              activeColor: Colors.blue,
+                              inactiveTrackColor: Colors.red,
+                              onChanged: (value) =>
+                                  viewModel.toggleAdvertiserMode()),
+                          MaterialButton(
+                            onPressed: () {},
+                            color: const Color.fromARGB(255, 92, 95, 112),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 16),
+                            textColor: const Color(0xffffffff),
+                            child: Text(
+                              viewModel.mode,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.normal,
+                              ),
+                            ),
+                          )
+                        ]),
+                      ))
                     ],
                   ),
                 ),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-                  child: Consumer<DiscovererViewModel>(
-                      builder: (context, app, child) => MaterialButton(
+                  child: Consumer<MainViewModel>(
+                      builder: (context, viewModel, child) => MaterialButton(
                             color: const Color(0x343a57e8),
                             elevation: 0,
                             shape: RoundedRectangleBorder(
@@ -110,7 +124,7 @@ class MainScreen extends StatelessWidget {
                             textColor: const Color(0xff3a57e8),
                             minWidth: MediaQuery.of(context).size.width,
                             child: const Text(
-                              "Set Username",
+                              "Change Username",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -120,138 +134,17 @@ class MainScreen extends StatelessWidget {
                             onPressed: () => showDialog(
                               context: context,
                               builder: (context) =>
-                                  InputDialog(app.getUsername(), (input) {
-                                app.setUsername(input);
+                                  InputDialog(viewModel.username, (input) {
+                                viewModel.setUsername(input);
                               }),
                             ),
                           )),
                 ),
-                Consumer<DiscovererViewModel>(
-                  builder: (context, viewModel, child) => ListView(
-                    scrollDirection: Axis.vertical,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 30, horizontal: 16),
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    children: !viewModel.canStartDiscovererFlow()
-                        ? []
-                        : [
-                            const Divider(
-                              color: Color(0x4d9e9e9e),
-                              height: 16,
-                              thickness: 1,
-                              indent: 0,
-                              endIndent: 0,
-                            ),
-                            Consumer<DiscovererViewModel>(
-                              builder: (context, app, child) => SwitchListTile(
-                                value: app.isDiscovering(),
-                                title: const Text(
-                                  "Discovery",
-                                ),
-                                onChanged: (newValue) => {
-                                  !newValue
-                                      ? app.stopDiscovery()
-                                      : app.startDiscovering()
-                                },
-                              ),
-                            ),
-                            const Divider(
-                              color: Color(0x4d9e9e9e),
-                              height: 16,
-                              thickness: 1,
-                              indent: 0,
-                              endIndent: 0,
-                            ),
-                            Consumer<DiscovererViewModel>(
-                                builder: (context, app, child) =>
-                                    app.isDiscovering()
-                                        ? Wrap(children: [
-                                            ListTile(
-                                              onTap: () {
-                                                Navigator.of(context)
-                                                    .push(MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AdvertiserList(app),
-                                                ));
-                                              },
-                                              trailing: const Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  color: Color(0xff212435),
-                                                  size: 24),
-                                              title: const Text(
-                                                "Search Devices",
-                                              ),
-                                            ),
-                                            const Divider(
-                                              color: Color(0x4d9e9e9e),
-                                              height: 16,
-                                              thickness: 1,
-                                              indent: 0,
-                                              endIndent: 0,
-                                            ),
-                                          ])
-                                        : Container()),
-                            Consumer<DiscovererViewModel>(
-                                builder: (context, app, child) =>
-                                    app.isConnected()
-                                        ? ListTile(
-                                            tileColor: const Color(0x1fffffff),
-                                            title: Text(
-                                              "Connected: Username ${app.getConnectedDeviceName()}",
-                                            ),
-                                            onTap: () {
-                                              Navigator.of(context)
-                                                  .push(MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AdvertiserComunicationScreen(
-                                                  app
-                                                      .getConnectedDevice()!
-                                                      .toItem(),
-                                                ),
-                                              ));
-                                            },
-                                            trailing: const Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: Color(0xff212435),
-                                                size: 24),
-                                          )
-                                        : const ListTile(
-                                            tileColor: Color(0x1fffffff),
-                                            title: Text(
-                                              "No Connected Device",
-                                            ),
-                                          ))
-                          ],
-                  ),
-                ),
-                Consumer<DiscovererViewModel>(
-                    builder: (context, app, child) => app.isConnected()
-                        ? MaterialButton(
-                            onPressed: () {
-                              Provider.of<DiscovererViewModel>(context,
-                                      listen: false)
-                                  .stopDiscovery();
-                            },
-                            color: const Color(0x343a57e8),
-                            elevation: 0,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,
-                            ),
-                            padding: const EdgeInsets.all(16),
-                            textColor: const Color(0xff3a57e8),
-                            height: 40,
-                            minWidth: MediaQuery.of(context).size.width,
-                            child: const Text(
-                              "Disconnect",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            ),
-                          )
-                        : Container())
+                Consumer<MainViewModel>(
+                    builder: (context, viewModel, child) =>
+                        viewModel.advertiserMode
+                            ? AdvertiserActions(viewModel.username)
+                            : DiscovererActions(viewModel.username))
               ],
             ),
           ),

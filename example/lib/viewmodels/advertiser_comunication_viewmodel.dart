@@ -3,14 +3,14 @@ import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 
 class AdvertiserComunicationViewModel extends ChangeNotifier {
-  late Device? connectedDevice;
-  String? lastMessage;
-  AdvertiserComunicationViewModel(String endpointId) {
-    var connectionsManager = ConnectionsManager();
-    connectedDevice = connectionsManager.getConnectedDevice(endpointId);
+  Device? lastDeviceMessage;
+  late ConnectionsManager connectionsManager;
+  AdvertiserComunicationViewModel() {
+    connectionsManager = ConnectionsManager();
 
-    connectionsManager.setCallbackReceivedMessage(
-        endpointId, _callbackReceivedMessage);
+    connectionsManager.getAllConnectedDevices().map((device) =>
+        connectionsManager.setCallbackReceivedMessage(
+            device.endpointId, _callbackReceivedMessage));
   }
 
   void _commonCallback(Device device) {
@@ -18,19 +18,19 @@ class AdvertiserComunicationViewModel extends ChangeNotifier {
   }
 
   void _callbackReceivedMessage(Device device) {
-    lastMessage = device.getLastMessage();
+    lastDeviceMessage = device;
     _commonCallback(device);
   }
 
-  String? getConnectedDeviceName() {
-    return connectedDevice?.endpointName;
+  String? getLastMessageDeviceName() {
+    return lastDeviceMessage?.endpointName;
   }
 
-  void sendData(String message) {
-    connectedDevice?.sendMessage(message);
+  void sendDataToDevices(String message) {
+    connectionsManager.broadcastMessage(message);
   }
 
   String? getLastMessage() {
-    return lastMessage;
+    return lastDeviceMessage?.getLastMessage();
   }
 }

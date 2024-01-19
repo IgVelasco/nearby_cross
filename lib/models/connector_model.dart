@@ -7,6 +7,7 @@ import '../helpers/permission_manager.dart';
 class Connector {
   var logger = Logger();
   String? platformVersion;
+  String? username;
   NearbyCross nearbyCross = NearbyCross();
   ConnectionsManager connectionsManager = ConnectionsManager();
 
