@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross/types/item_type.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
-
-import '../models/app_model.dart';
 
 class DiscoveredListItem extends StatelessWidget {
   final Item item;

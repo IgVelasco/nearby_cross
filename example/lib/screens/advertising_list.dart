@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross_example/models/app_model.dart';
+import 'package:nearby_cross/types/item_type.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/discovered_list_item.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';

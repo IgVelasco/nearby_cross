@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross/types/item_type.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_comunication_viewmodel.dart';
 
 import 'package:provider/provider.dart';
 import '../widgets/nc_app_bar.dart';
-import '../models/app_model.dart';
 
 class DiscovererComunicationScreen extends StatelessWidget {
   final Item connectedDevice;
