@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross_example/models/app_model.dart';
-import 'package:nearby_cross_example/widgets/advertising_list_item.dart';
+import 'package:nearby_cross/types/item_type.dart';
+import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
+import 'package:nearby_cross_example/widgets/discovered_list_item.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -36,17 +37,17 @@ class DiscoverersConnectedList extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer<AppModel>(
+              Consumer<DiscovererViewModel>(
                   builder: (context, app, child) => ListView.builder(
                       scrollDirection: Axis.vertical,
                       padding: const EdgeInsets.all(0),
-                      itemCount: app.totalAmount,
+                      itemCount: app.getDiscoveredDevicesAmount(),
                       shrinkWrap: true,
                       physics: const ScrollPhysics(),
                       itemBuilder: (context, index) {
-                        Item item = app.items[index];
+                        Item item = app.getDiscoveredDevices()[index].toItem();
                         logger.i("Item in list build $item");
-                        return AdvertisingListItem(item);
+                        return DiscoveredListItem(item, app);
                       })),
             ],
           ),

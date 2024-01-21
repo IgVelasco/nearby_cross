@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross_example/viewmodels/advertiser_comunication_viewmodel.dart';
 
 import 'package:provider/provider.dart';
 import '../widgets/nc_app_bar.dart';
-import '../models/app_model.dart';
 
 class AdvertiserComunicationScreen extends StatelessWidget {
   AdvertiserComunicationScreen({super.key});
@@ -11,48 +11,40 @@ class AdvertiserComunicationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const NCAppBar(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Consumer<AppModel>(
-              builder: (context, app, child) => Column(
-                    children: [
-                      Text(
-                          'Running on: ${app.platformVersion} \n username: ${app.username}'),
-                      Text('Message Received: ${app.messageReceived}')
-                    ],
-                  )),
-          TextField(
-            decoration: const InputDecoration(
-              hintText: 'Type something...',
-            ),
-            controller: _textFieldController, // Add this line
-          ),
-          ElevatedButton(
-            onPressed: () {
-              String inputData = _textFieldController.text;
-              Provider.of<AppModel>(context, listen: false).sendData(inputData);
-            },
-            child: const Text('Send'),
-          ),
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+              create: (context) => AdvertiserComunicationViewModel())
         ],
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-              onPressed: () =>
-                  Provider.of<AppModel>(context, listen: false).disconnect(),
-              child: const Text('Disconnect'),
-            )
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
+        child: Consumer<AdvertiserComunicationViewModel>(
+            builder: (context, viewModel, child) => Scaffold(
+                  appBar: const NCAppBar(),
+                  body: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                              'Last message username: ${viewModel.getLastMessageDeviceName()}'),
+                          Text(
+                              'Message Received: ${viewModel.getLastMessage()}')
+                        ],
+                      ),
+                      TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Type something...',
+                        ),
+                        controller: _textFieldController, // Add this line
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          String inputData = _textFieldController.text;
+                          viewModel.sendDataToDevices(inputData);
+                        },
+                        child: const Text('Send'),
+                      ),
+                    ],
+                  ),
+                )));
   }
 }

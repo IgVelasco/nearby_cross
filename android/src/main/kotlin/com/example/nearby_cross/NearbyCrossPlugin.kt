@@ -24,6 +24,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var callbacks: NearbyCrossCallbacks
     private var advertiser: Advertiser? = null
     private var discoverer: Discoverer? = null
+    private var dataManager: DataManager = DataManager()
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, Constants.PLUGIN_NAME)
@@ -82,9 +83,9 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(null)
             }
             ChannelMethods.SEND_DATA -> {
-                val data = call.arguments as String
-                this.advertiser?.sendData(context, data)
-                this.discoverer?.sendData(context, data)
+                val data = call.argument<String>("data") as String
+                val endpointId = call.argument<String>("endpointId") as String
+                this.dataManager.sendData(context, data, endpointId)
                 result.success(null)
             }
             else -> result.notImplemented()

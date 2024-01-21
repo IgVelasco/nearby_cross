@@ -14,9 +14,6 @@ class AppModel extends ChangeNotifier {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      _platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
-          'Unknown platform version';
-      logger.i("Running on  $_platformVersion");
       _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
         if (call.method == 'onEndpointFound') {
           var arguments = call.arguments as Map<Object?, Object?>;
@@ -152,7 +149,7 @@ class AppModel extends ChangeNotifier {
 
   void sendData(data) async {
     logger.i("Sending data $data");
-    await _nearbyCrossPlugin.sendData(data);
+    await _nearbyCrossPlugin.sendData(data, '');
   }
 
   void stopDiscovery() {

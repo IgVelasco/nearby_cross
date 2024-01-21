@@ -1,19 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross_example/screens/main_screen.dart';
-import 'package:provider/provider.dart';
-import 'models/app_model.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) {
-        var appModel = AppModel();
-        appModel.initPlatformState();
-        return appModel;
-      },
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {

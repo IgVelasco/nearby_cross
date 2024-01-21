@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross_example/models/app_model.dart';
-import 'package:provider/provider.dart';
 
 class InputDialog extends StatelessWidget {
   final String defaultUsername;
+  final Function(String) performAction;
   static final Logger logger = Logger();
-  const InputDialog(this.defaultUsername, {super.key});
+  const InputDialog(this.defaultUsername, this.performAction, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +28,7 @@ class InputDialog extends StatelessWidget {
           child: const Text('OK'),
           onPressed: () {
             logger.i(textFieldController.text);
-            Provider.of<AppModel>(context, listen: false)
-                .changeUsername(textFieldController.text);
+            performAction(textFieldController.text);
             Navigator.pop(context);
           },
         ),

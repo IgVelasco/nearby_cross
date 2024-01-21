@@ -2,7 +2,7 @@ package com.example.nearby_cross
 
 import android.content.Context
 import android.util.Log
-import com.example.nearby_cross.callbacks.PayloadReceivedCallbacks
+import com.example.nearby_cross.callbacks.ConnectionCallbacks
 import com.example.nearby_cross.constants.ConnectionStrategies
 import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
@@ -18,14 +18,12 @@ open class Connector(
     protected val serviceId: String,
     strategy: String,
     protected val context: Context,
-    callbacks: PayloadReceivedCallbacks,
+    callbacks: ConnectionCallbacks,
     userName: String = Constants.DEFAULT_USERNAME
 
 ) {
     var userName: ByteArray
     var strategy: Strategy
-    var listOfConnectedDevices: MutableMap<String, Device> = mutableMapOf()
-    var listOfInitiatedConnections: MutableMap<String, Device> = mutableMapOf()
 
 
     init {
@@ -36,21 +34,15 @@ open class Connector(
     open fun disconnect(context: Context) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
         Log.v("INFO", "Stopped all endpoints")
-        listOfConnectedDevices.clear()
-        listOfInitiatedConnections.clear()
     }
 
     fun disconnectFromEndpointId(context: Context, endpointsId: String) {
         Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointsId)
-        listOfConnectedDevices.remove(endpointsId)
     }
 
-    fun sendData(context: Context, data: String) {
+    fun sendData(context: Context, data: String, endpointId: String) {
         val bytesPayload = Payload.fromBytes(data.toByteArray())
-        for (connection in listOfConnectedDevices) {
-            Nearby.getConnectionsClient(context).sendPayload(connection.key, bytesPayload)
-            Log.v("INFO", "Send'$data' to $connection")
-        }
+        Nearby.getConnectionsClient(context).sendPayload(endpointId, bytesPayload)
     }
 
     val payloadCallback = object : PayloadCallback() {
@@ -59,12 +51,7 @@ open class Connector(
             if (payload.type == Payload.Type.BYTES) {
                 val receivedBytes = payload.asBytes()
                 val stringReceived = receivedBytes?.let { String(it) }
-                val device = listOfConnectedDevices[endpointId]
-                if (device == null) {
-                    Log.d("ERROR", "Device not found")
-                    return
-                }
-                callbacks.onPayloadReceived(stringReceived as String, device.endpointName)
+                callbacks.onPayloadReceived(stringReceived as String, endpointId)
             }
         }
 
@@ -79,10 +66,8 @@ open class Connector(
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
             Log.v("INFO", connectionInfo.endpointName)
 
-            val newInitiatedConnection = Device(endpointId, connectionInfo.endpointName)
-            listOfInitiatedConnections[endpointId] = newInitiatedConnection
-
-            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback);
+            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+            callbacks.onConnectionInitiated(endpointId, connectionInfo.endpointName)
             // A connection to another device has been initiated by the remote endpoint
             // You can now accept or reject the connection request using the provided ConnectionInfo
             // For example, you could show a dialog asking the user to confirm the connection
@@ -97,38 +82,21 @@ open class Connector(
                     // Connection was successful!
                     // You can now start sending and receiving data using the provided EndpointDiscoveryCallback
 
-                    // Add to connected endpoints
-                    val newConnection =
-                        listOfInitiatedConnections[endpointId]
-                    if (newConnection == null) {
-                        Log.d("ERROR", "Connection not found")
-                        return
-                    }
-
-                    listOfInitiatedConnections.remove(endpointId)
-                    listOfConnectedDevices[endpointId] = newConnection
-                    Log.d("INFO", "Connected to ${newConnection.endpointName}")
-
-
+                    callbacks.onSuccessfulConnection(endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    listOfInitiatedConnections.remove(endpointId)
-
                     // The connection request was rejected by the remote endpoint
                     // You may want to notify the user that the connection was rejected
                     Log.d("ERROR", "Connection rejected")
 
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
-                    listOfInitiatedConnections.remove(endpointId)
-
                     // There was an error connecting to the remote endpoint
                     // You may want to notify the user that the connection was unsuccessful
                     Log.d("ERROR", "Failed to connect")
 
                 }
                 else -> {
-                    listOfInitiatedConnections.remove(endpointId)
                     Log.d("ERROR", "Failed to connect")
                 }
                 // Other status codes can be handled here as well
@@ -138,7 +106,6 @@ open class Connector(
         override fun onDisconnected(endpointId: String) {
             // The connection to the remote endpoint has been disconnected
             // You may want to notify the user that the connection was lost
-            listOfConnectedDevices.remove(endpointId)
         }
     }
 
