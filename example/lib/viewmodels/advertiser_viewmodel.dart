@@ -21,12 +21,6 @@ class AdvertiserViewModel with ChangeNotifier {
         .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
   }
 
-  factory AdvertiserViewModel.withUsername(String? username) {
-    var instance = AdvertiserViewModel();
-    instance.setUsername(username ?? "");
-    return instance;
-  }
-
   void _commonCallback(Device device) {
     notifyListeners();
   }
@@ -37,9 +31,11 @@ class AdvertiserViewModel with ChangeNotifier {
     _commonCallback(device);
   }
 
-  void setUsername(String username) {
+  void setUsername(String username, [bool notify = true]) {
     _username = username;
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   String getUsername() {

@@ -11,11 +11,14 @@ class AdvertiserActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-              create: (context) => AdvertiserViewModel.withUsername(username))
-        ],
-        child: Column(children: [
+      providers: [
+        ChangeNotifierProvider(create: (context) => AdvertiserViewModel())
+      ],
+      builder: (context, child) {
+        Provider.of<AdvertiserViewModel>(context, listen: false)
+            .setUsername(username!, false);
+
+        return Column(children: [
           ListView(
             scrollDirection: Axis.vertical,
             padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 16),
@@ -114,6 +117,8 @@ class AdvertiserActions extends StatelessWidget {
                       ),
                     )
                   : Container())
-        ]));
+        ]);
+      },
+    );
   }
 }

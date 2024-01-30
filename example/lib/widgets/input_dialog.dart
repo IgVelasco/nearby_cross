@@ -27,7 +27,6 @@ class InputDialog extends StatelessWidget {
         TextButton(
           child: const Text('OK'),
           onPressed: () {
-            logger.i(textFieldController.text);
             performAction(textFieldController.text);
             Navigator.pop(context);
           },

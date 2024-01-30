@@ -24,12 +24,6 @@ class DiscovererViewModel with ChangeNotifier {
         .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
   }
 
-  factory DiscovererViewModel.withUsername(String? username) {
-    var instance = DiscovererViewModel();
-    instance.setUsername(username ?? "");
-    return instance;
-  }
-
   void _commonCallback(Device device) {
     notifyListeners();
   }
@@ -89,9 +83,11 @@ class DiscovererViewModel with ChangeNotifier {
     }
   }
 
-  void setUsername(String username) {
+  void setUsername(String username, [bool notify = true]) {
     _username = username;
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   String? getConnectedDeviceName() {
