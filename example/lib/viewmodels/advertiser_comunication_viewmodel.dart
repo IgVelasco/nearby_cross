@@ -8,7 +8,7 @@ class AdvertiserComunicationViewModel extends ChangeNotifier {
   AdvertiserComunicationViewModel() {
     connectionsManager = ConnectionsManager();
 
-    connectionsManager.getAllConnectedDevices().map((device) =>
+    connectionsManager.getAllConnectedDevices().forEach((device) =>
         connectionsManager.setCallbackReceivedMessage(
             device.endpointId, _callbackReceivedMessage));
   }

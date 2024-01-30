@@ -50,30 +50,6 @@ class AdvertiserActions extends StatelessWidget {
                 indent: 0,
                 endIndent: 0,
               ),
-              // Consumer<AdvertiserViewModel>(
-              //     builder: (context, app, child) => app.isAdvertising
-              //         ? Wrap(children: [
-              //             ListTile(
-              //               onTap: () {
-              //                 Navigator.of(context).push(MaterialPageRoute(
-              //                   builder: (context) => const AdvertiserList(),
-              //                 ));
-              //               },
-              //               trailing: const Icon(Icons.arrow_forward_ios,
-              //                   color: Color(0xff212435), size: 24),
-              //               title: const Text(
-              //                 "Pending Devices",
-              //               ),
-              //             ),
-              //             const Divider(
-              //               color: Color(0x4d9e9e9e),
-              //               height: 16,
-              //               thickness: 1,
-              //               indent: 0,
-              //               endIndent: 0,
-              //             ),
-              //           ])
-              //         : Container()),
               Consumer<AdvertiserViewModel>(
                   builder: (context, app, child) => ListTile(
                         tileColor: const Color(0x1fffffff),
