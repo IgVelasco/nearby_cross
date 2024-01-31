@@ -142,15 +142,18 @@ class MainScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  vm.advertiserMode
-                      ? Consumer<MainViewModel>(
-                          builder: (context, viewModel, child) =>
-                              AdvertiserActions(viewModel.username),
-                        )
-                      : Consumer<MainViewModel>(
-                          builder: (context, viewModel, child) =>
-                              DiscovererActions(viewModel.username),
-                        )
+                  Consumer<MainViewModel>(
+                    builder: (context, viewModel, child) =>
+                        viewModel.advertiserMode
+                            ? Consumer<MainViewModel>(
+                                builder: (context, viewModel, child) =>
+                                    AdvertiserActions(viewModel.username),
+                              )
+                            : Consumer<MainViewModel>(
+                                builder: (context, viewModel, child) =>
+                                    DiscovererActions(viewModel.username),
+                              ),
+                  )
                 ],
               ),
             ));
