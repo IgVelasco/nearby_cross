@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross_example/viewmodels/advertiser_comunication_viewmodel.dart';
+import 'package:nearby_cross_example/widgets/snackbar_launcher.dart';
 
 import 'package:provider/provider.dart';
 import '../widgets/nc_app_bar.dart';
@@ -46,6 +47,17 @@ class AdvertiserComunicationScreen extends StatelessWidget {
                 },
                 child: const Text('Send'),
               ),
+              Consumer<AdvertiserComunicationViewModel>(
+                  builder: (context, vm, child) {
+                if (vm.getRecentConnectedDeviceName() != null) {
+                  var message =
+                      "New device connected: ${vm.getRecentConnectedDeviceName()}";
+                  vm.setAlreadyAskedForRecentConnectedDevice(true);
+                  return SnackBarLauncher(message);
+                }
+
+                return Container();
+              })
             ],
           ),
         );

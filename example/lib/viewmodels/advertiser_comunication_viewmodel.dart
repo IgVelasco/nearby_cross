@@ -4,9 +4,15 @@ import 'package:nearby_cross/models/device_model.dart';
 
 class AdvertiserComunicationViewModel extends ChangeNotifier {
   Device? lastDeviceMessage;
+  Device? recentConnectedDevice;
+  bool alreadyAskedForRecentConnectedDevice = false;
+
   late ConnectionsManager connectionsManager;
   AdvertiserComunicationViewModel() {
     connectionsManager = ConnectionsManager();
+
+    connectionsManager
+        .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
 
     connectionsManager.getAllConnectedDevices().forEach((device) =>
         connectionsManager.setCallbackReceivedMessage(
@@ -17,9 +23,30 @@ class AdvertiserComunicationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _callbackSuccessfulConnection(Device device) {
+    connectionsManager.setCallbackReceivedMessage(
+        device.endpointId, _callbackReceivedMessage);
+    recentConnectedDevice = device;
+    alreadyAskedForRecentConnectedDevice = false;
+    _commonCallback(device);
+  }
+
   void _callbackReceivedMessage(Device device) {
     lastDeviceMessage = device;
     _commonCallback(device);
+  }
+
+  void setAlreadyAskedForRecentConnectedDevice(bool value) {
+    alreadyAskedForRecentConnectedDevice = value;
+  }
+
+  String? getRecentConnectedDeviceName() {
+    if (recentConnectedDevice != null &&
+        !alreadyAskedForRecentConnectedDevice) {
+      return recentConnectedDevice!.endpointName;
+    }
+
+    return null;
   }
 
   String? getLastMessageDeviceName() {
