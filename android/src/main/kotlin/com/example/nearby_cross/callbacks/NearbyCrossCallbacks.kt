@@ -12,10 +12,15 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, hashmap)
         }
 
-        override fun onConnectionInitiated(endpointId: String, endpointName: String) {
+        override fun onConnectionInitiated(
+            endpointId: String,
+            endpointName: String,
+            alreadyAcceptedConnection: Boolean
+        ) {
             val hashmap = HashMap<String, String>()
             hashmap["endpointId"] = endpointId
             hashmap["endpointName"] = endpointName
+            hashmap["alreadyAcceptedConnection"] = if (alreadyAcceptedConnection) "1" else "0"
             channel.invokeMethod(ChannelMethods.CONNECTION_INITIATED, hashmap)
         }
 
@@ -41,10 +46,15 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, hashmap)
         }
 
-        override fun onConnectionInitiated(endpointId: String, endpointName: String) {
+        override fun onConnectionInitiated(
+            endpointId: String,
+            endpointName: String,
+            alreadyAcceptedConnection: Boolean
+        ) {
             val hashmap = HashMap<String, String>()
             hashmap["endpointId"] = endpointId
             hashmap["endpointName"] = endpointName
+            hashmap["alreadyAcceptedConnection"] = if (alreadyAcceptedConnection) "1" else "0"
             channel.invokeMethod(ChannelMethods.CONNECTION_INITIATED, hashmap)
         }
 

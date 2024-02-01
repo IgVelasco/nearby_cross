@@ -19,16 +19,18 @@ open class Connector(
     strategy: String,
     protected val context: Context,
     callbacks: ConnectionCallbacks,
-    userName: String = Constants.DEFAULT_USERNAME
-
+    userName: String = Constants.DEFAULT_USERNAME,
+    manualAcceptConnections: Boolean = false
 ) {
     var userName: ByteArray
     var strategy: Strategy
+    private var manualAcceptConnections: Boolean
 
 
     init {
         this.userName = userName.toByteArray(Charset.forName("UTF-8"))
         this.strategy = getStrategy(strategy)
+        this.manualAcceptConnections = manualAcceptConnections
     }
 
     open fun disconnect(context: Context) {
@@ -66,8 +68,17 @@ open class Connector(
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
             Log.v("INFO", connectionInfo.endpointName)
 
-            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
-            callbacks.onConnectionInitiated(endpointId, connectionInfo.endpointName)
+            var alreadyAccepted = false
+            if (!manualAcceptConnections) {
+                Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+                alreadyAccepted = true
+            }
+
+            callbacks.onConnectionInitiated(
+                endpointId,
+                connectionInfo.endpointName,
+                alreadyAccepted
+            )
             // A connection to another device has been initiated by the remote endpoint
             // You can now accept or reject the connection request using the provided ConnectionInfo
             // For example, you could show a dialog asking the user to confirm the connection
@@ -118,6 +129,13 @@ open class Connector(
         }
     }
 
+    fun acceptConnection(endpointId: String) {
+        Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+    }
+
+    fun rejectConnection(endpointId: String) {
+        Nearby.getConnectionsClient(context).rejectConnection(endpointId)
+    }
 }
 
 

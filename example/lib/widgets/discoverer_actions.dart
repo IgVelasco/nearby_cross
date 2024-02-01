@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/advertising_list.dart';
+import '../screens/discovered_devices_list.dart';
 import '../screens/discoverer_comunication_screen.dart';
 
 class DiscovererActions extends StatelessWidget {

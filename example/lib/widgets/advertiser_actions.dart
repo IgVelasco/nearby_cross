@@ -34,7 +34,20 @@ class AdvertiserActions extends StatelessWidget {
               ),
               Consumer<AdvertiserViewModel>(
                 builder: (context, app, child) => SwitchListTile(
+                  value: app.manualAcceptConnections,
+                  activeColor: Colors.blue,
+                  title: const Text(
+                    "Manual accept",
+                  ),
+                  onChanged: (value) => app.isAdvertising
+                      ? null
+                      : app.toggleManualAcceptConnections(),
+                ),
+              ),
+              Consumer<AdvertiserViewModel>(
+                builder: (context, app, child) => SwitchListTile(
                   value: app.isAdvertising,
+                  activeColor: Colors.blue,
                   title: const Text(
                     "Advertise",
                   ),
@@ -50,6 +63,16 @@ class AdvertiserActions extends StatelessWidget {
                 indent: 0,
                 endIndent: 0,
               ),
+              Consumer<AdvertiserViewModel>(
+                  builder: (context, viewmodel, child) => ListTile(
+                        tileColor: const Color(0x1fffffff),
+                        title: Text(
+                          "Pending connections${viewmodel.getPendingConnectionsCount() > 0 ? " (${viewmodel.getPendingConnectionsCount()})" : ""}",
+                        ),
+                        onTap: () {},
+                        trailing: const Icon(Icons.arrow_forward_ios,
+                            color: Color(0xff212435), size: 24),
+                      )),
               Consumer<AdvertiserViewModel>(
                   builder: (context, app, child) => ListTile(
                         tileColor: const Color(0x1fffffff),

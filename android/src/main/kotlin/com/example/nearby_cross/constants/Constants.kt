@@ -18,6 +18,7 @@ class ChannelMethods {
         const val DISCONNECT = "disconnect"
         const val DISCONNECT_FROM_EP_NAME = "disconnectFromEndpointName"
         const val DISCONNECT_FROM_EP_ID = "disconnectFromEndpointId"
+        const val ACCEPT_CONNECTION = "acceptConnection"
 
         // Connection Callbacks
         const val ON_ENDPOINT_FOUND = "onEndpointFound"

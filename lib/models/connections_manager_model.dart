@@ -1,4 +1,5 @@
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
@@ -8,9 +9,11 @@ class ConnectionsManager {
   var logger = Logger();
   static ConnectionsManager? _singleton;
   NearbyCross nearbyCross = NearbyCross();
+  Set<Device> pendingAcceptConnections = {};
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
 
+  Function(Device) callbackPendingAcceptConnection = (_) => {};
   Function(Device) callbackConnectionInitiated = (_) => {};
   Function(Device) callbackSuccessfulConnection = (_) => {};
   Function(Device) callbackReceivedMessage = (_) => {};
@@ -25,9 +28,15 @@ class ConnectionsManager {
 
   /// Handler for [NearbyCrossMethods.connectionInitiated] method call.
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
-  void _handleConnectionInitiated(String endpointId, String endpointName) {
-    var device = addInitiatedConnection(endpointId, endpointName);
-    callbackConnectionInitiated(device);
+  void _handleConnectionInitiated(
+      String endpointId, String endpointName, bool alreadyAcceptedConnection) {
+    if (alreadyAcceptedConnection) {
+      var device = addInitiatedConnection(endpointId, endpointName);
+      callbackConnectionInitiated(device);
+    } else {
+      var device = addPendingAcceptConnection(endpointId, endpointName);
+      callbackPendingAcceptConnection(device);
+    }
   }
 
   /// Handler for [NearbyCrossMethods.successfulConnection] method call.
@@ -60,7 +69,10 @@ class ConnectionsManager {
       var arguments = call.arguments as Map<Object?, Object?>;
       var endpointId = arguments["endpointId"] as String;
       var endpointName = arguments["endpointName"] as String;
-      return _handleConnectionInitiated(endpointId, endpointName);
+      var alreadyAcceptedConnection =
+          (arguments["alreadyAcceptedConnection"] as String).parseBool();
+      return _handleConnectionInitiated(
+          endpointId, endpointName, alreadyAcceptedConnection);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.successfulConnection,
@@ -84,6 +96,12 @@ class ConnectionsManager {
   void setCallbackConnectionInitiated(
       Function(Device) callbackConnectionInitiated) {
     this.callbackConnectionInitiated = callbackConnectionInitiated;
+  }
+
+  /// Sets callbackConnectionInitiated callback that executes every time a connection needs to be accepted.
+  void setCallbackPendingAcceptConnection(
+      Function(Device) callbackPendingAcceptConnection) {
+    this.callbackPendingAcceptConnection = callbackPendingAcceptConnection;
   }
 
   /// Sets callbackSuccessfulConnection callback that executes every time a connection successfully finishes.
@@ -120,6 +138,13 @@ class ConnectionsManager {
   Device addInitiatedConnection(String endpointId, String endpointName) {
     var device = Device(endpointId, endpointName);
     initiatedConnections.add(device);
+    return device;
+  }
+
+  /// Adds a device in pendingAcceptConnections set.
+  Device addPendingAcceptConnection(String endpointId, String endpointName) {
+    var device = Device(endpointId, endpointName);
+    pendingAcceptConnections.add(device);
     return device;
   }
 
