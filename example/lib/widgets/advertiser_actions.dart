@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross_example/screens/pending_connections_list.dart';
 import 'package:nearby_cross_example/viewmodels/advertiser_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -69,7 +70,12 @@ class AdvertiserActions extends StatelessWidget {
                         title: Text(
                           "Pending connections${viewmodel.getPendingConnectionsCount() > 0 ? " (${viewmodel.getPendingConnectionsCount()})" : ""}",
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                const PendingConnectionsList(),
+                          ));
+                        },
                         trailing: const Icon(Icons.arrow_forward_ios,
                             color: Color(0xff212435), size: 24),
                       )),
