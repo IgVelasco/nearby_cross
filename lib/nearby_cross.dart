@@ -82,4 +82,9 @@ class NearbyCross {
   Future<void> connect(String endpointId) async {
     await methodChannel.invokeMethod('connect', {"endpointId": endpointId});
   }
+
+  Future<void> acceptConnection(String endpointId) async {
+    await methodChannel
+        .invokeMethod('acceptConnection', {"endpointId": endpointId});
+  }
 }

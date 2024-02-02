@@ -130,7 +130,8 @@ open class Connector(
     }
 
     fun acceptConnection(endpointId: String) {
-        Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+        Nearby.getConnectionsClient(context)
+            .acceptConnection(endpointId, payloadCallback)
     }
 
     fun rejectConnection(endpointId: String) {

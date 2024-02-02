@@ -46,9 +46,14 @@ class PendingConnectionsList extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const ScrollPhysics(),
                       itemBuilder: (context, index) {
-                        return PendingConnectionListItem(provider
-                            .getPendingConnectionsDevices()[index]
-                            .endpointName);
+                        var device =
+                            provider.getPendingConnectionsDevices()[index];
+                        return PendingConnectionListItem(
+                          deviceName: device.endpointName,
+                          action: () {
+                            return provider.acceptConnection(device.endpointId);
+                          },
+                        );
                       }),
                 ),
               ],

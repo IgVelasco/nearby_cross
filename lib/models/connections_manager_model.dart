@@ -134,16 +134,22 @@ class ConnectionsManager {
     }
   }
 
-  /// Adds a device in initiatedConnections set.
+  /// Creates a device in initiatedConnections set.
   Device addInitiatedConnection(String endpointId, String endpointName) {
     var device = Device(endpointId, endpointName);
     initiatedConnections.add(device);
     return device;
   }
 
+  // Adds a device in initiatedConnections set.
+  Device addDeviceAsInitiatedConnection(Device device) {
+    initiatedConnections.add(device);
+    return device;
+  }
+
   /// Adds a device in pendingAcceptConnections set.
   Device addPendingAcceptConnection(String endpointId, String endpointName) {
-    var device = Device(endpointId, endpointName);
+    var device = Device.asPendingConnection(endpointId, endpointName);
     pendingAcceptConnections.add(device);
     return device;
   }
@@ -159,6 +165,10 @@ class ConnectionsManager {
 
     connectedDevices.add(device);
     initiatedConnections.remove(device);
+
+    if (device.isPendingConnection) {
+      pendingAcceptConnections.remove(device);
+    }
 
     return device;
   }
@@ -207,5 +217,19 @@ class ConnectionsManager {
   /// Return a list with all connected Devices
   List<Device> getAllConnectedDevices() {
     return connectedDevices.toList();
+  }
+
+  /// Accepts a pending connection
+  Future<void> acceptConnection(String endpointId) async {
+    var pending = _findDevice(pendingAcceptConnections, endpointId);
+    if (pending == null) {
+      return;
+    }
+
+    var device = addDeviceAsInitiatedConnection(pending);
+
+    await nearbyCross.acceptConnection(endpointId);
+
+    callbackConnectionInitiated(device);
   }
 }

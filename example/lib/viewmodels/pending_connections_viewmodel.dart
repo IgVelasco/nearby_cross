@@ -4,12 +4,16 @@ import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 
 class PendingConnectionsViewModel with ChangeNotifier {
+  Logger logger = Logger();
   late ConnectionsManager connectionsManager;
 
   PendingConnectionsViewModel() {
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackPendingAcceptConnection(
         _setCallbackPendingAcceptConnection);
+
+    connectionsManager
+        .setCallbackSuccessfulConnection(_setCallbackSuccessfulConnection);
   }
 
   void _commonCallback(Device device) {
@@ -17,7 +21,12 @@ class PendingConnectionsViewModel with ChangeNotifier {
   }
 
   void _setCallbackPendingAcceptConnection(Device device) {
-    Logger().i("Device ${device.endpointName} wants to connect");
+    logger.i("Device ${device.endpointName} wants to connect");
+    _commonCallback(device);
+  }
+
+  void _setCallbackSuccessfulConnection(Device device) {
+    logger.i("Device ${device.endpointName} is successfully connected");
     _commonCallback(device);
   }
 
@@ -27,5 +36,9 @@ class PendingConnectionsViewModel with ChangeNotifier {
 
   List<Device> getPendingConnectionsDevices() {
     return connectionsManager.pendingAcceptConnections.toList();
+  }
+
+  Future<void> acceptConnection(String endpointId) {
+    return connectionsManager.acceptConnection(endpointId);
   }
 }

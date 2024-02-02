@@ -95,6 +95,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             ChannelMethods.ACCEPT_CONNECTION -> {
                 val endpointId = call.argument<String>("endpointId") as String
                 this.advertiser?.acceptConnection(endpointId)
+                result.success(null)
             }
             else -> result.notImplemented()
         }
