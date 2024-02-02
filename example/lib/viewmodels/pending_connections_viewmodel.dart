@@ -14,6 +14,9 @@ class PendingConnectionsViewModel with ChangeNotifier {
 
     connectionsManager
         .setCallbackSuccessfulConnection(_setCallbackSuccessfulConnection);
+
+    connectionsManager
+        .setCallbackConnectionRejected(_setCallbackConnectionRejected);
   }
 
   void _commonCallback(Device device) {
@@ -30,6 +33,11 @@ class PendingConnectionsViewModel with ChangeNotifier {
     _commonCallback(device);
   }
 
+  void _setCallbackConnectionRejected(Device device) {
+    logger.i("Device ${device.endpointName} was rejected");
+    _commonCallback(device);
+  }
+
   int getPendingConnectionsCount() {
     return connectionsManager.pendingAcceptConnections.length;
   }
@@ -40,5 +48,9 @@ class PendingConnectionsViewModel with ChangeNotifier {
 
   Future<void> acceptConnection(String endpointId) {
     return connectionsManager.acceptConnection(endpointId);
+  }
+
+  Future<void> rejectConnection(String endpointId) {
+    return connectionsManager.rejectConnection(endpointId);
   }
 }

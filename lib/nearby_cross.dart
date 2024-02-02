@@ -87,4 +87,9 @@ class NearbyCross {
     await methodChannel
         .invokeMethod('acceptConnection', {"endpointId": endpointId});
   }
+
+  Future<void> rejectConnection(String endpointId) async {
+    await methodChannel
+        .invokeMethod('rejectConnection', {"endpointId": endpointId});
+  }
 }

@@ -14,6 +14,7 @@ class ConnectionsManager {
   Set<Device> connectedDevices = {};
 
   Function(Device) callbackPendingAcceptConnection = (_) => {};
+  Function(Device) callbackConnectionRejected = (_) => {};
   Function(Device) callbackConnectionInitiated = (_) => {};
   Function(Device) callbackSuccessfulConnection = (_) => {};
   Function(Device) callbackReceivedMessage = (_) => {};
@@ -96,6 +97,12 @@ class ConnectionsManager {
   void setCallbackConnectionInitiated(
       Function(Device) callbackConnectionInitiated) {
     this.callbackConnectionInitiated = callbackConnectionInitiated;
+  }
+
+  /// Sets callbackConnectionRejected callback that executes every time a connection is rejected.
+  void setCallbackConnectionRejected(
+      Function(Device) callbackConnectionRejected) {
+    this.callbackConnectionRejected = callbackConnectionRejected;
   }
 
   /// Sets callbackConnectionInitiated callback that executes every time a connection needs to be accepted.
@@ -231,5 +238,18 @@ class ConnectionsManager {
     await nearbyCross.acceptConnection(endpointId);
 
     callbackConnectionInitiated(device);
+  }
+
+  /// Rejects a pending connection
+  Future<void> rejectConnection(String endpointId) async {
+    var pending = _findDevice(pendingAcceptConnections, endpointId);
+    if (pending == null) {
+      return;
+    }
+
+    await nearbyCross.rejectConnection(endpointId);
+    pendingAcceptConnections.remove(pending);
+
+    callbackConnectionRejected(pending);
   }
 }
