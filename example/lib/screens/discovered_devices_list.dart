@@ -4,11 +4,11 @@ import 'package:nearby_cross/types/item_type.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/discovered_list_item.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
-import 'package:provider/provider.dart';
 
-class DiscoverersConnectedList extends StatelessWidget {
+class DiscoveredDevicesList extends StatelessWidget {
   static final logger = Logger();
-  const DiscoverersConnectedList({super.key});
+  final DiscovererViewModel provider;
+  const DiscoveredDevicesList(this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +37,16 @@ class DiscoverersConnectedList extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer<DiscovererViewModel>(
-                  builder: (context, app, child) => ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      padding: const EdgeInsets.all(0),
-                      itemCount: app.getDiscoveredDevicesAmount(),
-                      shrinkWrap: true,
-                      physics: const ScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        Item item = app.getDiscoveredDevices()[index].toItem();
-                        logger.i("Item in list build $item");
-                        return DiscoveredListItem(item, app);
-                      })),
+              ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  padding: const EdgeInsets.all(0),
+                  itemCount: provider.getDiscoveredDevicesAmount(),
+                  shrinkWrap: true,
+                  physics: const ScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    Item item = provider.getDiscoveredDevices()[index].toItem();
+                    return DiscoveredListItem(item, provider);
+                  }),
             ],
           ),
         ),

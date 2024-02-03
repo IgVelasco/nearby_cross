@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
@@ -9,6 +10,7 @@ class AdvertiserViewModel with ChangeNotifier {
   late ConnectionsManager connectionsManager;
   String? _username;
   bool _isConnected = false;
+  bool _manualAcceptConnections = false;
   Device? _connectedDevice;
 
   AdvertiserViewModel() {
@@ -16,6 +18,8 @@ class AdvertiserViewModel with ChangeNotifier {
     _username = advertiser.username;
 
     connectionsManager = ConnectionsManager();
+    connectionsManager.setCallbackPendingAcceptConnection(
+        _setCallbackPendingAcceptConnection);
     connectionsManager.setCallbackConnectionInitiated(_commonCallback);
     connectionsManager
         .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
@@ -23,6 +27,11 @@ class AdvertiserViewModel with ChangeNotifier {
 
   void _commonCallback(Device device) {
     notifyListeners();
+  }
+
+  void _setCallbackPendingAcceptConnection(Device device) {
+    Logger().i("Device ${device.endpointName} wants to connect");
+    _commonCallback(device);
   }
 
   void _callbackSuccessfulConnection(Device device) {
@@ -44,10 +53,12 @@ class AdvertiserViewModel with ChangeNotifier {
 
   bool get isConnected => _isConnected;
   bool get isAdvertising => advertiser.isAdvertising;
+  bool get manualAcceptConnections => _manualAcceptConnections;
 
   Future<void> startAdvertising() async {
     await advertiser.requestPermissions();
-    await advertiser.advertise(_username);
+    await advertiser.advertise(_username,
+        manualAcceptConnections: _manualAcceptConnections);
     notifyListeners();
   }
 
@@ -81,5 +92,14 @@ class AdvertiserViewModel with ChangeNotifier {
 
   Device? getConnectedDevice() {
     return _connectedDevice;
+  }
+
+  void toggleManualAcceptConnections() {
+    _manualAcceptConnections = !_manualAcceptConnections;
+    notifyListeners();
+  }
+
+  int getPendingConnectionsCount() {
+    return connectionsManager.pendingAcceptConnections.length;
   }
 }

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull
 import com.example.nearby_cross.callbacks.NearbyCrossCallbacks
 import com.example.nearby_cross.constants.ChannelMethods
 import com.example.nearby_cross.constants.Constants
+import com.example.nearby_cross.utils.InterfaceUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -56,12 +57,15 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 val serviceId = call.argument<String>("serviceId")
                 val userName = call.argument<String>("username")
                 val strategy = call.argument<String>("strategy")
+                val manualAcceptConnections =
+                    InterfaceUtils.parseStringAsBoolean(call.argument<String>("manualAcceptConnections") as String)
                 this.advertiser = Advertiser(
                     serviceId as String,
                     strategy as String,
                     context,
                     callbacks.advertiser,
                     userName as String,
+                    manualAcceptConnections
                 )
                 this.advertiser?.startAdvertising(context)
                 result.success(null)
@@ -86,6 +90,16 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 val data = call.argument<String>("data") as String
                 val endpointId = call.argument<String>("endpointId") as String
                 this.dataManager.sendData(context, data, endpointId)
+                result.success(null)
+            }
+            ChannelMethods.ACCEPT_CONNECTION -> {
+                val endpointId = call.argument<String>("endpointId") as String
+                this.advertiser?.acceptConnection(endpointId)
+                result.success(null)
+            }
+            ChannelMethods.REJECT_CONNECTION -> {
+                val endpointId = call.argument<String>("endpointId") as String
+                this.advertiser?.rejectConnection(endpointId)
                 result.success(null)
             }
             else -> result.notImplemented()

@@ -53,11 +53,13 @@ class NearbyCross {
     });
   }
 
-  Future<void> advertise(String serviceId, String? username) async {
+  Future<void> advertise(
+      String serviceId, String? username, bool manualAcceptConnections) async {
     await methodChannel.invokeMethod('startAdvertising', {
       'serviceId': serviceId,
       'username': username ?? 'generic_advertiser_name',
-      'strategy': 'P2P_STAR'
+      'strategy': 'P2P_STAR',
+      'manualAcceptConnections': manualAcceptConnections ? "1" : "0"
     });
   }
 
@@ -79,5 +81,15 @@ class NearbyCross {
 
   Future<void> connect(String endpointId) async {
     await methodChannel.invokeMethod('connect', {"endpointId": endpointId});
+  }
+
+  Future<void> acceptConnection(String endpointId) async {
+    await methodChannel
+        .invokeMethod('acceptConnection', {"endpointId": endpointId});
+  }
+
+  Future<void> rejectConnection(String endpointId) async {
+    await methodChannel
+        .invokeMethod('rejectConnection', {"endpointId": endpointId});
   }
 }

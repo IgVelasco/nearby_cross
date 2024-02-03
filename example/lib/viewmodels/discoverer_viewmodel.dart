@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/discoverer_model.dart';
@@ -19,6 +20,8 @@ class DiscovererViewModel with ChangeNotifier {
     _username = discoverer.username;
 
     connectionsManager = ConnectionsManager();
+    connectionsManager.setCallbackPendingAcceptConnection(
+        _setCallbackPendingAcceptConnection);
     connectionsManager.setCallbackConnectionInitiated(_commonCallback);
     connectionsManager
         .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
@@ -26,6 +29,10 @@ class DiscovererViewModel with ChangeNotifier {
 
   void _commonCallback(Device device) {
     notifyListeners();
+  }
+
+  void _setCallbackPendingAcceptConnection(Device device) {
+    Logger().i("Device ${device.endpointName} wants to connect");
   }
 
   void _callbackSuccessfulConnection(Device device) {

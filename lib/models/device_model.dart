@@ -8,12 +8,22 @@ class Device {
   String endpointId;
   String endpointName;
   bool isEndpointOnly;
+  bool isPendingConnection;
   List<String> messages = [];
   final NearbyCross _nearbyCross = NearbyCross();
   Function(Device) callbackReceivedMessage = (_) => {};
 
-  Device(this.endpointId, this.endpointName) : isEndpointOnly = false;
-  Device.asEndpoint(this.endpointId, this.endpointName) : isEndpointOnly = true;
+  Device(this.endpointId, this.endpointName)
+      : isEndpointOnly = false,
+        isPendingConnection = false;
+
+  Device.asEndpoint(this.endpointId, this.endpointName)
+      : isEndpointOnly = true,
+        isPendingConnection = false;
+
+  Device.asPendingConnection(this.endpointId, this.endpointName)
+      : isEndpointOnly = false,
+        isPendingConnection = true;
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
   void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
