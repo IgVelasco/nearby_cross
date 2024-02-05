@@ -3,7 +3,7 @@ package com.example.nearby_cross.constants
 class Constants {
     companion object {
         const val PLUGIN_NAME = "nearby_cross"
-        const val DEFAULT_USERNAME = "generic_name"
+        const val DEFAULT_USERNAME = "generic_name" // TODO: add phone data or a random to improve default uuid
     }
 }
 

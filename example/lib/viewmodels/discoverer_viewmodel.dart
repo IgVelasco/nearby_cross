@@ -65,7 +65,8 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   Future<void> startDiscovering() async {
-    await discoverer.requestPermissions();
+    await discoverer
+        .requestPermissions(); // TODO: move this to the constructor of the plugin
     await discoverer.startDiscovery(_username);
     notifyListeners();
   }

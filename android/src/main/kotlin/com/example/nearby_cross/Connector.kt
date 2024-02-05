@@ -43,6 +43,7 @@ open class Connector(
     }
 
     fun sendData(context: Context, data: String, endpointId: String) {
+        // TODO: verify and have in mind error handling if endpoint id doesnt exist
         val bytesPayload = Payload.fromBytes(data.toByteArray())
         Nearby.getConnectionsClient(context).sendPayload(endpointId, bytesPayload)
     }

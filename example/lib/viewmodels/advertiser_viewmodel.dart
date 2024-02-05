@@ -56,7 +56,8 @@ class AdvertiserViewModel with ChangeNotifier {
   bool get manualAcceptConnections => _manualAcceptConnections;
 
   Future<void> startAdvertising() async {
-    await advertiser.requestPermissions();
+    await advertiser
+        .requestPermissions(); // TODO: move this to the constructor of the plugin
     await advertiser.advertise(_username,
         manualAcceptConnections: _manualAcceptConnections);
     notifyListeners();
