@@ -17,8 +17,6 @@ class Discoverer(
     callbacks: DiscovererCallbacks,
     userName: String = Constants.DEFAULT_USERNAME,
 ) : Connector(serviceId, strategy, context, callbacks, userName) {
-    var listOfNearbyDevices: MutableMap<String, Device> = mutableMapOf()
-
     private var endpointDiscoveryCallback: EndpointDiscoveryCallback
 
     init {
@@ -27,7 +25,6 @@ class Discoverer(
                 // A nearby device with the same service ID was found
                 // You can now initiate a connection with this device using its endpoint ID
                 Log.d("INFO", "A nearby device with the same service ID was found")
-                listOfNearbyDevices[endpointId] = Device(endpointId, info.endpointName)
                 callbacks.onEndpointFound(endpointId, info.endpointName)
             }
 
@@ -37,7 +34,6 @@ class Discoverer(
                     "INFO",
                     "The nearby device with the given endpoint ID is no longer available $endpointId"
                 )
-                listOfNearbyDevices.remove(endpointId)
             }
         }
 
@@ -63,10 +59,6 @@ class Discoverer(
             .requestConnection(userName, endpointId, connectionLifecycleCallback)
     }
 
-    override fun disconnect(context: Context) {
-        super.disconnect(context)
-        listOfNearbyDevices.clear()
-    }
 }
 
 

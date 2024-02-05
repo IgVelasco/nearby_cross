@@ -14,7 +14,8 @@ class Advertiser(
     context: Context,
     callbacks: AdvertiserCallbacks,
     userName: String = Constants.DEFAULT_USERNAME,
-) : Connector(serviceId, strategy, context, callbacks, userName) {
+    manualAcceptConnections: Boolean = false
+) : Connector(serviceId, strategy, context, callbacks, userName, manualAcceptConnections) {
 
     fun startAdvertising(context: Context) {
         val advertisingOptions = AdvertisingOptions.Builder().setStrategy(this.strategy).build()

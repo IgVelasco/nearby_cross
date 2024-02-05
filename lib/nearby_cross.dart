@@ -1,44 +1,95 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/helpers/permission_manager.dart';
-
-import 'nearby_cross_method_channel.dart';
+import 'package:nearby_cross/nearby_cross_methods.dart';
 
 class NearbyCross {
-  static final MethodChannelNearbyCross nearbyChannel =
-      MethodChannelNearbyCross();
+  @visibleForTesting
+  var logger = Logger();
+  late MethodChannel methodChannel;
+  static NearbyCross? _singleton;
+  Map<String, List<Function(MethodCall)>> methodCallHandlers = {};
 
-  get methodChannel => nearbyChannel;
+  factory NearbyCross() {
+    _singleton ??= NearbyCross._internal();
+
+    return _singleton!;
+  }
+
+  NearbyCross._internal() {
+    methodChannel = const MethodChannel('nearby_cross');
+    for (var method in NearbyCrossMethods.values) {
+      methodCallHandlers[method.getString()] = [];
+    }
+
+    methodChannel.setMethodCallHandler((call) async {
+      if (methodCallHandlers.containsKey(call.method)) {
+        var handlers = methodCallHandlers[call.method];
+        await Future.wait(handlers!.map(
+          (e) async => await e(call),
+        ));
+      } else {
+        logger.i("Received unknown method call: ${call.method}");
+      }
+    });
+  }
 
   static Future<void> requestPermissions() async {
     await PermissionManager.requestPermissions();
   }
 
   Future<String?> getPlatformVersion() async {
-    return nearbyChannel.getPlatformVersion();
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
+    return version;
   }
 
   Future<void> startDiscovery(String serviceId, String? username) async {
-    await nearbyChannel.startDiscovery(serviceId, username);
+    await methodChannel.invokeMethod('startDiscovery', {
+      'serviceId': serviceId,
+      'username': username ?? 'generic_discoverer_name',
+      'strategy': 'P2P_STAR'
+    });
   }
 
-  Future<void> advertise(String serviceId, String? username) async {
-    await nearbyChannel.advertise(serviceId, username);
+  Future<void> advertise(
+      String serviceId, String? username, bool manualAcceptConnections) async {
+    await methodChannel.invokeMethod('startAdvertising', {
+      'serviceId': serviceId,
+      'username': username ?? 'generic_advertiser_name',
+      'strategy': 'P2P_STAR',
+      'manualAcceptConnections': manualAcceptConnections ? "1" : "0"
+    });
   }
 
   Future<void> disconnect(String serviceId) async {
-    await nearbyChannel.disconnect(serviceId);
+    await methodChannel.invokeMethod('disconnect', serviceId);
   }
 
-  Future<void> sendData(String data) async {
-    await nearbyChannel.sendData(data);
+  Future<void> sendData(String data, String endpointId) async {
+    await methodChannel
+        .invokeMethod('sendData', {"data": data, "endpointId": endpointId});
   }
 
-  Future<void> setMethodCallHandler(
-      Future<dynamic> Function(MethodCall) handler) async {
-    await nearbyChannel.setMethodCallHandler(handler);
+  void setMethodCallHandler(
+      NearbyCrossMethods method, Future<dynamic> Function(MethodCall) handler) {
+    if (methodCallHandlers.containsKey(method.getString())) {
+      methodCallHandlers[method.getString()]!.add(handler);
+    }
   }
 
   Future<void> connect(String endpointId) async {
-    await nearbyChannel.connect(endpointId);
+    await methodChannel.invokeMethod('connect', {"endpointId": endpointId});
+  }
+
+  Future<void> acceptConnection(String endpointId) async {
+    await methodChannel
+        .invokeMethod('acceptConnection', {"endpointId": endpointId});
+  }
+
+  Future<void> rejectConnection(String endpointId) async {
+    await methodChannel
+        .invokeMethod('rejectConnection', {"endpointId": endpointId});
   }
 }
