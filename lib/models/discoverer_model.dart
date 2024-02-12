@@ -25,6 +25,11 @@ class Discoverer extends Connector {
     callbackOnDeviceFound(device);
   }
 
+  void _handleEndpointLost(String endpointId) {
+    listOfDiscoveredDevices
+        .removeWhere((element) => element.endpointId == endpointId);
+  }
+
   /// Service to configure callbackOnDeviceFound, that executes every time a new device is found
   void setOnDeviceFoundCallback(Function(Device) callbackOnDeviceFound) {
     this.callbackOnDeviceFound = callbackOnDeviceFound;
@@ -39,7 +44,7 @@ class Discoverer extends Connector {
   }
 
   Future<void> stopDiscovery() async {
-    await nearbyCross.disconnect(serviceId);
+    await nearbyCross.stopDiscovery(serviceId);
     isDiscovering = false;
   }
 

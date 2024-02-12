@@ -2,7 +2,8 @@ enum NearbyCrossMethods {
   onEndpointFound,
   connectionInitiated,
   successfulConnection,
-  payloadReceived;
+  payloadReceived,
+  endpointDisconnected;
 
   String getString() {
     switch (this) {
@@ -14,6 +15,8 @@ enum NearbyCrossMethods {
         return 'successfulConnection';
       case NearbyCrossMethods.payloadReceived:
         return 'payloadReceived';
+      case NearbyCrossMethods.endpointDisconnected:
+        return 'endpointDisconnected';
     }
   }
 }

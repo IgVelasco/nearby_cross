@@ -63,10 +63,6 @@ class AdvertiserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> disconnect() async {
-    return advertiser.disconnect();
-  }
-
   Future<void> stopAdvertising() async {
     await advertiser.stopAdvertising();
     notifyListeners();

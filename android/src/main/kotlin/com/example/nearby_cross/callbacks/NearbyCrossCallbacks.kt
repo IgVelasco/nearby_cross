@@ -29,6 +29,12 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             hashmap["endpointId"] = endpointId
             channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, hashmap)
         }
+
+        override fun onDisconnected(endpointId: String) {
+            val hashmap = HashMap<String, String>()
+            hashmap["endpointId"] = endpointId
+            channel.invokeMethod(ChannelMethods.ENPOINT_DISCONNECTED, hashmap)
+        }
     }
 
     val discoverer = object : DiscovererCallbacks() {
@@ -62,6 +68,12 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             val hashmap = HashMap<String, String>()
             hashmap["endpointId"] = endpointId
             channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, hashmap)
+        }
+
+        override fun onDisconnected(endpointId: String) {
+            val hashmap = HashMap<String, String>()
+            hashmap["endpointId"] = endpointId
+            channel.invokeMethod(ChannelMethods.ENPOINT_DISCONNECTED, hashmap)
         }
     }
 }

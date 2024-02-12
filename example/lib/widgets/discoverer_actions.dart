@@ -114,7 +114,7 @@ class DiscovererActions extends StatelessWidget {
                         onPressed: () {
                           Provider.of<DiscovererViewModel>(context,
                                   listen: false)
-                              .disconnect();
+                              .stopDiscovery();
                         },
                         color: const Color(0x343a57e8),
                         elevation: 0,

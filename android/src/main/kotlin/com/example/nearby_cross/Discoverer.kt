@@ -54,10 +54,16 @@ class Discoverer(
             }
     }
 
+    fun stopDiscovery(context: Context) {
+        Nearby.getConnectionsClient(context).stopDiscovery()
+        Log.d("INFO", "Stopped discovery")
+    }
+
     fun connect(endpointId: String) {
         Nearby.getConnectionsClient(context)
             .requestConnection(userName, endpointId, connectionLifecycleCallback)
     }
+
 
 }
 

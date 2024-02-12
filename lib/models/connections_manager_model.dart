@@ -16,6 +16,7 @@ class ConnectionsManager {
   Function(Device) callbackPendingAcceptConnection = (_) => {};
   Function(Device) callbackConnectionRejected = (_) => {};
   Function(Device) callbackConnectionInitiated = (_) => {};
+  Function(Device?) callbackDisconnectedDevice = (_) => {};
   Function(Device) callbackSuccessfulConnection = (_) => {};
   Function(Device) callbackReceivedMessage = (_) => {};
 
@@ -38,6 +39,13 @@ class ConnectionsManager {
       var device = addPendingAcceptConnection(endpointId, endpointName);
       callbackPendingAcceptConnection(device);
     }
+  }
+
+  /// Handler for [NearbyCrossMethods.endpointDisconnected] method call.
+  /// Adds a device as a "initiated connection", waiting for the conection to sucess.
+  void _handleEndpointDisconnected(String endpointId) {
+    var device = removeInitiatedConnection(endpointId);
+    callbackDisconnectedDevice(device);
   }
 
   /// Handler for [NearbyCrossMethods.successfulConnection] method call.
@@ -90,6 +98,11 @@ class ConnectionsManager {
       var endpointId = arguments["endpointId"] as String;
 
       return _handlePayloadReceived(endpointId, messageReceived);
+    });
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.endpointDisconnected,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      return _handleEndpointDisconnected(arguments["endpointId"] as String);
     });
   }
 
@@ -145,6 +158,18 @@ class ConnectionsManager {
   Device addInitiatedConnection(String endpointId, String endpointName) {
     var device = Device(endpointId, endpointName);
     initiatedConnections.add(device);
+    return device;
+  }
+
+  Device? removeInitiatedConnection(String endpointId) {
+    Device? device = _findDevice(initiatedConnections, endpointId);
+    if (device == null) {
+      logger.e(
+          "Could not find a initiated connection from endpointID $endpointId");
+      return device;
+    }
+
+    initiatedConnections.remove(device);
     return device;
   }
 

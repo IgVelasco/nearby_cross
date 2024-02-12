@@ -26,8 +26,12 @@ class Connector {
     await nearbyCross.connect(endpointId);
   }
 
-  Future<void> disconnect() async {
-    await nearbyCross.disconnect(serviceId);
+  Future<void> disconnectFrom(String endpointId) async {
+    await nearbyCross.disconnectFrom(endpointId);
+  }
+
+  Future<void> stopAllConnections() async {
+    await nearbyCross.disconnectFrom(serviceId);
   }
 
   Connector();

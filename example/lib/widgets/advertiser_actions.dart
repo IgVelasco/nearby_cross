@@ -101,7 +101,7 @@ class AdvertiserActions extends StatelessWidget {
                   ? MaterialButton(
                       onPressed: () {
                         Provider.of<AdvertiserViewModel>(context, listen: false)
-                            .disconnect();
+                            .stopAdvertising();
                       },
                       color: const Color(0x343a57e8),
                       elevation: 0,
