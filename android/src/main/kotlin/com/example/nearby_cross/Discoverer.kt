@@ -40,7 +40,7 @@ class Discoverer(
         Log.d("info", "Discoverer init completed")
     }
 
-    fun startDiscovery(context: Context) {
+    fun startDiscovering(context: Context) {
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(this.strategy).build()
         Nearby.getConnectionsClient(context)
             .startDiscovery(this.serviceId, this.endpointDiscoveryCallback, discoveryOptions)
@@ -54,7 +54,7 @@ class Discoverer(
             }
     }
 
-    fun stopDiscovery(context: Context) {
+    fun stopDiscovering(context: Context) {
         Nearby.getConnectionsClient(context).stopDiscovery()
         Log.d("INFO", "Stopped discovery")
     }

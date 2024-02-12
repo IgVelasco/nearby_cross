@@ -43,8 +43,8 @@ class Discoverer extends Connector {
     this.username = username;
   }
 
-  Future<void> stopDiscovery() async {
-    await nearbyCross.stopDiscovery(serviceId);
+  Future<void> stopDiscovering() async {
+    await nearbyCross.stopDiscovering(serviceId);
     isDiscovering = false;
   }
 

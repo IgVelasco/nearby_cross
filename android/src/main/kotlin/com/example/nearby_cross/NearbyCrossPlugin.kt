@@ -50,7 +50,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                     callbacks.discoverer,
                     userName as String,
                 )
-                this.discoverer?.startDiscovery(context)
+                this.discoverer?.startDiscovering(context)
                 result.success(null)
             }
             ChannelMethods.START_ADVERTISING -> {
@@ -70,8 +70,12 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 this.advertiser?.startAdvertising(context)
                 result.success(null)
             }
-            ChannelMethods.STOP_DISCOVERY -> {
-                this.discoverer?.stopDiscovery(context)
+            ChannelMethods.STOP_DISCOVERING -> {
+                this.discoverer?.stopDiscovering(context)
+                result.success(null)
+            }
+            Chan    nelMethods.STOP_ADVERTISING -> {
+                this.advertiser?.stopAdvertising(context)
                 result.success(null)
             }
             ChannelMethods.CONNECT -> {

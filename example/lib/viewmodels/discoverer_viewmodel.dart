@@ -75,8 +75,8 @@ class DiscovererViewModel with ChangeNotifier {
     return discoverer.disconnectFrom(endpointId);
   }
 
-  Future<void> stopDiscovery() async {
-    await discoverer.stopDiscovery();
+  Future<void> stopDiscovering() async {
+    await discoverer.stopDiscovering();
     notifyListeners();
   }
 

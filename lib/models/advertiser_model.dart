@@ -21,6 +21,8 @@ class Advertiser extends Connector {
   }
 
   Future<void> stopAdvertising() async {
+    await nearbyCross.stopAdvertising(serviceId);
+    isAdvertising = true;
     // TODO: implement stopAdvertising
   }
 

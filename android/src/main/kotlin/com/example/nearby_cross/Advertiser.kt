@@ -38,6 +38,11 @@ class Advertiser(
                 Log.d("INFO", "We were unable to start advertising.")
             }
     }
+
+    fun stopAdvertising(context: Context) {
+        Nearby.getConnectionsClient(context).stopAdvertising()
+        Log.d("INFO", "Stopped advertising")
+    }
 }
 
 

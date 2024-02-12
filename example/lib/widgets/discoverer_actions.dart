@@ -40,7 +40,7 @@ class DiscovererActions extends StatelessWidget {
                     ),
                     onChanged: (value) => {
                       !value
-                          ? viewModel.stopDiscovery()
+                          ? viewModel.stopDiscovering()
                           : viewModel.startDiscovering()
                     },
                   ),
@@ -114,7 +114,7 @@ class DiscovererActions extends StatelessWidget {
                         onPressed: () {
                           Provider.of<DiscovererViewModel>(context,
                                   listen: false)
-                              .stopDiscovery();
+                              .stopDiscovering();
                         },
                         color: const Color(0x343a57e8),
                         elevation: 0,
