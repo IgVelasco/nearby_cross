@@ -1,4 +1,6 @@
+import 'package:nearby_cross/models/advertiser_model.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
+import 'package:nearby_cross/models/discoverer_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:logger/logger.dart';
 
@@ -31,7 +33,9 @@ class Connector {
   }
 
   Future<void> stopAllConnections() async {
-    await nearbyCross.disconnectFrom(serviceId);
+    await nearbyCross.stopAllConnections();
+    Advertiser().connectionsRemoved();
+    Discoverer().connectionsRemoved();
   }
 
   Connector();

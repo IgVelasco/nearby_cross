@@ -20,10 +20,13 @@ class Advertiser extends Connector {
     this.username = username;
   }
 
+  Future<void> connectionsRemoved() async {
+    isAdvertising = false;
+  }
+
   Future<void> stopAdvertising() async {
-    await nearbyCross.stopAdvertising(serviceId);
-    isAdvertising = true;
-    // TODO: implement stopAdvertising
+    await super.stopAllConnections();
+    isAdvertising = false;
   }
 
   Advertiser._internal() : super();

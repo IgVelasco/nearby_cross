@@ -68,6 +68,11 @@ class AdvertiserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> stopAllConnections() async {
+    await advertiser.stopAllConnections();
+    notifyListeners();
+  }
+
   Future<void> connect(String endpointId) {
     return advertiser.connect(endpointId);
   }

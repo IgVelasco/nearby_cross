@@ -74,7 +74,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 this.discoverer?.stopDiscovering(context)
                 result.success(null)
             }
-            Chan    nelMethods.STOP_ADVERTISING -> {
+            ChannelMethods.STOP_ADVERTISING -> {
                 this.advertiser?.stopAdvertising(context)
                 result.success(null)
             }

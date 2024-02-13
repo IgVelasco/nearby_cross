@@ -111,10 +111,8 @@ class DiscovererActions extends StatelessWidget {
             Consumer<DiscovererViewModel>(
                 builder: (context, viewModel, child) => viewModel.isConnected
                     ? MaterialButton(
-                        onPressed: () {
-                          Provider.of<DiscovererViewModel>(context,
-                                  listen: false)
-                              .stopDiscovering();
+                        onPressed: () async {
+                          await viewModel.stopAllConnections();
                         },
                         color: const Color(0x343a57e8),
                         elevation: 0,

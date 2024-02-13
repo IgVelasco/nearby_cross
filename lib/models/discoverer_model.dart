@@ -44,7 +44,11 @@ class Discoverer extends Connector {
   }
 
   Future<void> stopDiscovering() async {
-    await nearbyCross.stopDiscovering(serviceId);
+    await nearbyCross.stopDiscovering();
+    isDiscovering = false;
+  }
+
+  Future<void> connectionsRemoved() async {
     isDiscovering = false;
   }
 

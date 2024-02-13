@@ -196,7 +196,7 @@ class ConnectionsManager {
     }
 
     connectedDevices.add(device);
-    initiatedConnections.remove(device);
+    initiatedConnections.remove(endpointId);
 
     if (device.isPendingConnection) {
       pendingAcceptConnections.remove(device);

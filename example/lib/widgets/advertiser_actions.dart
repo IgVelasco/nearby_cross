@@ -99,9 +99,8 @@ class AdvertiserActions extends StatelessWidget {
           Consumer<AdvertiserViewModel>(
               builder: (context, app, child) => app.isConnected
                   ? MaterialButton(
-                      onPressed: () {
-                        Provider.of<AdvertiserViewModel>(context, listen: false)
-                            .stopAdvertising();
+                      onPressed: () async {
+                        await app.stopAllConnections();
                       },
                       color: const Color(0x343a57e8),
                       elevation: 0,
