@@ -25,11 +25,6 @@ class Discoverer extends Connector {
     callbackOnDeviceFound(device);
   }
 
-  void _handleEndpointLost(String endpointId) {
-    listOfDiscoveredDevices
-        .removeWhere((element) => element.endpointId == endpointId);
-  }
-
   /// Service to configure callbackOnDeviceFound, that executes every time a new device is found
   void setOnDeviceFoundCallback(Function(Device) callbackOnDeviceFound) {
     this.callbackOnDeviceFound = callbackOnDeviceFound;
