@@ -44,7 +44,7 @@ class ConnectionsManager {
   /// Handler for [NearbyCrossMethods.endpointDisconnected] method call.
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
   void _handleEndpointDisconnected(String endpointId) {
-    var device = removeInitiatedConnection(endpointId);
+    var device = removeConnectedDevices(endpointId);
     callbackDisconnectedDevice(device);
   }
 
@@ -161,18 +161,6 @@ class ConnectionsManager {
     return device;
   }
 
-  Device? removeInitiatedConnection(String endpointId) {
-    Device? device = _findDevice(initiatedConnections, endpointId);
-    if (device == null) {
-      logger.e(
-          "Could not find a initiated connection from endpointID $endpointId");
-      return device;
-    }
-
-    initiatedConnections.remove(device);
-    return device;
-  }
-
   // Adds a device in initiatedConnections set.
   Device addDeviceAsInitiatedConnection(Device device) {
     initiatedConnections.add(device);
@@ -202,6 +190,19 @@ class ConnectionsManager {
       pendingAcceptConnections.remove(device);
     }
 
+    return device;
+  }
+
+  Device? removeConnectedDevices(String endpointId) {
+    Device? device = _findDevice(initiatedConnections, endpointId);
+    if (device == null) {
+      logger.e(
+          "Could not find a initiated connection from endpointID $endpointId");
+      return device;
+    }
+
+    connectedDevices.remove(device);
+    logger.i("Device $endpointId disconnected");
     return device;
   }
 
