@@ -7,7 +7,10 @@ class Discoverer extends Connector {
   static Discoverer? _singleton;
   Set<Device> listOfDiscoveredDevices = {};
   Function(Device) callbackOnDeviceFound = (_) => {};
+
   bool isDiscovering = false;
+  bool isConnected = false;
+  bool get isRunning => isConnected || isDiscovering;
 
   /// Implements singleton pattern
   factory Discoverer() {
@@ -43,8 +46,9 @@ class Discoverer extends Connector {
     isDiscovering = false;
   }
 
-  Future<void> connectionsRemoved() async {
+  Future<void> connectionsStopped() async {
     isDiscovering = false;
+    isConnected = false;
   }
 
   int getNumberOfDiscoveredDevices() {

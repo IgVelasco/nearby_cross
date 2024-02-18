@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross/models/discoverer_model.dart';
 import 'package:nearby_cross_example/screens/pending_connections_list.dart';
 import 'package:nearby_cross_example/viewmodels/advertiser_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -97,30 +98,31 @@ class AdvertiserActions extends StatelessWidget {
             ],
           ),
           Consumer<AdvertiserViewModel>(
-              builder: (context, app, child) => app.isConnected
-                  ? MaterialButton(
-                      onPressed: () async {
-                        await app.stopAllConnections();
-                      },
-                      color: const Color(0x343a57e8),
-                      elevation: 0,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      textColor: const Color(0xff3a57e8),
-                      height: 40,
-                      minWidth: MediaQuery.of(context).size.width,
-                      child: const Text(
-                        "Disconnect All",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                    )
-                  : Container())
+              builder: (context, app, child) =>
+                  app.isRunning || Discoverer().isRunning
+                      ? MaterialButton(
+                          onPressed: () async {
+                            await app.stopAllConnections();
+                          },
+                          color: const Color(0x343a57e8),
+                          elevation: 0,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          textColor: const Color(0xff3a57e8),
+                          height: 40,
+                          minWidth: MediaQuery.of(context).size.width,
+                          child: const Text(
+                            "Stop All Connections",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.normal,
+                            ),
+                          ),
+                        )
+                      : Container())
         ]);
       },
     );

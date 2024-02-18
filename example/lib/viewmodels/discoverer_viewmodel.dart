@@ -11,7 +11,6 @@ class DiscovererViewModel with ChangeNotifier {
 
   late ConnectionsManager connectionsManager;
   String? _username;
-  bool _isConnected = false;
   Device? _connectedDevice;
 
   DiscovererViewModel() {
@@ -37,13 +36,15 @@ class DiscovererViewModel with ChangeNotifier {
 
   void _callbackSuccessfulConnection(Device device) {
     _connectedDevice = device;
-    _isConnected = true;
+    discoverer.isConnected = true;
     _commonCallback(device);
   }
 
-  bool get isConnected => _isConnected;
+  bool get isConnected => discoverer.isConnected;
 
   bool get isDiscovering => discoverer.isDiscovering;
+
+  bool get isRunning => discoverer.isConnected || discoverer.isDiscovering;
 
   String getUsername() {
     return _username ?? discoverer.username ?? "";

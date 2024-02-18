@@ -34,8 +34,8 @@ class Connector {
 
   Future<void> stopAllConnections() async {
     await nearbyCross.stopAllConnections();
-    Advertiser().connectionsRemoved();
-    Discoverer().connectionsRemoved();
+    Advertiser().connectionsStopped();
+    Discoverer().connectionsStopped();
   }
 
   Connector();
