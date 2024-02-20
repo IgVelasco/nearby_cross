@@ -30,7 +30,8 @@ class Advertiser(
                 // We're discovering! Using service id: $serviceId
                 Log.d(
                     "INFO",
-                    "We're advertising! Using service id: $serviceId and username $userName"
+                    "We're advertising in $strategy mode! Using service id: $serviceId " +
+                            "and username $userName"
                 )
             }
             .addOnFailureListener { e ->

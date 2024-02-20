@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross_example/screens/pending_connections_list.dart';
 import 'package:nearby_cross_example/viewmodels/advertiser_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +8,8 @@ import '../screens/advertiser_comunication_screen.dart';
 
 class AdvertiserActions extends StatelessWidget {
   final String? username;
-  const AdvertiserActions(this.username, {super.key});
+  final NearbyStrategies? strategy;
+  const AdvertiserActions(this.username, this.strategy, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,7 @@ class AdvertiserActions extends StatelessWidget {
                   ),
                   onChanged: (value) => value == false
                       ? app.stopAdvertising()
-                      : app.startAdvertising(),
+                      : app.startAdvertising(strategy!),
                 ),
               ),
               const Divider(

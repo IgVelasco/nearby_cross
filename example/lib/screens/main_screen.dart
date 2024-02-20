@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross_example/viewmodels/main_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/discoverer_actions.dart';
 import 'package:nearby_cross_example/widgets/input_dialog.dart';
@@ -44,19 +45,51 @@ class MainScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Consumer<MainViewModel>(
-                                  builder: (context, viewModel, child) => Text(
-                                    viewModel.username,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.clip,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontStyle: FontStyle.normal,
-                                      fontSize: 18,
-                                      color: Color(0xff000000),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Ink(
+                                      decoration: const ShapeDecoration(
+                                        color: Colors.white,
+                                        shape: CircleBorder(),
+                                      ),
+                                      child: Consumer<MainViewModel>(
+                                        builder: (context, viewModel, child) =>
+                                            IconButton(
+                                          icon: const Icon(Icons.edit),
+                                          color: viewModel.advertiserMode
+                                              ? Colors.blue
+                                              : Colors.red,
+                                          onPressed: () => showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return InputDialog(vm.username,
+                                                  (input) {
+                                                vm.setUsername(input);
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Consumer<MainViewModel>(
+                                      builder: (context, viewModel, child) =>
+                                          Text(
+                                        viewModel.username,
+                                        textAlign: TextAlign.start,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.clip,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontStyle: FontStyle.normal,
+                                          fontSize: 18,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const Padding(
                                     padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -112,46 +145,55 @@ class MainScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-                    child: MaterialButton(
-                      color: const Color(0x343a57e8),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      textColor: const Color(0xff3a57e8),
-                      minWidth: MediaQuery.of(context).size.width,
-                      child: const Text(
-                        "Change Username",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                      onPressed: () => showDialog(
-                        context: context,
-                        builder: (context) {
-                          return InputDialog(vm.username, (input) {
-                            vm.setUsername(input);
-                          });
-                        },
-                      ),
-                    ),
-                  ),
+                  Consumer<MainViewModel>(
+                      builder: (context, viewModel, child) => ListView(
+                            scrollDirection: Axis.vertical,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            children: [
+                              ListTile(
+                                title: const Text("Strategy"),
+                                trailing: DropdownButton<NearbyStrategies>(
+                                  value: viewModel.strategy,
+                                  elevation: 16,
+                                  style: TextStyle(
+                                      color: viewModel.advertiserMode
+                                          ? Colors.blue
+                                          : Colors.red),
+                                  underline: Container(
+                                    height: 2,
+                                    color: viewModel.advertiserMode
+                                        ? Colors.blue
+                                        : Colors.red,
+                                  ),
+                                  onChanged: (NearbyStrategies? value) {
+                                    viewModel.setStrategy(value!);
+                                  },
+                                  items: NearbyStrategies.values
+                                      .map<DropdownMenuItem<NearbyStrategies>>(
+                                          (NearbyStrategies value) {
+                                    return DropdownMenuItem<NearbyStrategies>(
+                                      value: value,
+                                      child: Text(value.toPresentationString()),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                            ],
+                          )),
                   Consumer<MainViewModel>(
                     builder: (context, viewModel, child) =>
                         viewModel.advertiserMode
                             ? Consumer<MainViewModel>(
                                 builder: (context, viewModel, child) =>
-                                    AdvertiserActions(viewModel.username),
+                                    AdvertiserActions(
+                                        viewModel.username, viewModel.strategy),
                               )
                             : Consumer<MainViewModel>(
                                 builder: (context, viewModel, child) =>
-                                    DiscovererActions(viewModel.username),
+                                    DiscovererActions(
+                                        viewModel.username, viewModel.strategy),
                               ),
                   )
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross/helpers/permission_manager.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
@@ -45,20 +46,22 @@ class NearbyCross {
     return version;
   }
 
-  Future<void> startDiscovery(String serviceId, String? username) async {
+  Future<void> startDiscovery(String serviceId, String? username,
+      [NearbyStrategies strategy = NearbyStrategies.star]) async {
     await methodChannel.invokeMethod('startDiscovery', {
       'serviceId': serviceId,
       'username': username ?? 'generic_discoverer_name',
-      'strategy': 'P2P_STAR'
+      'strategy': strategy.toStrategyString()
     });
   }
 
   Future<void> advertise(
-      String serviceId, String? username, bool manualAcceptConnections) async {
+      String serviceId, String? username, bool manualAcceptConnections,
+      [NearbyStrategies strategy = NearbyStrategies.star]) async {
     await methodChannel.invokeMethod('startAdvertising', {
       'serviceId': serviceId,
       'username': username ?? 'generic_advertiser_name',
-      'strategy': 'P2P_STAR',
+      'strategy': strategy.toStrategyString(),
       'manualAcceptConnections': manualAcceptConnections ? "1" : "0"
     });
   }

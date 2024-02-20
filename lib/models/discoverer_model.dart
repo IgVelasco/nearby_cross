@@ -1,3 +1,4 @@
+import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
@@ -31,9 +32,10 @@ class Discoverer extends Connector {
   }
 
   /// Service to start discovering devices using NearbyCross plugin
-  Future<void> startDiscovery(String? username) async {
+  Future<void> startDiscovery(String? username,
+      {NearbyStrategies strategy = NearbyStrategies.star}) async {
     listOfDiscoveredDevices.clear();
-    await nearbyCross.startDiscovery(serviceId, username);
+    await nearbyCross.startDiscovery(serviceId, username, strategy);
     isDiscovering = true;
     this.username = username;
   }
