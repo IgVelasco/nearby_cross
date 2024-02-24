@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +8,8 @@ import '../screens/discoverer_comunication_screen.dart';
 
 class DiscovererActions extends StatelessWidget {
   final String? username;
-  const DiscovererActions(this.username, {super.key});
+  final NearbyStrategies? strategy;
+  const DiscovererActions(this.username, this.strategy, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class DiscovererActions extends StatelessWidget {
                     onChanged: (value) => {
                       !value
                           ? viewModel.stopDiscovery()
-                          : viewModel.startDiscovering()
+                          : viewModel.startDiscovering(strategy!)
                     },
                   ),
                 ),
