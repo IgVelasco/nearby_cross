@@ -36,7 +36,6 @@ class DiscovererViewModel with ChangeNotifier {
 
   void _callbackSuccessfulConnection(Device device) {
     _connectedDevice = device;
-    discoverer.isConnected = true;
     _commonCallback(device);
   }
 

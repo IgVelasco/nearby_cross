@@ -35,7 +35,6 @@ class AdvertiserViewModel with ChangeNotifier {
 
   void _callbackSuccessfulConnection(Device device) {
     _connectedDevice = device;
-    advertiser.isConnected = true;
     _commonCallback(device);
   }
 
@@ -52,7 +51,6 @@ class AdvertiserViewModel with ChangeNotifier {
 
   bool get isConnected => advertiser.isConnected;
   bool get isAdvertising => advertiser.isAdvertising;
-  bool get isRunning => advertiser.isRunning;
 
   bool get manualAcceptConnections => _manualAcceptConnections;
 

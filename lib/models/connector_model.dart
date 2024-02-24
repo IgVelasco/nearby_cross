@@ -12,6 +12,7 @@ class Connector {
   String? username;
   NearbyCross nearbyCross = NearbyCross();
   ConnectionsManager connectionsManager = ConnectionsManager();
+  bool get isConnected => connectionsManager.connectedDevices.isNotEmpty;
 
   String serviceId = 'com.example.nearbyCrossExample';
 
@@ -34,8 +35,6 @@ class Connector {
 
   Future<void> stopAllConnections() async {
     await nearbyCross.stopAllConnections();
-    Advertiser().connectionsStopped();
-    Discoverer().connectionsStopped();
   }
 
   Connector();

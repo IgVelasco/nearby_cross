@@ -4,8 +4,6 @@ import 'package:nearby_cross/models/connector_model.dart';
 class Advertiser extends Connector {
   static Advertiser? _singleton;
   bool isAdvertising = false;
-  bool isConnected = false;
-  bool get isRunning => isConnected || isAdvertising;
 
   /// Implements singleton pattern
   factory Advertiser() {
@@ -20,11 +18,6 @@ class Advertiser extends Connector {
     await nearbyCross.advertise(serviceId, username, manualAcceptConnections);
     isAdvertising = true;
     this.username = username;
-  }
-
-  Future<void> connectionsStopped() async {
-    isAdvertising = false;
-    isConnected = false;
   }
 
   Future<void> stopAdvertising() async {

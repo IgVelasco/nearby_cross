@@ -45,6 +45,12 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
             channel.invokeMethod(ChannelMethods.ON_ENDPOINT_FOUND, hashmap)
         }
 
+        override fun onEndpointLost(endpointId: String) {
+            val hashmap = HashMap<String, String>()
+            hashmap["endpointId"] = endpointId
+            channel.invokeMethod(ChannelMethods.ON_ENDPOINT_LOST, hashmap)
+        }
+
         override fun onPayloadReceived(stringReceived: String, endpointId: String) {
             val hashmap = HashMap<String, String>()
             hashmap["message"] = stringReceived

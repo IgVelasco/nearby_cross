@@ -34,6 +34,7 @@ class Discoverer(
                     "INFO",
                     "The nearby device with the given endpoint ID is no longer available $endpointId"
                 )
+                callbacks.onEndpointLost(endpointId)
             }
         }
 
