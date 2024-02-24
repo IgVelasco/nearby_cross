@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross/models/advertiser_model.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:provider/provider.dart';
 
