@@ -19,7 +19,7 @@ class AdvertiserComunicationScreen extends StatelessWidget {
       ],
       builder: (context, child) {
         return Scaffold(
-          appBar: const NCAppBar(),
+          appBar: NCAppBar(),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

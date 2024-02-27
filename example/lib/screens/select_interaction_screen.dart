@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross_example/screens/comunication_screen.dart';
 import 'package:nearby_cross_example/viewmodels/select_interaction_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +16,8 @@ class SelectInteractionScreen extends StatelessWidget {
     }
 
     void interactAction(Device device) {
-      // Navigator.of(context).push(MaterialPageRoute(
-      //     builder: (context) =>
-      //         DiscovererComunicationScreen(connectedDevice: device.toItem())));
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ComunicationScreen(device: device)));
     }
 
     return MultiProvider(
@@ -30,7 +30,7 @@ class SelectInteractionScreen extends StatelessWidget {
             Provider.of<SelectInteractionViewModel>(context, listen: false);
 
         return Scaffold(
-            appBar: const NCAppBar(),
+            appBar: NCAppBar(),
             body: Consumer<SelectInteractionViewModel>(
               builder: (context, viewModel, child) => RefreshIndicator(
                   triggerMode: RefreshIndicatorTriggerMode.onEdge,

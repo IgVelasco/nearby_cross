@@ -7,10 +7,6 @@ class SelectInteractionViewModel with ChangeNotifier {
   Logger logger = Logger();
   late ConnectionsManager connectionsManager;
 
-  var mockDevices = [
-    Device("id1", "device1"),
-  ];
-
   SelectInteractionViewModel() {
     connectionsManager = ConnectionsManager();
 
@@ -33,12 +29,10 @@ class SelectInteractionViewModel with ChangeNotifier {
   }
 
   int getTotalConnectionsCount() {
-    // return connectionsManager.connectedDevices.length;
-    return mockDevices.length;
+    return connectionsManager.connectedDevices.length;
   }
 
   Device getConnectedDeviceByIndex(int index) {
-    // return connectionsManager.connectedDevices.toList()[index];
-    return mockDevices[index];
+    return connectionsManager.connectedDevices.toList()[index];
   }
 }

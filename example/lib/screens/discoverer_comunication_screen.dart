@@ -20,7 +20,7 @@ class DiscovererComunicationScreen extends StatelessWidget {
                   connectedDevice["endpointId"]!))
         ],
         child: Scaffold(
-          appBar: const NCAppBar(),
+          appBar: NCAppBar(),
           body: Consumer<DiscovererComunicationViewModel>(
               builder: (context, viewModel, child) => Column(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -14,7 +14,7 @@ class DiscoveredDevicesList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
-      appBar: const NCAppBar(),
+      appBar: NCAppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
         child: SingleChildScrollView(
