@@ -30,6 +30,7 @@ class PendingConnectionListItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     FloatingActionButton.small(
+                      heroTag: null,
                       onPressed: () {
                         rejectAction();
                       },
@@ -44,6 +45,7 @@ class PendingConnectionListItem extends StatelessWidget {
                       endIndent: 0,
                     ),
                     FloatingActionButton.small(
+                      heroTag: null,
                       onPressed: () {
                         acceptAction();
                       },
