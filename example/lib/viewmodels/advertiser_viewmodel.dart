@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
@@ -54,11 +55,11 @@ class AdvertiserViewModel with ChangeNotifier {
 
   bool get manualAcceptConnections => _manualAcceptConnections;
 
-  Future<void> startAdvertising() async {
+  Future<void> startAdvertising(NearbyStrategies strategy) async {
     await advertiser
         .requestPermissions(); // TODO: move this to the constructor of the plugin
     await advertiser.advertise(_username,
-        manualAcceptConnections: _manualAcceptConnections);
+        manualAcceptConnections: _manualAcceptConnections, strategy: strategy);
     notifyListeners();
   }
 

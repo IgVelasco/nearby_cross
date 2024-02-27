@@ -47,7 +47,10 @@ class Discoverer(
             .startDiscovery(this.serviceId, this.endpointDiscoveryCallback, discoveryOptions)
             .addOnSuccessListener {
                 // We're discovering! Using service id: $serviceId
-                Log.d("INFO", "We're discovering! Using service id: $this.serviceId")
+                Log.d(
+                    "INFO", "We're discovering in $strategy! " +
+                            "Using service id: ${this.serviceId}"
+                )
             }
             .addOnFailureListener { e ->
                 // We were unable to start discovery.
