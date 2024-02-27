@@ -50,7 +50,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                     callbacks.discoverer,
                     userName as String,
                 )
-                this.discoverer?.startDiscovery(context)
+                this.discoverer?.startDiscovering(context)
                 result.success(null)
             }
             ChannelMethods.START_ADVERTISING -> {
@@ -70,17 +70,24 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 this.advertiser?.startAdvertising(context)
                 result.success(null)
             }
+            ChannelMethods.STOP_DISCOVERING -> {
+                this.discoverer?.stopDiscovering(context)
+                result.success(null)
+            }
+            ChannelMethods.STOP_ADVERTISING -> {
+                this.advertiser?.stopAdvertising(context)
+                result.success(null)
+            }
             ChannelMethods.CONNECT -> {
                 val endpointId = call.argument<String>("endpointId")
                 this.discoverer?.connect(endpointId as String)
             }
-            ChannelMethods.DISCONNECT -> {
-                val serviceId = call.arguments as String
-                this.advertiser?.disconnect(context)
-                this.discoverer?.disconnect(context)
+            ChannelMethods.STOP_ALL_CONNECTIONS -> {
+                this.advertiser?.stopAllConnections(context)
+                this.discoverer?.stopAllConnections(context)
                 result.success(null)
             }
-            ChannelMethods.DISCONNECT_FROM_EP_ID -> {
+            ChannelMethods.DISCONNECT_FROM -> {
                 val endpointId = call.arguments as String
                 this.advertiser?.disconnectFromEndpointId(context, endpointId)
                 this.discoverer?.disconnectFromEndpointId(context, endpointId)

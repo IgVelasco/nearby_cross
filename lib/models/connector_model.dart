@@ -10,6 +10,7 @@ class Connector {
   String? username;
   NearbyCross nearbyCross = NearbyCross();
   ConnectionsManager connectionsManager = ConnectionsManager();
+  bool get isConnected => connectionsManager.connectedDevices.isNotEmpty;
 
   String serviceId = 'com.example.nearbyCrossExample';
 
@@ -26,8 +27,12 @@ class Connector {
     await nearbyCross.connect(endpointId);
   }
 
-  Future<void> disconnect() async {
-    await nearbyCross.disconnect(serviceId);
+  Future<void> disconnectFrom(String endpointId) async {
+    await nearbyCross.disconnectFrom(endpointId);
+  }
+
+  Future<void> stopAllConnections() async {
+    await nearbyCross.stopAllConnections();
   }
 
   Connector();

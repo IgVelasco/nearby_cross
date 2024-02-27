@@ -8,6 +8,7 @@ class Discoverer extends Connector {
   static Discoverer? _singleton;
   Set<Device> listOfDiscoveredDevices = {};
   Function(Device) callbackOnDeviceFound = (_) => {};
+  Function(Device) callbackOnDeviceLost = (_) => {};
   bool isDiscovering = false;
 
   /// Implements singleton pattern
@@ -26,6 +27,14 @@ class Discoverer extends Connector {
     callbackOnDeviceFound(device);
   }
 
+  void _handleEndpointLost(String endpointId) {
+    var device = listOfDiscoveredDevices
+        .firstWhere((element) => element.endpointId == endpointId);
+
+    listOfDiscoveredDevices.remove(device);
+    callbackOnDeviceLost(device);
+  }
+
   /// Service to configure callbackOnDeviceFound, that executes every time a new device is found
   void setOnDeviceFoundCallback(Function(Device) callbackOnDeviceFound) {
     this.callbackOnDeviceFound = callbackOnDeviceFound;
@@ -40,8 +49,8 @@ class Discoverer extends Connector {
     this.username = username;
   }
 
-  Future<void> stopDiscovery() async {
-    await nearbyCross.disconnect(serviceId);
+  Future<void> stopDiscovering() async {
+    await nearbyCross.stopDiscovering();
     isDiscovering = false;
   }
 
@@ -55,6 +64,12 @@ class Discoverer extends Connector {
       var arguments = call.arguments as Map<Object?, Object?>;
       return _handleEndpointFound(arguments["endpointId"] as String,
           arguments["endpointName"] as String);
+    });
+
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.onEndpointLost,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      return _handleEndpointLost(arguments["endpointId"] as String);
     });
   }
 }
