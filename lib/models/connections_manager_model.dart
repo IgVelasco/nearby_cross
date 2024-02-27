@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
@@ -219,7 +221,7 @@ class ConnectionsManager {
   }
 
   /// Sends message to a given device given its endpointId
-  void sendMessageToDevice(String endpointId, String message) {
+  void sendMessageToDevice(String endpointId, Uint8List message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
@@ -230,7 +232,7 @@ class ConnectionsManager {
   }
 
   /// Broadcasts a message to every connected device
-  void broadcastMessage(String message) {
+  void broadcastMessage(Uint8List message) {
     for (var device in connectedDevices) {
       device.sendMessage(message);
     }

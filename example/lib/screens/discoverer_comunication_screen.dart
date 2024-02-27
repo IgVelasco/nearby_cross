@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/types/item_type.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_comunication_viewmodel.dart';
