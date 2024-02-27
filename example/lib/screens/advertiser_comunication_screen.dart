@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:nearby_cross_example/viewmodels/advertiser_comunication_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/snackbar_launcher.dart';
