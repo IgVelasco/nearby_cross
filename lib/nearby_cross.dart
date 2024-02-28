@@ -84,7 +84,7 @@ class NearbyCross {
     await methodChannel.invokeMethod('stopAdvertising');
   }
 
-  Future<void> sendData(String data, String endpointId) async {
+  Future<void> sendData(Uint8List data, String endpointId) async {
     await methodChannel
         .invokeMethod('sendData', {"data": data, "endpointId": endpointId});
   }

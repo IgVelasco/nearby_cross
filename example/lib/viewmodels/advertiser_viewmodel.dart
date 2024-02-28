@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
@@ -77,7 +79,7 @@ class AdvertiserViewModel with ChangeNotifier {
     return advertiser.connect(endpointId);
   }
 
-  Future<void> sendData(String message) async {
+  Future<void> sendData(Uint8List message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
           _connectedDevice!.endpointId, message);

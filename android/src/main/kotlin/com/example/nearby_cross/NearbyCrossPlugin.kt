@@ -94,7 +94,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(null)
             }
             ChannelMethods.SEND_DATA -> {
-                val data = call.argument<String>("data") as String
+                val data = call.argument<ByteArray>("data") as ByteArray
                 val endpointId = call.argument<String>("endpointId") as String
                 this.dataManager.sendData(context, data, endpointId)
                 result.success(null)

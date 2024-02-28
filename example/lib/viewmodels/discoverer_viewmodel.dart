@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -86,7 +87,7 @@ class DiscovererViewModel with ChangeNotifier {
     return discoverer.connect(endpointId);
   }
 
-  Future<void> sendData(String message) async {
+  Future<void> sendData(Uint8List message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
           _connectedDevice!.endpointId, message);

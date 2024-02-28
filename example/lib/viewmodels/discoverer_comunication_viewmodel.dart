@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
@@ -27,7 +29,8 @@ class DiscovererComunicationViewModel extends ChangeNotifier {
   }
 
   void sendData(String message) {
-    connectedDevice?.sendMessage(message);
+    Uint8List data = Uint8List.fromList(message.codeUnits);
+    connectedDevice?.sendMessage(data);
   }
 
   String? getLastMessage() {

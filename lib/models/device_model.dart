@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
@@ -39,7 +40,7 @@ class Device {
   }
 
   /// Sends message to the device identified with endpointId
-  void sendMessage(String message) {
+  void sendMessage(Uint8List message) {
     _nearbyCross.sendData(message, endpointId);
   }
 
