@@ -3,6 +3,7 @@ import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross_example/screens/comunication_screen.dart';
 import 'package:nearby_cross_example/viewmodels/select_interaction_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
+import 'package:nearby_cross_example/widgets/utils/alert.dart';
 import 'package:provider/provider.dart';
 
 class SelectInteractionScreen extends StatelessWidget {
@@ -29,27 +30,44 @@ class SelectInteractionScreen extends StatelessWidget {
         var provider =
             Provider.of<SelectInteractionViewModel>(context, listen: false);
 
+        bool noConnections = provider.getTotalConnectionsCount() == 0;
+
         return Scaffold(
             appBar: NCAppBar(),
             body: Consumer<SelectInteractionViewModel>(
               builder: (context, viewModel, child) => RefreshIndicator(
                   triggerMode: RefreshIndicatorTriggerMode.onEdge,
                   onRefresh: () => provider.refreshConnectedList(),
-                  child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    padding: const EdgeInsets.all(0),
-                    physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics()),
-                    itemCount: viewModel.getTotalConnectionsCount(),
-                    itemBuilder: (context, index) {
-                      Device device =
-                          viewModel.getConnectedDeviceByIndex(index);
-                      return InteractListItem(
-                          device: device,
-                          acceptAction: interactAction,
-                          rejectAction: disconnectAction);
-                    },
-                  )),
+                  child: noConnections
+                      ? LayoutBuilder(
+                          builder: (context, constraints) => Center(
+                            child: SizedBox(
+                              height: constraints.maxHeight * 0.2,
+                              width: constraints.maxWidth * 0.8,
+                              child: const Alert(
+                                icon: Icon(Icons.warning),
+                                title: "No connections",
+                                text:
+                                    "Please start to advertise or discover to find devices to interact!",
+                              ),
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          padding: const EdgeInsets.all(0),
+                          physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics()),
+                          itemCount: viewModel.getTotalConnectionsCount(),
+                          itemBuilder: (context, index) {
+                            Device device =
+                                viewModel.getConnectedDeviceByIndex(index);
+                            return InteractListItem(
+                                device: device,
+                                acceptAction: interactAction,
+                                rejectAction: disconnectAction);
+                          },
+                        )),
             ));
       },
     );
