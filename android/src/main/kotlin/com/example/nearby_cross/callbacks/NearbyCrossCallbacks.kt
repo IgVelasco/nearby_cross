@@ -53,6 +53,7 @@ class NearbyCrossCallbacks(private val channel: MethodChannel) {
 
         override fun onPayloadReceived(stringReceived: String, endpointId: String) {
             val hashmap = HashMap<String, String>()
+            // TODO: change to bytes instead of string
             hashmap["message"] = stringReceived
             hashmap["endpointId"] = endpointId
             channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, hashmap)

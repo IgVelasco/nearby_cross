@@ -54,6 +54,7 @@ open class Connector(
             if (payload.type == Payload.Type.BYTES) {
                 val receivedBytes = payload.asBytes()
                 val stringReceived = receivedBytes?.let { String(it) }
+                // TODO: change to bytes instead of string
                 callbacks.onPayloadReceived(stringReceived as String, endpointId)
             }
         }
