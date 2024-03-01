@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+protocol ConnectionCallbacks {
+    func onPayloadReceived(stringReceived: String, endpointId: String)
+    func onDisconnected(endpointId: String)
+    func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool)
+    func onSuccessfulConnection(endpointId: String)
+}

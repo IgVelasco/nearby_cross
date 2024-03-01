@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+enum ConnectionStrategies: String {
+    case P2P_CLUSTER
+    case P2P_STAR
+    case P2P_POINT_TO_POINT
+}

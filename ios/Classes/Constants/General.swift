@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct GeneralConstants {
+    static let PLUGIN_NAME = "nearby_cross"
+    static let DEFAULT_USERNAME = "generic_name" // TODO: add phone data or a random to improve default uuid
+}

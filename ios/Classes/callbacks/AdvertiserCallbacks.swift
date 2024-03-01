@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol AdvertiserCallbacks: ConnectionCallbacks {
+    // Additional methods specific to AdvertiserCallbacks can be defined here
+}
