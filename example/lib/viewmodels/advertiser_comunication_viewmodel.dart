@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross/models/message_model.dart';
 
 class AdvertiserComunicationViewModel extends ChangeNotifier {
   Device? lastDeviceMessage;
@@ -54,10 +55,10 @@ class AdvertiserComunicationViewModel extends ChangeNotifier {
   }
 
   void sendDataToDevices(String message) {
-    connectionsManager.broadcastMessage(message);
+    connectionsManager.broadcastMessage(NearbyMessage.fromString(message));
   }
 
-  String? getLastMessage() {
+  NearbyMessage? getLastMessage() {
     return lastDeviceMessage?.getLastMessage();
   }
 }

@@ -4,6 +4,7 @@ import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
+import 'package:nearby_cross/models/message_model.dart';
 
 class AdvertiserViewModel with ChangeNotifier {
   late Advertiser advertiser;
@@ -80,7 +81,7 @@ class AdvertiserViewModel with ChangeNotifier {
   Future<void> sendData(String message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
-          _connectedDevice!.endpointId, message);
+          _connectedDevice!.endpointId, NearbyMessage.fromString(message));
     }
   }
 

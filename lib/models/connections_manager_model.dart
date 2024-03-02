@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
@@ -53,7 +56,7 @@ class ConnectionsManager {
 
   /// Handler for [NearbyCrossMethods.payloadReceived] method call.
   /// Adds received message to the corresponding device.
-  void _handlePayloadReceived(String endpointId, String messageReceived) {
+  void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
     var device = addMessageFromDevice(endpointId, messageReceived);
     if (device == null) {
       return;
@@ -86,7 +89,7 @@ class ConnectionsManager {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var messageReceived = arguments["message"] as String;
+      var messageReceived = arguments["message"] as Uint8List;
       var endpointId = arguments["endpointId"] as String;
 
       return _handlePayloadReceived(endpointId, messageReceived);
@@ -181,19 +184,19 @@ class ConnectionsManager {
   }
 
   /// Adds message received to the device where it comes from.
-  Device? addMessageFromDevice(String endpointId, String message) {
+  Device? addMessageFromDevice(String endpointId, Uint8List message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
       return null;
     }
 
-    device.addMessage(message);
+    device.addMessage(NearbyMessage(message));
     return device;
   }
 
   /// Sends message to a given device given its endpointId
-  void sendMessageToDevice(String endpointId, String message) {
+  void sendMessageToDevice(String endpointId, NearbyMessage message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
@@ -204,7 +207,7 @@ class ConnectionsManager {
   }
 
   /// Broadcasts a message to every connected device
-  void broadcastMessage(String message) {
+  void broadcastMessage(NearbyMessage message) {
     for (var device in connectedDevices) {
       device.sendMessage(message);
     }

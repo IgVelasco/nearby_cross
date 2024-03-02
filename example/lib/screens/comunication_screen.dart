@@ -45,6 +45,9 @@ class ComunicationScreen extends StatelessWidget {
           body: Consumer<ComunicationViewModel>(
               builder: (context, viewModel, child) => LayoutBuilder(
                     builder: (context, constraints) {
+                      var vm = Provider.of<ComunicationViewModel>(context,
+                          listen: false);
+
                       return Column(
                         children: [
                           SizedBox(
@@ -78,7 +81,8 @@ class ComunicationScreen extends StatelessWidget {
                                           ListView.builder(
                                               scrollDirection: Axis.vertical,
                                               padding: const EdgeInsets.all(0),
-                                              itemCount: 15,
+                                              itemCount:
+                                                  provider.getMessagesCount(),
                                               shrinkWrap: true,
                                               physics: const ScrollPhysics(),
                                               itemBuilder: (context, index) {
@@ -106,7 +110,9 @@ class ComunicationScreen extends StatelessWidget {
                                       child: const Text('Send'),
                                     ),
                                     ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        vm.clearMessages();
+                                      },
                                       child: const Text('Clear'),
                                     )
                                   ],

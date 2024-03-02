@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross/models/message_model.dart';
 
 class DiscovererComunicationViewModel extends ChangeNotifier {
   late Device? connectedDevice;
-  String? lastMessage;
+  NearbyMessage? lastMessage;
   DiscovererComunicationViewModel(String endpointId) {
     var connectionsManager = ConnectionsManager();
     connectedDevice = connectionsManager.getConnectedDevice(endpointId);
@@ -27,10 +28,10 @@ class DiscovererComunicationViewModel extends ChangeNotifier {
   }
 
   void sendData(String message) {
-    connectedDevice?.sendMessage(message);
+    connectedDevice?.sendMessage(NearbyMessage.fromString(message));
   }
 
-  String? getLastMessage() {
+  NearbyMessage? getLastMessage() {
     return lastMessage;
   }
 }

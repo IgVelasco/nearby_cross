@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
 
@@ -9,7 +10,7 @@ class Device {
   String endpointName;
   bool isEndpointOnly;
   bool isPendingConnection;
-  List<String> messages = [];
+  List<NearbyMessage> messages = [];
   final NearbyCross _nearbyCross = NearbyCross();
   Function(Device) callbackReceivedMessage = (_) => {};
 
@@ -31,7 +32,7 @@ class Device {
   }
 
   /// Adds message to messages list
-  void addMessage(String message) {
+  void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
       messages.add(message);
       callbackReceivedMessage(this);
@@ -39,17 +40,17 @@ class Device {
   }
 
   /// Sends message to the device identified with endpointId
-  void sendMessage(String message) {
-    _nearbyCross.sendData(message, endpointId);
+  void sendMessage(NearbyMessage message) {
+    _nearbyCross.sendData(message.convertToBytes(), endpointId);
   }
 
   /// Retrieves messages list
-  List<String> getMessages() {
+  List<NearbyMessage> getMessages() {
     return messages;
   }
 
   /// Retrieves last message received
-  String? getLastMessage() {
+  NearbyMessage? getLastMessage() {
     try {
       return messages.last;
     } catch (_) {
@@ -60,6 +61,10 @@ class Device {
   Item toItem() {
     return HashMap.from(
         {"endpointId": endpointId, "endpointName": endpointName});
+  }
+
+  void clearMessages() {
+    messages.clear();
   }
 
   @override

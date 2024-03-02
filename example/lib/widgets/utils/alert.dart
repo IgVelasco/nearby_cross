@@ -47,16 +47,13 @@ class Alert extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Center(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Expanded(
-                        child: SingleChildScrollView(
-                          child: Text(
-                            message,
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          message,
+                          style: const TextStyle(
+                            fontSize: 16,
                           ),
                         ),
                       ),
