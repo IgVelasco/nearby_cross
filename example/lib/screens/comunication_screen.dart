@@ -29,7 +29,9 @@ class ComunicationMessage extends StatelessWidget {
 
 class ComunicationScreen extends StatelessWidget {
   final Device device;
-  const ComunicationScreen({super.key, required this.device});
+  final TextEditingController _textFieldController = TextEditingController();
+
+  ComunicationScreen({super.key, required this.device});
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +53,7 @@ class ComunicationScreen extends StatelessWidget {
                       return Column(
                         children: [
                           SizedBox(
-                            height: constraints.maxHeight * 0.8,
-                            width: constraints.maxWidth,
+                            height: constraints.maxHeight * 0.7,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -75,48 +76,63 @@ class ComunicationScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(
-                                    flex: 1,
                                     child: Consumer<ComunicationViewModel>(
-                                      builder: (context, provider, child) =>
-                                          ListView.builder(
-                                              scrollDirection: Axis.vertical,
-                                              padding: const EdgeInsets.all(0),
-                                              itemCount:
-                                                  provider.getMessagesCount(),
-                                              shrinkWrap: true,
-                                              physics: const ScrollPhysics(),
-                                              itemBuilder: (context, index) {
-                                                return ComunicationMessage(
-                                                    text: provider
-                                                            .getLastMessages()[
-                                                        index]);
-                                              }),
-                                    )),
+                                  builder: (context, provider, child) =>
+                                      ListView.builder(
+                                          scrollDirection: Axis.vertical,
+                                          itemCount:
+                                              provider.getMessagesCount(),
+                                          shrinkWrap: true,
+                                          physics: const ScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return ComunicationMessage(
+                                                text: provider
+                                                    .getLastMessages()[index]);
+                                          }),
+                                )),
                               ],
                             ),
                           ),
+                          const Divider(),
                           SizedBox(
-                            height: constraints.maxHeight * 0.10,
+                            height: constraints.maxHeight * 0.20,
                             width: MediaQuery.of(context).size.width * 0.8,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text('Send'),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 20),
+                                  child: TextField(
+                                    decoration: const InputDecoration(
+                                      hintText: 'Type something...',
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        vm.clearMessages();
-                                      },
-                                      child: const Text('Clear'),
-                                    )
-                                  ],
-                                )
+                                    controller:
+                                        _textFieldController, // Add this line
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          vm.clearMessages();
+                                        },
+                                        child: const Text('Clear'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          String inputData =
+                                              _textFieldController.text;
+                                          viewModel.sendData(inputData);
+                                        },
+                                        child: const Text('Send'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
+import 'package:nearby_cross_example/screens/select_interaction_screen.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/discovered_devices_list.dart';
-import '../screens/discoverer_comunication_screen.dart';
 
 class DiscovererActions extends StatelessWidget {
   final String? username;
@@ -82,32 +82,19 @@ class DiscovererActions extends StatelessWidget {
                             ),
                           ])
                         : Container()),
-                Consumer<DiscovererViewModel>(
-                    builder: (context, viewModel, child) =>
-                        viewModel.isConnected
-                            ? ListTile(
-                                tileColor: const Color(0x1fffffff),
-                                title: Text(
-                                  "Connected: Username ${viewModel.getConnectedDeviceName()}",
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        DiscovererComunicationScreen(
-                                            connectedDevice: viewModel
-                                                .getConnectedDevice()!
-                                                .toItem()),
-                                  ));
-                                },
-                                trailing: const Icon(Icons.arrow_forward_ios,
-                                    color: Color(0xff212435), size: 24),
-                              )
-                            : const ListTile(
-                                tileColor: Color(0x1fffffff),
-                                title: Text(
-                                  "No Connected Device",
-                                ),
-                              ))
+                ListTile(
+                  tileColor: const Color(0x1fffffff),
+                  title: const Text(
+                    "Interact",
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SelectInteractionScreen(),
+                    ));
+                  },
+                  trailing: const Icon(Icons.arrow_forward_ios,
+                      color: Color(0xff212435), size: 24),
+                )
               ],
             ),
             Consumer<DiscovererViewModel>(

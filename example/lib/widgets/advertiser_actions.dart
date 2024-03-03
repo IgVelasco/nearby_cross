@@ -80,21 +80,19 @@ class AdvertiserActions extends StatelessWidget {
                         trailing: const Icon(Icons.arrow_forward_ios,
                             color: Color(0xff212435), size: 24),
                       )),
-              Consumer<AdvertiserViewModel>(
-                  builder: (context, app, child) => ListTile(
-                        tileColor: const Color(0x1fffffff),
-                        title: const Text(
-                          "Interact",
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>
-                                const SelectInteractionScreen(),
-                          ));
-                        },
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Color(0xff212435), size: 24),
-                      ))
+              ListTile(
+                tileColor: const Color(0x1fffffff),
+                title: const Text(
+                  "Interact",
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SelectInteractionScreen(),
+                  ));
+                },
+                trailing: const Icon(Icons.arrow_forward_ios,
+                    color: Color(0xff212435), size: 24),
+              )
             ],
           ),
           Consumer<AdvertiserViewModel>(
