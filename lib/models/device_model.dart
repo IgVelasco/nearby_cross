@@ -11,6 +11,7 @@ class Device {
   bool isEndpointOnly;
   bool isPendingConnection;
   List<NearbyMessage> messages = [];
+  List<NearbyMessage> messagesSent = [];
   final NearbyCross _nearbyCross = NearbyCross();
   Function(Device) callbackReceivedMessage = (_) => {};
 
@@ -31,7 +32,7 @@ class Device {
     this.callbackReceivedMessage = callbackReceivedMessage;
   }
 
-  /// Adds message to messages list
+  /// Adds message to received messages list
   void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
       messages.add(message);
@@ -41,11 +42,24 @@ class Device {
 
   /// Sends message to the device identified with endpointId
   void sendMessage(NearbyMessage message) {
+    messagesSent.add(message);
     _nearbyCross.sendData(message.convertToBytes(), endpointId);
   }
 
-  /// Retrieves messages list
-  List<NearbyMessage> getMessages() {
+  /// Retrieves message and messageSent list
+  List<NearbyMessage> getAllMessages() {
+    List<NearbyMessage> combined = [...messages, ...messagesSent];
+    combined.sort(((a, b) => a.dateTime.compareTo(a.dateTime)));
+    return combined;
+  }
+
+  /// Retrieves messages sent list
+  List<NearbyMessage> getMessagesSent() {
+    return messagesSent;
+  }
+
+  /// Retrieves messages received list
+  List<NearbyMessage> getMessagesReceived() {
     return messages;
   }
 
@@ -65,6 +79,7 @@ class Device {
 
   void clearMessages() {
     messages.clear();
+    messagesSent.clear();
   }
 
   @override

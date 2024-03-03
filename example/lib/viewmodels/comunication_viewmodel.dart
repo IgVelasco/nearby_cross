@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross_example/models/chat_message.dart';
 
 class ComunicationViewModel extends ChangeNotifier {
   Device connectedDevice;
-  NearbyMessage? lastMessage;
   Logger logger = Logger();
+  late List<ChatMessage> allMessages;
 
   ComunicationViewModel(this.connectedDevice) {
     var connectionsManager = ConnectionsManager();
@@ -16,14 +16,15 @@ class ComunicationViewModel extends ChangeNotifier {
     connectionsManager.setCallbackReceivedMessage(
         connectedDevice.endpointId, _callbackReceivedMessage);
 
-    var asd = NearbyMessage.fromString("HOLA");
-    var converted = asd.convertToBytes();
-
-    var jaja = NearbyMessage(converted);
-
-    logger.i("Message type: ${jaja.messageType}");
-    logger.i("Date time: ${jaja.dateTime}");
-    logger.i("Message: ${jaja.message}");
+    allMessages = [
+      ...connectedDevice
+          .getMessagesReceived()
+          .map((nm) => ChatMessage.fromParent(nm, received: true)),
+      ...connectedDevice
+          .getMessagesSent()
+          .map((nm) => ChatMessage.fromParent(nm, received: false))
+    ];
+    allMessages.sort(((a, b) => a.dateTime.compareTo(a.dateTime)));
   }
 
   void _commonCallback(Device device) {
@@ -31,7 +32,10 @@ class ComunicationViewModel extends ChangeNotifier {
   }
 
   void _callbackReceivedMessage(Device device) {
-    lastMessage = device.getLastMessage();
+    NearbyMessage? lastMessage = device.getLastMessage();
+    if (lastMessage != null) {
+      allMessages.add(ChatMessage.fromParent(lastMessage, received: true));
+    }
     _commonCallback(device);
   }
 
@@ -40,24 +44,23 @@ class ComunicationViewModel extends ChangeNotifier {
   }
 
   void sendData(String message) {
-    connectedDevice.sendMessage(NearbyMessage.fromString(message));
+    ChatMessage messageToSend =
+        ChatMessage.fromString(message, received: false);
+    allMessages.add(messageToSend);
+    connectedDevice.sendMessage(messageToSend);
+    notifyListeners();
   }
 
-  NearbyMessage? getLastMessage() {
-    return lastMessage;
-  }
-
-  List<String> getLastMessages() {
-    return connectedDevice.messages
-        .map((m) => "${m.dateTime} - ${BytesUtils.getString(m.message)}")
-        .toList();
+  List<ChatMessage> getMessages() {
+    return allMessages;
   }
 
   int getMessagesCount() {
-    return connectedDevice.messages.length;
+    return allMessages.length;
   }
 
   void clearMessages() {
+    allMessages.clear();
     connectedDevice.clearMessages();
     notifyListeners();
   }

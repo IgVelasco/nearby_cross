@@ -7,23 +7,45 @@ import '../widgets/nc_app_bar.dart';
 
 class ComunicationMessage extends StatelessWidget {
   final String text;
-  const ComunicationMessage({super.key, required this.text});
+  final bool received;
+  const ComunicationMessage(
+      {super.key, required this.text, required this.received});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        color: Colors.white,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 1 * 0.7),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            child: Text(
-              text,
-            ),
-          ),
-        ));
+    var cardColor = received ? Colors.white : Colors.green;
+    var rowAlignment =
+        received ? MainAxisAlignment.start : MainAxisAlignment.end;
+    var textAlignment = received ? Alignment.centerLeft : Alignment.centerRight;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: rowAlignment,
+        children: [
+          Card(
+              color: cardColor,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              child: Align(
+                alignment: textAlignment,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    ),
+                    child: Text(
+                      text,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              )),
+        ],
+      ),
+    );
   }
 }
 
@@ -85,9 +107,12 @@ class ComunicationScreen extends StatelessWidget {
                                           shrinkWrap: true,
                                           physics: const ScrollPhysics(),
                                           itemBuilder: (context, index) {
+                                            var msg =
+                                                provider.getMessages()[index];
                                             return ComunicationMessage(
-                                                text: provider
-                                                    .getLastMessages()[index]);
+                                              text: msg.format(),
+                                              received: msg.received,
+                                            );
                                           }),
                                 )),
                               ],
