@@ -41,7 +41,7 @@ class AdvertiserViewModel with ChangeNotifier {
     _commonCallback(device);
   }
 
-  void setUsername(String username, [bool notify = true]) {
+  void setUsername(String? username, [bool notify = true]) {
     _username = username;
     if (notify) {
       notifyListeners();

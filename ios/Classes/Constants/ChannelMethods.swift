@@ -10,10 +10,10 @@ import Foundation
 
 struct ChannelMethods {
     static let GET_PLATFORM_VERSION = "getPlatformVersion"
-    static let START_DISCOVERY = "startDiscovery"
+    static let START_ADVERTISING = "startAdvertising"
     
     // Not Implemented
-    static let START_ADVERTISING = "startAdvertising"
+    static let START_DISCOVERY = "startDiscovery"
     static let SEND_DATA = "sendData"
     static let CONNECT = "connect"
     static let STOP_DISCOVERING = "stopDiscovering"
