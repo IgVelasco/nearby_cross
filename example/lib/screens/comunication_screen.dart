@@ -53,7 +53,7 @@ class ComunicationScreen extends StatelessWidget {
                       return Column(
                         children: [
                           SizedBox(
-                            height: constraints.maxHeight * 0.7,
+                            height: constraints.maxHeight * 0.8,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -94,44 +94,66 @@ class ComunicationScreen extends StatelessWidget {
                             ),
                           ),
                           const Divider(),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.20,
-                            width: MediaQuery.of(context).size.width * 0.8,
+                          Expanded(
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 20),
-                                  child: TextField(
-                                    decoration: const InputDecoration(
-                                      hintText: 'Type something...',
-                                    ),
-                                    controller:
-                                        _textFieldController, // Add this line
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          vm.clearMessages();
-                                        },
-                                        child: const Text('Clear'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          String inputData =
-                                              _textFieldController.text;
-                                          viewModel.sendData(inputData);
-                                        },
-                                        child: const Text('Send'),
-                                      ),
-                                    ],
-                                  ),
+                                SizedBox(
+                                  width: constraints.maxWidth * 0.9,
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            height: 50,
+                                            child: TextField(
+                                              style: const TextStyle(
+                                                  fontSize: 12.0,
+                                                  height: 2.0,
+                                                  color: Colors.black),
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                ),
+                                                filled: true,
+                                                hintText: 'Type something...',
+                                              ),
+                                              controller:
+                                                  _textFieldController, // Add this line
+                                            ),
+                                          )),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              vm.clearMessages();
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              fixedSize:
+                                                  const Size.fromRadius(15),
+                                              shape: const CircleBorder(),
+                                              padding: const EdgeInsets.all(10),
+                                            ),
+                                            child: const Icon(
+                                              Icons.delete,
+                                              size: 20,
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              String inputData =
+                                                  _textFieldController.text;
+                                              viewModel.sendData(inputData);
+                                              _textFieldController.clear();
+                                            },
+                                            child: const Icon(Icons.send),
+                                          ),
+                                        ],
+                                      )),
                                 ),
                               ],
                             ),
