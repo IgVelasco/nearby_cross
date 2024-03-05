@@ -33,7 +33,7 @@ open class Connector(
         this.manualAcceptConnections = manualAcceptConnections
     }
 
-    open fun disconnect(context: Context) {
+    open fun stopAllConnections(context: Context) {
         Nearby.getConnectionsClient(context).stopAllEndpoints()
         Log.v("INFO", "Stopped all endpoints")
     }
@@ -115,6 +115,9 @@ open class Connector(
         }
 
         override fun onDisconnected(endpointId: String) {
+            callbacks.onDisconnected(
+                endpointId
+            )
             // The connection to the remote endpoint has been disconnected
             // You may want to notify the user that the connection was lost
         }

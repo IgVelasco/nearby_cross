@@ -66,8 +66,22 @@ class NearbyCross {
     });
   }
 
-  Future<void> disconnect(String serviceId) async {
-    await methodChannel.invokeMethod('disconnect', serviceId);
+  Future<void> stopAllConnections() async {
+    // TODO: implement
+    await methodChannel.invokeMethod('stopAllConnections');
+  }
+
+  Future<void> disconnectFrom(String serviceId) async {
+    // TODO: implement
+    // await methodChannel.invokeMethod('disconnectFrom', serviceId);
+  }
+
+  Future<void> stopDiscovering() async {
+    await methodChannel.invokeMethod('stopDiscovering');
+  }
+
+  Future<void> stopAdvertising() async {
+    await methodChannel.invokeMethod('stopAdvertising');
   }
 
   Future<void> sendData(Uint8List data, String endpointId) async {

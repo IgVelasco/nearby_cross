@@ -34,13 +34,14 @@ class Discoverer(
                     "INFO",
                     "The nearby device with the given endpoint ID is no longer available $endpointId"
                 )
+                callbacks.onEndpointLost(endpointId)
             }
         }
 
         Log.d("info", "Discoverer init completed")
     }
 
-    fun startDiscovery(context: Context) {
+    fun startDiscovering(context: Context) {
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(this.strategy).build()
         Nearby.getConnectionsClient(context)
             .startDiscovery(this.serviceId, this.endpointDiscoveryCallback, discoveryOptions)
@@ -57,10 +58,16 @@ class Discoverer(
             }
     }
 
+    fun stopDiscovering(context: Context) {
+        Nearby.getConnectionsClient(context).stopDiscovery()
+        Log.d("INFO", "Stopped discovery")
+    }
+
     fun connect(endpointId: String) {
         Nearby.getConnectionsClient(context)
             .requestConnection(userName, endpointId, connectionLifecycleCallback)
     }
+
 
 }
 

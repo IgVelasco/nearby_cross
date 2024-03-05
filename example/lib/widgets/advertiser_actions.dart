@@ -95,32 +95,6 @@ class AdvertiserActions extends StatelessWidget {
               )
             ],
           ),
-          Consumer<AdvertiserViewModel>(
-              builder: (context, app, child) => app.isConnected
-                  ? MaterialButton(
-                      onPressed: () {
-                        Provider.of<AdvertiserViewModel>(context, listen: false)
-                            .disconnect();
-                      },
-                      color: const Color(0x343a57e8),
-                      elevation: 0,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      textColor: const Color(0xff3a57e8),
-                      height: 40,
-                      minWidth: MediaQuery.of(context).size.width,
-                      child: const Text(
-                        "Disconnect All",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                    )
-                  : Container())
         ]);
       },
     );

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
@@ -11,7 +13,6 @@ class AdvertiserViewModel with ChangeNotifier {
 
   late ConnectionsManager connectionsManager;
   String? _username;
-  bool _isConnected = false;
   bool _manualAcceptConnections = false;
   Device? _connectedDevice;
 
@@ -38,7 +39,6 @@ class AdvertiserViewModel with ChangeNotifier {
 
   void _callbackSuccessfulConnection(Device device) {
     _connectedDevice = device;
-    _isConnected = true;
     _commonCallback(device);
   }
 
@@ -53,8 +53,9 @@ class AdvertiserViewModel with ChangeNotifier {
     return _username ?? advertiser.username ?? "";
   }
 
-  bool get isConnected => _isConnected;
+  bool get isConnected => advertiser.isConnected;
   bool get isAdvertising => advertiser.isAdvertising;
+
   bool get manualAcceptConnections => _manualAcceptConnections;
 
   Future<void> startAdvertising(NearbyStrategies strategy) async {
@@ -65,12 +66,13 @@ class AdvertiserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> disconnect() async {
-    return advertiser.disconnect();
-  }
-
   Future<void> stopAdvertising() async {
     await advertiser.stopAdvertising();
+    notifyListeners();
+  }
+
+  Future<void> stopAllConnections() async {
+    await advertiser.stopAllConnections();
     notifyListeners();
   }
 
@@ -78,7 +80,7 @@ class AdvertiserViewModel with ChangeNotifier {
     return advertiser.connect(endpointId);
   }
 
-  Future<void> sendData(String message) async {
+  Future<void> sendData(Uint8List message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
           _connectedDevice!.endpointId, NearbyMessage.fromString(message));
