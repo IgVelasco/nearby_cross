@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross_example/screens/broadcast_screen.dart';
 import 'package:nearby_cross_example/screens/comunication_screen.dart';
 import 'package:nearby_cross_example/viewmodels/select_interaction_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
@@ -21,6 +22,14 @@ class SelectInteractionScreen extends StatelessWidget {
           builder: (context) => ComunicationScreen(device: device)));
     }
 
+    List<Widget> actions = <Widget>[
+      IconButton(
+        onPressed: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => BroadcastScreen())),
+        icon: const Icon(Icons.campaign),
+      )
+    ];
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -33,7 +42,10 @@ class SelectInteractionScreen extends StatelessWidget {
         bool noConnections = provider.getTotalConnectionsCount() == 0;
 
         return Scaffold(
-            appBar: NCAppBar(),
+            appBar: NCAppBar(
+              title: "Interact",
+              actions: actions,
+            ),
             body: Consumer<SelectInteractionViewModel>(
               builder: (context, viewModel, child) => noConnections
                   ? const Center(

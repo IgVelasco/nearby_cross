@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
-import 'package:nearby_cross_example/viewmodels/comunication_viewmodel.dart';
+import 'package:nearby_cross_example/viewmodels/broadcast_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/comunication_message.dart';
 
 import 'package:provider/provider.dart';
 import '../widgets/nc_app_bar.dart';
 
-class ComunicationScreen extends StatelessWidget {
-  final Device device;
+class BroadcastScreen extends StatelessWidget {
   final TextEditingController _textFieldController = TextEditingController();
 
-  ComunicationScreen({super.key, required this.device});
+  BroadcastScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(
-              create: (context) => ComunicationViewModel(device))
+          ChangeNotifierProvider(create: (context) => BroadcastViewModel())
         ],
         child: Scaffold(
           appBar: NCAppBar(
-            title: device.endpointName,
+            title: "Broadcast",
           ),
-          body: Consumer<ComunicationViewModel>(
+          body: Consumer<BroadcastViewModel>(
               builder: (context, viewModel, child) => LayoutBuilder(
                     builder: (context, constraints) {
-                      var vm = Provider.of<ComunicationViewModel>(context,
+                      var vm = Provider.of<BroadcastViewModel>(context,
                           listen: false);
 
                       return Column(
@@ -44,7 +41,7 @@ class ComunicationScreen extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Last messages",
+                                        "Messages",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontStyle: FontStyle.normal,
@@ -56,7 +53,7 @@ class ComunicationScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(
-                                    child: Consumer<ComunicationViewModel>(
+                                    child: Consumer<BroadcastViewModel>(
                                   builder: (context, provider, child) =>
                                       ListView.builder(
                                           scrollDirection: Axis.vertical,
@@ -68,7 +65,8 @@ class ComunicationScreen extends StatelessWidget {
                                             var msg =
                                                 provider.getMessages()[index];
                                             return ComunicationMessage(
-                                              text: msg.format(),
+                                              text:
+                                                  msg.format(printSender: true),
                                               received: msg.received,
                                               broadcast: msg.messageType ==
                                                   NearbyMessageType.broadcast,
@@ -132,7 +130,8 @@ class ComunicationScreen extends StatelessWidget {
                                             onPressed: () {
                                               String inputData =
                                                   _textFieldController.text;
-                                              viewModel.sendData(inputData);
+                                              viewModel
+                                                  .broadcastMessage(inputData);
                                               _textFieldController.clear();
                                             },
                                             child: const Icon(Icons.send),

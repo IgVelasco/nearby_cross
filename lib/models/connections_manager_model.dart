@@ -120,8 +120,13 @@ class ConnectionsManager {
     this.callbackSuccessfulConnection = callbackSuccessfulConnection;
   }
 
-  /// Sets callbackReceivedMessage callback that executes every time a message is received.
-  void setCallbackReceivedMessage(
+  /// Sets callbackReceivedMessage callback that executes every time a device receives a message.
+  void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
+    this.callbackReceivedMessage = callbackReceivedMessage;
+  }
+
+  /// Sets callbackReceivedMessage callback for a given device that executes every time a message is received from that device.
+  void setCallbackReceivedMessageForDevice(
       String endpointId, Function(Device) callbackReceivedMessage) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {

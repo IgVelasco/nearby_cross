@@ -13,7 +13,7 @@ class ComunicationViewModel extends ChangeNotifier {
   ComunicationViewModel(this.connectedDevice) {
     var connectionsManager = ConnectionsManager();
 
-    connectionsManager.setCallbackReceivedMessage(
+    connectionsManager.setCallbackReceivedMessageForDevice(
         connectedDevice.endpointId, _callbackReceivedMessage);
 
     allMessages = [
