@@ -1,19 +1,24 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
 
 /// Class that represent every connected device with NearbyCross plugin
 class Device {
+  Logger logger = Logger();
   String endpointId;
   String endpointName;
   bool isEndpointOnly;
   bool isPendingConnection;
+  bool hasNewMessages = false;
   List<NearbyMessage> messages = [];
   List<NearbyMessage> messagesSent = [];
   final NearbyCross _nearbyCross = NearbyCross();
-  Function(Device) callbackReceivedMessage = (_) => {};
+  HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
+      HashMap<String, dynamic Function(Device)>();
 
   Device(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
@@ -28,15 +33,42 @@ class Device {
         isPendingConnection = true;
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
-  void setCallbackReceivedMessage(Function(Device) callbackReceivedMessage) {
-    this.callbackReceivedMessage = callbackReceivedMessage;
+  void setCallbackReceivedMessage(
+      String callbackName, Function(Device) callbackReceivedMessage) {
+    this.callbackReceivedMessage[callbackName] = callbackReceivedMessage;
+  }
+
+  /// Unset callbackReceivedMessage
+  void unsetCallbackReceivedMessage(String callbackKey) {
+    callbackReceivedMessage.remove(callbackKey);
+  }
+
+  void _executeCallback(
+      HashMap<String, dynamic Function(Device)> callbackCollection,
+      Device funcParam) {
+    for (var callbackKey in callbackCollection.keys) {
+      try {
+        callbackCollection[callbackKey]!(funcParam);
+      } on FlutterError catch (err) {
+        // Disposed ChangeNotifier
+        logger.e(
+            "Could not execute callback $callbackKey. Error: ${err.toString()}");
+        callbackCollection.remove(callbackKey);
+      } catch (err) {
+        logger.e(
+            "Could not execute callback $callbackKey. Error: ${err.toString()}");
+      }
+    }
   }
 
   /// Adds message to received messages list
   void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
       messages.add(message);
-      callbackReceivedMessage(this);
+
+      _executeCallback(callbackReceivedMessage, this);
+
+      hasNewMessages = true;
     }
   }
 
@@ -50,6 +82,7 @@ class Device {
   List<NearbyMessage> getAllMessages() {
     List<NearbyMessage> combined = [...messages, ...messagesSent];
     combined.sort(((a, b) => a.dateTime.compareTo(a.dateTime)));
+    hasNewMessages = false;
     return combined;
   }
 
@@ -60,11 +93,13 @@ class Device {
 
   /// Retrieves messages received list
   List<NearbyMessage> getMessagesReceived() {
+    hasNewMessages = false;
     return messages;
   }
 
   /// Retrieves last message received
   NearbyMessage? getLastMessage() {
+    hasNewMessages = false;
     try {
       return messages.last;
     } catch (_) {

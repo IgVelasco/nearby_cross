@@ -9,22 +9,47 @@ class SelectInteractionViewModel with ChangeNotifier {
 
   SelectInteractionViewModel() {
     connectionsManager = ConnectionsManager();
+    setCallbacks();
+  }
 
+  @override
+  void dispose() {
     connectionsManager
-        .setCallbackSuccessfulConnection(_setCallbackSuccessfulConnection);
+        .removeNamedCallback("SelectInteractionViewModel:successfulConnection");
+    connectionsManager
+        .removeNamedCallback("SelectInteractionViewModel:receivedMessage");
+    super.dispose();
   }
 
   void _commonCallback(Device device) {
     notifyListeners();
   }
 
+  void setCallbacks() {
+    connectionsManager.setCallbackSuccessfulConnection(
+        "SelectInteractionViewModel:successfulConnection",
+        _setCallbackSuccessfulConnection);
+    connectionsManager.setCallbackReceivedMessage(
+        "SelectInteractionViewModel:receivedMessage",
+        _setCallbackReceivedMessage);
+  }
+
+  Future<void> afterNavigationPop() async {
+    setCallbacks();
+    notifyListeners();
+  }
+
   Future<void> refreshConnectedList() async {
     notifyListeners();
-    return;
   }
 
   void _setCallbackSuccessfulConnection(Device device) {
     logger.i("Device ${device.endpointName} is successfully connected");
+    _commonCallback(device);
+  }
+
+  void _setCallbackReceivedMessage(Device device) {
+    logger.i("New messages from ${device.endpointName}");
     _commonCallback(device);
   }
 

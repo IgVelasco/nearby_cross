@@ -1,6 +1,4 @@
 import 'dart:collection';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
@@ -22,11 +20,25 @@ class DiscovererViewModel with ChangeNotifier {
     _username = discoverer.username;
 
     connectionsManager = ConnectionsManager();
+    connectionsManager.setCallbackPendingAcceptConnection(
+        "DiscovererViewModel:pendingAcceptConnection",
+        _callbackPendingAcceptConnection);
+    connectionsManager.setCallbackConnectionInitiated(
+        "DiscovererViewModel:connectionInitiated", _commonCallback);
+    connectionsManager.setCallbackSuccessfulConnection(
+        "DiscovererViewModel:successfulConnection",
+        _callbackSuccessfulConnection);
+  }
+
+  @override
+  void dispose() {
     connectionsManager
-        .setCallbackPendingAcceptConnection(_callbackPendingAcceptConnection);
-    connectionsManager.setCallbackConnectionInitiated(_commonCallback);
+        .removeNamedCallback("DiscovererViewModel:pendingAcceptConnection");
     connectionsManager
-        .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
+        .removeNamedCallback("DiscovererViewModel:connectionInitiated");
+    connectionsManager
+        .removeNamedCallback("DiscovererViewModel:successfulConnection");
+    super.dispose();
   }
 
   void _commonCallback(Device device) {
@@ -88,7 +100,7 @@ class DiscovererViewModel with ChangeNotifier {
     return discoverer.connect(endpointId);
   }
 
-  Future<void> sendData(Uint8List message) async {
+  Future<void> sendData(String message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
           _connectedDevice!.endpointId, NearbyMessage.fromString(message));

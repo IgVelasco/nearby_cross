@@ -12,24 +12,6 @@ class SelectInteractionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void disconnectAction(Device device) {
-      // TODO
-      return;
-    }
-
-    void interactAction(Device device) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ComunicationScreen(device: device)));
-    }
-
-    List<Widget> actions = <Widget>[
-      IconButton(
-        onPressed: () => Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => BroadcastScreen())),
-        icon: const Icon(Icons.campaign),
-      )
-    ];
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -37,7 +19,33 @@ class SelectInteractionScreen extends StatelessWidget {
       ],
       builder: (context, child) {
         var provider =
-            Provider.of<SelectInteractionViewModel>(context, listen: false);
+            Provider.of<SelectInteractionViewModel>(context, listen: true);
+
+        void disconnectAction(Device device) {
+          // TODO
+          return;
+        }
+
+        void interactAction(Device device) async {
+          await Navigator.of(context)
+              .push(MaterialPageRoute(
+                  builder: (context) => ComunicationScreen(device: device)))
+              .then((value) {
+            return provider.afterNavigationPop();
+          });
+        }
+
+        List<Widget> actions = <Widget>[
+          IconButton(
+            onPressed: () async => await Navigator.of(context)
+                .push(
+                    MaterialPageRoute(builder: (context) => BroadcastScreen()))
+                .then((value) {
+              return provider.afterNavigationPop();
+            }),
+            icon: const Icon(Icons.campaign),
+          )
+        ];
 
         bool noConnections = provider.getTotalConnectionsCount() == 0;
 
@@ -96,52 +104,74 @@ class InteractListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceVariant,
-        child: SizedBox(
-          height: 100,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20.0),
-                child: Center(child: Text(device.endpointName)),
+    return Stack(
+      children: [
+        Card(
+            elevation: 0,
+            color: Theme.of(context).colorScheme.surfaceVariant,
+            child: SizedBox(
+              height: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Center(child: Text(device.endpointName)),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        FloatingActionButton.small(
+                          heroTag: null,
+                          onPressed: () {
+                            rejectAction(device);
+                          },
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.red,
+                          child: const Icon(Icons.phonelink_erase),
+                        ),
+                        const Divider(
+                          height: 20,
+                          thickness: 5,
+                          indent: 20,
+                          endIndent: 0,
+                        ),
+                        FloatingActionButton.small(
+                          heroTag: null,
+                          onPressed: () {
+                            acceptAction(device);
+                          },
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.green,
+                          child: const Icon(Icons.chat),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Container(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    FloatingActionButton.small(
-                      heroTag: null,
-                      onPressed: () {
-                        rejectAction(device);
-                      },
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red,
-                      child: const Icon(Icons.phonelink_erase),
-                    ),
-                    const Divider(
-                      height: 20,
-                      thickness: 5,
-                      indent: 20,
-                      endIndent: 0,
-                    ),
-                    FloatingActionButton.small(
-                      heroTag: null,
-                      onPressed: () {
-                        acceptAction(device);
-                      },
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.green,
-                      child: const Icon(Icons.chat),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ));
+            )),
+        ...(device.hasNewMessages
+            ? [
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 10,
+                        minHeight: 10,
+                      )),
+                )
+              ]
+            : [])
+      ],
+    );
   }
 }

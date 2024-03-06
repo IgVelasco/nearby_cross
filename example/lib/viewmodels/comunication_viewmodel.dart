@@ -14,17 +14,29 @@ class ComunicationViewModel extends ChangeNotifier {
     var connectionsManager = ConnectionsManager();
 
     connectionsManager.setCallbackReceivedMessageForDevice(
-        connectedDevice.endpointId, _callbackReceivedMessage);
+        connectedDevice.endpointId, _callbackReceivedMessage,
+        callbackName: "ComunicationViewModel:receivedMessageForDevice");
 
     allMessages = [
       ...connectedDevice
           .getMessagesReceived()
-          .map((nm) => ChatMessage.fromParent(nm, received: true)),
+          .map((nm) => ChatMessage.fromParent(nm, received: true))
+          .toList(),
       ...connectedDevice
           .getMessagesSent()
           .map((nm) => ChatMessage.fromParent(nm, received: false))
+          .toList()
     ];
-    allMessages.sort(((a, b) => a.dateTime.compareTo(a.dateTime)));
+    allMessages.sort(((a, b) => a.dateTime.compareTo(b.dateTime)));
+  }
+
+  @override
+  void dispose() {
+    var connectionsManager = ConnectionsManager();
+    connectionsManager.unsetCallbackReceivedMessageForDevice(
+        connectedDevice.endpointId,
+        callbackName: "ComunicationViewModel:receivedMessageForDevice");
+    super.dispose();
   }
 
   void _commonCallback(Device device) {

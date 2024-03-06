@@ -13,7 +13,15 @@ class BroadcastViewModel extends ChangeNotifier {
   BroadcastViewModel() {
     connectionsManager = ConnectionsManager();
 
-    connectionsManager.setCallbackReceivedMessage(_callbackReceivedMessage);
+    connectionsManager.setCallbackReceivedMessage(
+        "BroadcastViewModel:receivedMessage", _callbackReceivedMessage);
+  }
+
+  @override
+  void dispose() {
+    connectionsManager
+        .removeNamedCallback("BroadcastViewModel:receivedMessage");
+    super.dispose();
   }
 
   void _commonCallback(Device device) {
