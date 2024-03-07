@@ -52,9 +52,8 @@ open class Connector(
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             // This always gets the full data of the payload. Is null if it's not a BYTES payload.
             if (payload.type == Payload.Type.BYTES) {
-                val receivedBytes = payload.asBytes()
-                val stringReceived = receivedBytes?.let { String(it) }
-                callbacks.onPayloadReceived(stringReceived as String, endpointId)
+                val receivedBytes = payload.asBytes() as ByteArray
+                callbacks.onPayloadReceived(receivedBytes, endpointId)
             }
         }
 

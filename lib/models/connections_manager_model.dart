@@ -1,8 +1,10 @@
-import 'dart:typed_data';
+import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
@@ -15,12 +17,18 @@ class ConnectionsManager {
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
 
-  Function(Device) callbackPendingAcceptConnection = (_) => {};
-  Function(Device) callbackConnectionRejected = (_) => {};
-  Function(Device) callbackConnectionInitiated = (_) => {};
-  Function(Device?) callbackDisconnectedDevice = (_) => {};
-  Function(Device) callbackSuccessfulConnection = (_) => {};
-  Function(Device) callbackReceivedMessage = (_) => {};
+  HashMap<String, dynamic Function(Device)> callbackPendingAcceptConnection =
+      HashMap<String, dynamic Function(Device)>();
+  HashMap<String, dynamic Function(Device)> callbackConnectionRejected =
+      HashMap<String, dynamic Function(Device)>();
+  HashMap<String, dynamic Function(Device)> callbackConnectionInitiated =
+      HashMap<String, dynamic Function(Device)>();
+  HashMap<String, dynamic Function(Device)> callbackDisconnectedDevice =
+      HashMap<String, dynamic Function(Device)>();
+  HashMap<String, dynamic Function(Device)> callbackSuccessfulConnection =
+      HashMap<String, dynamic Function(Device)>();
+  HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
+      HashMap<String, dynamic Function(Device)>();
 
   /// ConnectionsManager implements the singleton pattern.
   /// There will be only one instance of this class
@@ -30,16 +38,45 @@ class ConnectionsManager {
     return _singleton!;
   }
 
+  /// Removes a named callback in all callback collections
+  void removeNamedCallback(String callbackKey) {
+    // TODO: Find a better way to do this
+    callbackPendingAcceptConnection.remove(callbackKey);
+    callbackConnectionRejected.remove(callbackKey);
+    callbackConnectionInitiated.remove(callbackKey);
+    callbackDisconnectedDevice.remove(callbackKey);
+    callbackSuccessfulConnection.remove(callbackKey);
+    callbackReceivedMessage.remove(callbackKey);
+  }
+
+  void _executeCallback(
+      HashMap<String, dynamic Function(Device)> callbackCollection,
+      Device funcParam) {
+    for (var callbackKey in callbackCollection.keys) {
+      try {
+        callbackCollection[callbackKey]!(funcParam);
+      } on FlutterError catch (err) {
+        // Disposed ChangeNotifier
+        logger.e(
+            "Could not execute callback $callbackKey. Error: ${err.toString()}");
+        callbackCollection.remove(callbackKey);
+      } catch (err) {
+        logger.e(
+            "Could not execute callback $callbackKey. Error: ${err.toString()}");
+      }
+    }
+  }
+
   /// Handler for [NearbyCrossMethods.connectionInitiated] method call.
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
   void _handleConnectionInitiated(
       String endpointId, String endpointName, bool alreadyAcceptedConnection) {
     if (alreadyAcceptedConnection) {
       var device = addInitiatedConnection(endpointId, endpointName);
-      callbackConnectionInitiated(device);
+      _executeCallback(callbackConnectionInitiated, device);
     } else {
       var device = addPendingAcceptConnection(endpointId, endpointName);
-      callbackPendingAcceptConnection(device);
+      _executeCallback(callbackPendingAcceptConnection, device);
     }
   }
 
@@ -47,7 +84,9 @@ class ConnectionsManager {
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
   void _handleEndpointDisconnected(String endpointId) {
     var device = removeConnectedDevices(endpointId);
-    callbackDisconnectedDevice(device);
+    if (device != null) {
+      _executeCallback(callbackDisconnectedDevice, device);
+    }
   }
 
   /// Handler for [NearbyCrossMethods.successfulConnection] method call.
@@ -58,18 +97,18 @@ class ConnectionsManager {
       return;
     }
 
-    callbackSuccessfulConnection(device);
+    _executeCallback(callbackSuccessfulConnection, device);
   }
 
   /// Handler for [NearbyCrossMethods.payloadReceived] method call.
   /// Adds received message to the corresponding device.
-  void _handlePayloadReceived(String endpointId, String messageReceived) {
+  void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
     var device = addMessageFromDevice(endpointId, messageReceived);
     if (device == null) {
       return;
     }
 
-    callbackReceivedMessage(device);
+    _executeCallback(callbackReceivedMessage, device);
   }
 
   /// Internal constructor for class [ConnectionsManager].
@@ -96,7 +135,7 @@ class ConnectionsManager {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var messageReceived = arguments["message"] as String;
+      var messageReceived = arguments["message"] as Uint8List;
       var endpointId = arguments["endpointId"] as String;
 
       return _handlePayloadReceived(endpointId, messageReceived);
@@ -110,31 +149,40 @@ class ConnectionsManager {
 
   /// Sets callbackConnectionInitiated callback that executes every time a connection is initiated.
   void setCallbackConnectionInitiated(
-      Function(Device) callbackConnectionInitiated) {
-    this.callbackConnectionInitiated = callbackConnectionInitiated;
+      String callbackId, Function(Device) callbackConnectionInitiated) {
+    this.callbackConnectionInitiated[callbackId] = callbackConnectionInitiated;
   }
 
   /// Sets callbackConnectionRejected callback that executes every time a connection is rejected.
   void setCallbackConnectionRejected(
-      Function(Device) callbackConnectionRejected) {
-    this.callbackConnectionRejected = callbackConnectionRejected;
+      String callbackId, Function(Device) callbackConnectionRejected) {
+    this.callbackConnectionRejected[callbackId] = callbackConnectionRejected;
   }
 
   /// Sets callbackConnectionInitiated callback that executes every time a connection needs to be accepted.
   void setCallbackPendingAcceptConnection(
-      Function(Device) callbackPendingAcceptConnection) {
-    this.callbackPendingAcceptConnection = callbackPendingAcceptConnection;
+      String callbackId, Function(Device) callbackPendingAcceptConnection) {
+    this.callbackPendingAcceptConnection[callbackId] =
+        callbackPendingAcceptConnection;
   }
 
   /// Sets callbackSuccessfulConnection callback that executes every time a connection successfully finishes.
   void setCallbackSuccessfulConnection(
-      Function(Device) callbackSuccessfulConnection) {
-    this.callbackSuccessfulConnection = callbackSuccessfulConnection;
+      String callbackId, Function(Device) callbackSuccessfulConnection) {
+    this.callbackSuccessfulConnection[callbackId] =
+        callbackSuccessfulConnection;
   }
 
-  /// Sets callbackReceivedMessage callback that executes every time a message is received.
+  /// Sets callbackReceivedMessage callback that executes every time a device receives a message.
   void setCallbackReceivedMessage(
-      String endpointId, Function(Device) callbackReceivedMessage) {
+      String callbackId, Function(Device) callbackReceivedMessage) {
+    this.callbackReceivedMessage[callbackId] = callbackReceivedMessage;
+  }
+
+  /// Sets callbackReceivedMessage callback for a given device that executes every time a message is received from that device.
+  void setCallbackReceivedMessageForDevice(
+      String endpointId, Function(Device) callbackReceivedMessage,
+      {String callbackName = "ConnectionsManager:receivedMessageForDevice"}) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e(
@@ -142,7 +190,16 @@ class ConnectionsManager {
       return;
     }
 
-    device.setCallbackReceivedMessage(callbackReceivedMessage);
+    device.setCallbackReceivedMessage(callbackName, callbackReceivedMessage);
+  }
+
+  /// Unsets a received message callback for a given Device endpointId
+  void unsetCallbackReceivedMessageForDevice(String endpointId,
+      {String callbackName = "ConnectionsManager:receivedMessageForDevice"}) {
+    Device? device = _findDevice(connectedDevices, endpointId);
+    if (device != null) {
+      device.unsetCallbackReceivedMessage(callbackName);
+    }
   }
 
   /// Private method to find a Device in a given iterable context.
@@ -209,19 +266,19 @@ class ConnectionsManager {
   }
 
   /// Adds message received to the device where it comes from.
-  Device? addMessageFromDevice(String endpointId, String message) {
+  Device? addMessageFromDevice(String endpointId, Uint8List message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
       return null;
     }
 
-    device.addMessage(message);
+    device.addMessage(NearbyMessage(message));
     return device;
   }
 
   /// Sends message to a given device given its endpointId
-  void sendMessageToDevice(String endpointId, Uint8List message) {
+  void sendMessageToDevice(String endpointId, NearbyMessage message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
@@ -232,7 +289,7 @@ class ConnectionsManager {
   }
 
   /// Broadcasts a message to every connected device
-  void broadcastMessage(Uint8List message) {
+  void broadcastMessage(NearbyMessage message) {
     for (var device in connectedDevices) {
       device.sendMessage(message);
     }
@@ -265,7 +322,7 @@ class ConnectionsManager {
 
     await nearbyCross.acceptConnection(endpointId);
 
-    callbackConnectionInitiated(device);
+    _executeCallback(callbackConnectionInitiated, device);
   }
 
   /// Rejects a pending connection
@@ -278,6 +335,6 @@ class ConnectionsManager {
     await nearbyCross.rejectConnection(endpointId);
     pendingAcceptConnections.remove(pending);
 
-    callbackConnectionRejected(pending);
+    _executeCallback(callbackConnectionRejected, pending);
   }
 }

@@ -20,7 +20,7 @@ class MainScreen extends StatelessWidget {
 
         return Scaffold(
             backgroundColor: const Color(0xffffffff),
-            appBar: const NCAppBar(),
+            appBar: NCAppBar(),
             body: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
