@@ -14,8 +14,6 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		B7F908022A0B18D600AFED3A /* NearbyConnections in Frameworks */ = {isa = PBXBuildFile; productRef = B7F908012A0B18D600AFED3A /* NearbyConnections */; };
-		B7F908042A0B18D600AFED3A /* NearbyCoreAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = B7F908032A0B18D600AFED3A /* NearbyCoreAdapter */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,8 +54,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7F908042A0B18D600AFED3A /* NearbyCoreAdapter in Frameworks */,
-				B7F908022A0B18D600AFED3A /* NearbyConnections in Frameworks */,
 				67557ECF5340FDE29457EC5C /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -150,8 +146,6 @@
 			);
 			name = Runner;
 			packageProductDependencies = (
-				B7F908012A0B18D600AFED3A /* NearbyConnections */,
-				B7F908032A0B18D600AFED3A /* NearbyCoreAdapter */,
 			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
@@ -182,7 +176,6 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				B7F908002A0B18D600AFED3A /* XCRemoteSwiftPackageReference "nearby" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -372,12 +365,12 @@
 				DEVELOPMENT_TEAM = TSUAA597A7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.nearbyCrossExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.nearbyCrossExampleJP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -502,12 +495,12 @@
 				DEVELOPMENT_TEAM = TSUAA597A7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.nearbyCrossExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.nearbyCrossExampleJP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -526,12 +519,12 @@
 				DEVELOPMENT_TEAM = TSUAA597A7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.nearbyCrossExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.nearbyCrossExampleJP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -563,30 +556,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		B7F908002A0B18D600AFED3A /* XCRemoteSwiftPackageReference "nearby" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/nearby";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		B7F908012A0B18D600AFED3A /* NearbyConnections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B7F908002A0B18D600AFED3A /* XCRemoteSwiftPackageReference "nearby" */;
-			productName = NearbyConnections;
-		};
-		B7F908032A0B18D600AFED3A /* NearbyCoreAdapter */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B7F908002A0B18D600AFED3A /* XCRemoteSwiftPackageReference "nearby" */;
-			productName = NearbyCoreAdapter;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }

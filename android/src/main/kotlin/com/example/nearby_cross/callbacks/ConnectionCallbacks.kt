@@ -1,7 +1,7 @@
 package com.example.nearby_cross.callbacks
 
 abstract class ConnectionCallbacks {
-    abstract fun onPayloadReceived(stringReceived: String, endpointId: String)
+    abstract fun onPayloadReceived(bytesReceived: ByteArray, endpointName: String)
     abstract fun onDisconnected(endpointId: String)
     abstract fun onConnectionInitiated(
         endpointId: String,

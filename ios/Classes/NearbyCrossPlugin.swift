@@ -7,6 +7,7 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
     private var context: UIApplication
     private var callbacks: NearbyCrossCallbacks
     private var advertiser: NCAdvertiser?
+    private var discoverer: NCDiscoverer?
 
     
     init(channel: FlutterMethodChannel) {
@@ -34,11 +35,49 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
                       result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
                       return
             }
-            if(advertiser == nil) {
+            if (advertiser == nil) {
                 advertiser = NCAdvertiser(serviceId: serviceId, strategy: strategy, context: context, callbacks: callbacks.advertiser, userName: userName, manualAcceptConnections: false)
             }
             
             advertiser?.startAdvertising()
+            result(nil)
+        case ChannelMethods.START_DISCOVERY:
+            guard let args = call.arguments as? [String: Any],
+                  let serviceId = args["serviceId"] as? String,
+                  let userName = args["username"] as? String,
+                  let strategy = args["strategy"] as? String else {
+                      result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
+                      return
+            }
+            if (discoverer == nil) {
+                discoverer = NCDiscoverer(serviceId: serviceId, strategy: strategy, context: context, callbacks: callbacks.discoverer, userName: userName)
+            }
+            
+            discoverer?.startDiscovering()
+            result(nil)
+        case ChannelMethods.CONNECT:
+            guard let args = call.arguments as? [String: Any],
+                  let endpointId = args["endpointId"] as? String else {
+                result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
+                return
+            }
+            
+            discoverer?.connect(endpointId: endpointId)
+            result(nil)
+        case ChannelMethods.SEND_DATA:
+            guard let args = call.arguments as? [String: Any],
+                  let data = args["data"] as? FlutterStandardTypedData,
+                  let endpointId = args["endpointId"] as? String else {
+                result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
+                return
+            }
+            
+            if (discoverer != nil) {
+                discoverer?.sendData(data: Data(data.data), to: endpointId)
+            } else if (advertiser != nil) {
+                advertiser?.sendData(data: Data(data.data), to: endpointId)
+            }
+
             result(nil)
         default:
           result("Not implemented")

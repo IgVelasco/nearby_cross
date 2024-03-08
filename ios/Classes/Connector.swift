@@ -13,26 +13,72 @@
  class Connector: ConnectionManagerDelegate {
      func connectionManager(_ connectionManager: ConnectionManager, didReceive verificationCode: String, from endpointID: EndpointID, verificationHandler: @escaping (Bool) -> Void) {
          // TODO
+         // Optionally show the user the verification code. Your app should call this handler
+         // with a value of `true` if the nearby endpoint should be trusted, or `false`
+         // otherwise.
+         verificationHandler(true)
      }
     
      func connectionManager(_ connectionManager: ConnectionManager, didReceive data: Data, withID payloadID: PayloadID, from endpointID: EndpointID) {
          // TODO
+         // A simple byte payload has been received. This will always include the full data.
+         print(data)
+         callbacks.onPayloadReceived(bytesReceived: data, endpointId: endpointID)
      }
     
      func connectionManager(_ connectionManager: ConnectionManager, didReceive stream: InputStream, withID payloadID: PayloadID, from endpointID: EndpointID, cancellationToken token: CancellationToken) {
          // TODO
+         // We have received a readable stream.
      }
     
      func connectionManager(_ connectionManager: ConnectionManager, didStartReceivingResourceWithID payloadID: PayloadID, from endpointID: EndpointID, at localURL: URL, withName name: String, cancellationToken token: CancellationToken) {
          // TODO
+         // We have started receiving a file. We will receive a separate transfer
+         // event when complete.
      }
     
      func connectionManager(_ connectionManager: ConnectionManager, didReceiveTransferUpdate update: TransferUpdate, from endpointID: EndpointID, forPayload payloadID: PayloadID) {
-         // TODO
+         // TODO We have to manage payloads as they are not sent atomically
+         // A success, failure, cancelation or progress update.
+         switch update {
+         case .success:
+             print("success")
+         case .canceled:
+             print("canceled")
+         case .failure:
+             print("failure")
+         case let .progress(progress):
+             print("progress")
+         }
      }
     
      func connectionManager(_ connectionManager: ConnectionManager, didChangeTo state: ConnectionState, for endpointID: EndpointID) {
-         // TODO
+         switch state {
+             case .connecting:
+               // A connection to the remote endpoint is currently being established.
+             print("connecting")
+             callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: "TODO connecting state", alreadyAcceptedConnection: true)
+             break;
+             case .connected:
+               // We're connected! Can now start sending and receiving data.
+             print("connected")
+             callbacks.onSuccessfulConnection(endpointId: endpointID)
+             break;
+             case .disconnected:
+               // We've been disconnected from this endpoint. No more data can be sent or received.
+             print("disconnected")
+             break;
+             case .rejected:
+               // The connection was rejected by one or both sides.
+             print("rejected")
+             break;
+             }
+     }
+     
+     func sendData(data: Data, to endpointId: String) -> CancellationToken {
+         return connectionManager.send(data, to: [endpointId], completionHandler: { err in
+             print(err ?? "Sent data")
+         })
      }
     
      let serviceId: String

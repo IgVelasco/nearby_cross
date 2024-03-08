@@ -15,7 +15,7 @@ class PendingConnectionsList extends StatelessWidget {
       create: (context) => PendingConnectionsViewModel(),
       child: Scaffold(
         backgroundColor: const Color(0xffffffff),
-        appBar: const NCAppBar(),
+        appBar: NCAppBar(),
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
           child: SingleChildScrollView(
