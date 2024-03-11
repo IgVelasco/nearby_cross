@@ -9,22 +9,8 @@ import Foundation
 
 
 class NCDiscoverer: Connector, DiscovererDelegate {
-    func discoverer(
-        _ discoverer: Discoverer, didFind endpointID: EndpointID, with context: Data) {
-        // An endpoint was found.
-            (callbacks as! any DiscovererCallbacks as DiscovererCallbacks).onEndpointFound(endpointId: endpointID, endpointName: "My Device")
-      }
-
-      func discoverer(_ discoverer: Discoverer, didLose endpointID: EndpointID) {
-        // A previously discovered endpoint has gone away.
-      }
-    
-    func connect(endpointId: String) {
-        discoverer?.requestConnection(to: endpointId, using: userName)
-    }
-   
     var discoverer: Discoverer?
-   
+
     init(serviceId: String,
          strategy: String,
          context: UIApplication,
@@ -40,8 +26,36 @@ class NCDiscoverer: Connector, DiscovererDelegate {
         discoverer = Discoverer(connectionManager: connectionManager)
         discoverer!.delegate = self
     }
+
+    func discoverer(
+        _ discoverer: Discoverer, didFind endpointID: EndpointID, with context: Data) {
+            // An endpoint was found.
+            var endpointName = String(decoding: context, as: UTF8.self)
+            (callbacks as! any DiscovererCallbacks as DiscovererCallbacks)
+                .onEndpointFound(
+                    endpointId: endpointID,
+                    endpointName: endpointName
+                )
+    }
+
+      func discoverer(_ discoverer: Discoverer, didLose endpointID: EndpointID) {
+          // A previously discovered endpoint has gone away.
+          (callbacks as! any DiscovererCallbacks as DiscovererCallbacks).onEndpointLost(endpointId: endpointID)
+      }
+    
+    func connect(endpointId: String) {
+        let completionHandler: (Error?) -> Void  = {(error) in
+            print(error ?? "Requested connection to \(endpointId)")
+        };
+        
+        discoverer?.requestConnection(to: endpointId, using: userName)
+    }
    
     func startDiscovering() {
-        discoverer!.startDiscovery()
+        let completionHandler: (Error?) -> Void  = {(error) in
+            print(error ?? "Starting to discover devices in iOS")
+        };
+
+        discoverer!.startDiscovery(completionHandler: completionHandler);
     }
 }

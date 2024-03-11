@@ -105,6 +105,6 @@ class DiscovererCallbacksImpl: DiscovererCallbacks {
     func onEndpointLost(endpointId: String) {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
-        channel.invokeMethod(ChannelMethods.ON_ENDPOINT_FOUND, arguments: hashmap)
+        channel.invokeMethod(ChannelMethods.ON_ENDPOINT_LOST, arguments: hashmap)
     }
 }
