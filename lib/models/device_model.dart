@@ -16,7 +16,7 @@ class Device {
   bool hasNewMessages = false;
   List<NearbyMessage> messages = [];
   List<NearbyMessage> messagesSent = [];
-  NearbyCross _nearbyCross;
+  final NearbyCross _nearbyCross;
   HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
       HashMap<String, dynamic Function(Device)>();
 
