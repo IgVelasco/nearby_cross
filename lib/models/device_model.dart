@@ -16,21 +16,28 @@ class Device {
   bool hasNewMessages = false;
   List<NearbyMessage> messages = [];
   List<NearbyMessage> messagesSent = [];
-  final NearbyCross _nearbyCross = NearbyCross();
+  NearbyCross _nearbyCross;
   HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
       HashMap<String, dynamic Function(Device)>();
 
-  Device(this.endpointId, this.endpointName)
+  Device.fromConnection(this._nearbyCross, this.endpointId, this.endpointName)
       : isEndpointOnly = false,
         isPendingConnection = false;
+
+  Device(this.endpointId, this.endpointName)
+      : isEndpointOnly = false,
+        isPendingConnection = false,
+        _nearbyCross = NearbyCross();
 
   Device.asEndpoint(this.endpointId, this.endpointName)
       : isEndpointOnly = true,
-        isPendingConnection = false;
+        isPendingConnection = false,
+        _nearbyCross = NearbyCross();
 
   Device.asPendingConnection(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
-        isPendingConnection = true;
+        isPendingConnection = true,
+        _nearbyCross = NearbyCross();
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
   void setCallbackReceivedMessage(
