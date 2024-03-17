@@ -1,4 +1,5 @@
 {
+  "originHash" : "70514a2e37eb1194662ccc10716c4e5d18e31b2d5dc8da2499cc8f40a608e949",
   "pins" : [
     {
       "identity" : "abseil-cpp-swiftpm",
@@ -23,10 +24,9 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/nearby",
       "state" : {
-        "branch" : "main",
-        "revision" : "115c286885c5de1944de1c3c3e8ba16bfe950106"
+        "revision" : "3c72e4f40ca1694b7a082178142c36bf084a1573"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

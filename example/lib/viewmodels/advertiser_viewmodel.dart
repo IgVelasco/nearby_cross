@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
+import 'package:nearby_cross/models/message_model.dart';
 
 class AdvertiserViewModel with ChangeNotifier {
   late Advertiser advertiser;
@@ -21,10 +20,24 @@ class AdvertiserViewModel with ChangeNotifier {
 
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackPendingAcceptConnection(
+        "AdvertiserViewModel:pendingAcceptConnection",
         _setCallbackPendingAcceptConnection);
-    connectionsManager.setCallbackConnectionInitiated(_commonCallback);
+    connectionsManager.setCallbackConnectionInitiated(
+        "AdvertiserViewModel:connetionInitiated", _commonCallback);
+    connectionsManager.setCallbackSuccessfulConnection(
+        "AdvertiserViewModel:successfulConnection",
+        _callbackSuccessfulConnection);
+  }
+
+  @override
+  void dispose() {
     connectionsManager
-        .setCallbackSuccessfulConnection(_callbackSuccessfulConnection);
+        .removeNamedCallback("AdvertiserViewModel:pendingAcceptConnection");
+    connectionsManager
+        .removeNamedCallback("AdvertiserViewModel:connetionInitiated");
+    connectionsManager
+        .removeNamedCallback("AdvertiserViewModel:successfulConnection");
+    super.dispose();
   }
 
   void _commonCallback(Device device) {
@@ -79,10 +92,10 @@ class AdvertiserViewModel with ChangeNotifier {
     return advertiser.connect(endpointId);
   }
 
-  Future<void> sendData(Uint8List message) async {
+  Future<void> sendData(String message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
-          _connectedDevice!.endpointId, message);
+          _connectedDevice!.endpointId, NearbyMessage.fromString(message));
     }
   }
 

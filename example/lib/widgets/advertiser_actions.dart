@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross_example/screens/pending_connections_list.dart';
+import 'package:nearby_cross_example/screens/select_interaction_screen.dart';
 import 'package:nearby_cross_example/viewmodels/advertiser_viewmodel.dart';
 import 'package:provider/provider.dart';
-
-import '../screens/advertiser_comunication_screen.dart';
 
 class AdvertiserActions extends StatelessWidget {
   final String? username;
@@ -79,21 +78,19 @@ class AdvertiserActions extends StatelessWidget {
                         trailing: const Icon(Icons.arrow_forward_ios,
                             color: Color(0xff212435), size: 24),
                       )),
-              Consumer<AdvertiserViewModel>(
-                  builder: (context, app, child) => ListTile(
-                        tileColor: const Color(0x1fffffff),
-                        title: const Text(
-                          "Interact",
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>
-                                AdvertiserComunicationScreen(),
-                          ));
-                        },
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Color(0xff212435), size: 24),
-                      ))
+              ListTile(
+                tileColor: const Color(0x1fffffff),
+                title: const Text(
+                  "Interact",
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SelectInteractionScreen(),
+                  ));
+                },
+                trailing: const Icon(Icons.arrow_forward_ios,
+                    color: Color(0xff212435), size: 24),
+              )
             ],
           ),
         ]);

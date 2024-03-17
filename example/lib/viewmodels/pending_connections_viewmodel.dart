@@ -10,13 +10,27 @@ class PendingConnectionsViewModel with ChangeNotifier {
   PendingConnectionsViewModel() {
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackPendingAcceptConnection(
+        "PendingConnectionsViewModel:pendingAcceptConnection",
         _setCallbackPendingAcceptConnection);
 
-    connectionsManager
-        .setCallbackSuccessfulConnection(_setCallbackSuccessfulConnection);
+    connectionsManager.setCallbackSuccessfulConnection(
+        "PendingConnectionsViewModel:successfulConnection",
+        _setCallbackSuccessfulConnection);
 
+    connectionsManager.setCallbackConnectionRejected(
+        "PendingConnectionsViewModel:connectionRejected",
+        _setCallbackConnectionRejected);
+  }
+
+  @override
+  void dispose() {
+    connectionsManager.removeNamedCallback(
+        "PendingConnectionsViewModel:pendingAcceptConnection");
+    connectionsManager.removeNamedCallback(
+        "PendingConnectionsViewModel:successfulConnection");
     connectionsManager
-        .setCallbackConnectionRejected(_setCallbackConnectionRejected);
+        .removeNamedCallback("PendingConnectionsViewModel:connectionRejected");
+    super.dispose();
   }
 
   void _commonCallback(Device device) {

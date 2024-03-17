@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
 
 class MainViewModel with ChangeNotifier {
-  String? _username;
+  String? _username = "asd";
   bool advertiserMode = true;
   String get mode => advertiserMode ? "Advertiser" : "Discoverer";
   NearbyStrategies strategy = NearbyStrategies.star;
