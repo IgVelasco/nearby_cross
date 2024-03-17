@@ -17,7 +17,9 @@ class AdvertiserActions extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AdvertiserViewModel())
       ],
       builder: (context, child) {
-        Provider.of<AdvertiserViewModel>(context, listen: false);
+        Provider.of<AdvertiserViewModel>(context, listen: false)
+            .setUsername(username!, false);
+
         return Column(children: [
           ListView(
             scrollDirection: Axis.vertical,

@@ -20,6 +20,7 @@ class DiscovererActions extends StatelessWidget {
         builder: (context, child) {
           Provider.of<DiscovererViewModel>(context)
               .setUsername(username!, false);
+
           return Column(children: [
             ListView(
               scrollDirection: Axis.vertical,

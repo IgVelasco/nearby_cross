@@ -65,8 +65,8 @@ class MainScreen extends StatelessWidget {
                                           onPressed: () => showDialog(
                                             context: context,
                                             builder: (context) {
-                                              return InputDialog(
-                                                  vm.username ?? "", (input) {
+                                              return InputDialog(vm.username,
+                                                  (input) {
                                                 vm.setUsername(input);
                                               });
                                             },
@@ -77,7 +77,7 @@ class MainScreen extends StatelessWidget {
                                     Consumer<MainViewModel>(
                                       builder: (context, viewModel, child) =>
                                           Text(
-                                        viewModel.username ?? "",
+                                        viewModel.username,
                                         textAlign: TextAlign.start,
                                         maxLines: 1,
                                         overflow: TextOverflow.clip,
