@@ -30,7 +30,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
     func discoverer(
         _ discoverer: Discoverer, didFind endpointID: EndpointID, with context: Data) {
             // An endpoint was found.
-            var endpointName = String(decoding: context, as: UTF8.self)
+            let endpointName = String(decoding: context, as: UTF8.self)
             (callbacks as! any DiscovererCallbacks as DiscovererCallbacks)
                 .onEndpointFound(
                     endpointId: endpointID,
@@ -48,7 +48,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
             print(error ?? "Requested connection to \(endpointId)")
         };
         
-        discoverer?.requestConnection(to: endpointId, using: userName)
+        discoverer?.requestConnection(to: endpointId, using: userName, completionHandler: completionHandler)
     }
    
     func startDiscovering() {

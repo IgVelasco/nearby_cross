@@ -31,12 +31,13 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
             guard let args = call.arguments as? [String: Any],
                   let serviceId = args["serviceId"] as? String,
                   let userName = args["username"] as? String,
-                  let strategy = args["strategy"] as? String else {
+                  let strategy = args["strategy"] as? String,
+                  let manualAcceptConnections = args["manualAcceptConnections"] as? String  else {
                       result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
                       return
             }
             if (advertiser == nil) {
-                advertiser = NCAdvertiser(serviceId: serviceId, strategy: strategy, context: context, callbacks: callbacks.advertiser, userName: userName, manualAcceptConnections: false)
+                advertiser = NCAdvertiser(serviceId: serviceId, strategy: strategy, context: context, callbacks: callbacks.advertiser, userName: userName, manualAcceptConnections:  manualAcceptConnections == "1")
             }
             
             advertiser?.startAdvertising()
@@ -73,12 +74,32 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
             }
             
             if (discoverer != nil) {
-                discoverer?.sendData(data: Data(data.data), to: endpointId)
+                var _ = discoverer?.sendData(data: Data(data.data), to: endpointId)
             } else if (advertiser != nil) {
-                advertiser?.sendData(data: Data(data.data), to: endpointId)
+                var _ = advertiser?.sendData(data: Data(data.data), to: endpointId)
             }
 
             result(nil)
+        case ChannelMethods.ACCEPT_CONNECTION:
+            guard let args = call.arguments as? [String: Any],
+                  let endpointId = args["endpointId"] as? String else {
+                result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
+                return
+            }
+            
+            advertiser?.acceptConnection(endpointId: endpointId)
+            result(nil)
+            break;
+        case ChannelMethods.REJECT_CONNECTION:
+            guard let args = call.arguments as? [String: Any],
+                  let endpointId = args["endpointId"] as? String else {
+                result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
+                return
+            }
+            
+            advertiser?.rejectConnection(endpointId: endpointId)
+            result(nil)
+            break;
         default:
           result("Not implemented")
         }
