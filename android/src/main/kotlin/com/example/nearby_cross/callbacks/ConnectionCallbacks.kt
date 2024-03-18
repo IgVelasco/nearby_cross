@@ -10,4 +10,6 @@ abstract class ConnectionCallbacks {
     )
 
     abstract fun onSuccessfulConnection(endpointId: String)
+
+    abstract fun onRejectedConnection(endpointId: String)
 }

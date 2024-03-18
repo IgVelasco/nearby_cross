@@ -56,21 +56,22 @@
          switch state {
              case .connecting:
                // A connection to the remote endpoint is currently being established.
-             print("connecting")
-             callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: "TODO connecting state", alreadyAcceptedConnection: true)
+                 print("connecting")
+                 callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: "TODO connecting state", alreadyAcceptedConnection: true)
              break;
              case .connected:
                // We're connected! Can now start sending and receiving data.
-             print("connected")
-             callbacks.onSuccessfulConnection(endpointId: endpointID)
+                 print("connected")
+                 callbacks.onSuccessfulConnection(endpointId: endpointID)
              break;
              case .disconnected:
                // We've been disconnected from this endpoint. No more data can be sent or received.
-             print("disconnected")
+                print("disconnected")
              break;
              case .rejected:
                // The connection was rejected by one or both sides.
-             print("rejected")
+                 print("rejected")
+                 callbacks.onRejectedConnection(endpointId: endpointID)
              break;
              }
      }

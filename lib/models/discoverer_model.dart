@@ -35,6 +35,13 @@ class Discoverer extends Connector {
     callbackOnDeviceLost(device);
   }
 
+  void _handleConnectionRejected(String endpointId) {
+    var device = listOfDiscoveredDevices
+        .firstWhere((element) => element.endpointId == endpointId);
+
+    listOfDiscoveredDevices.remove(device);
+  }
+
   /// Service to configure callbackOnDeviceFound, that executes every time a new device is found
   void setOnDeviceFoundCallback(Function(Device) callbackOnDeviceFound) {
     this.callbackOnDeviceFound = callbackOnDeviceFound;
@@ -70,6 +77,12 @@ class Discoverer extends Connector {
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
       return _handleEndpointLost(arguments["endpointId"] as String);
+    });
+
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      return _handleConnectionRejected(arguments["endpointId"] as String);
     });
   }
 }

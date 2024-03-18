@@ -47,6 +47,7 @@ class ConnectionAttempt {
              case .rejected:
                 // The connection was rejected by one or both sides.
                  print("rejected")
+             callbacks.onRejectedConnection(endpointId: endpointID)
              break;
           }
      }

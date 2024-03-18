@@ -100,6 +100,16 @@ class ConnectionsManager {
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
+  void _handleRejectedConnection(String endpointId) {
+    var device = _findDevice(pendingAcceptConnections, endpointId);
+    if (device == null) {
+      return;
+    }
+
+    pendingAcceptConnections.remove(device);
+    _executeCallback(callbackConnectionRejected, device);
+  }
+
   /// Handler for [NearbyCrossMethods.payloadReceived] method call.
   /// Adds received message to the corresponding device.
   void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
@@ -132,12 +142,18 @@ class ConnectionsManager {
       return _handleSuccessfulConnection(endpointId);
     });
 
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      var endpointId = arguments["endpointId"] as String;
+      return _handleRejectedConnection(endpointId);
+    });
+
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
       var messageReceived = arguments["message"] as Uint8List;
       var endpointId = arguments["endpointId"] as String;
-      logger.i("MESSAGE: $messageReceived");
 
       return _handlePayloadReceived(endpointId, messageReceived);
     });

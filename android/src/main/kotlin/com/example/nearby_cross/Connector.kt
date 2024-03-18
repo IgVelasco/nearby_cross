@@ -99,7 +99,7 @@ open class Connector(
                     // The connection request was rejected by the remote endpoint
                     // You may want to notify the user that the connection was rejected
                     Log.d("ERROR", "Connection rejected")
-                    // TODO: Write Connection rejected callback
+                    callbacks.onRejectedConnection(endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
                     // There was an error connecting to the remote endpoint

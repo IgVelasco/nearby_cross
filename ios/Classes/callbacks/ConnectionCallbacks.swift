@@ -12,4 +12,5 @@ protocol ConnectionCallbacks {
     func onDisconnected(endpointId: String)
     func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool)
     func onSuccessfulConnection(endpointId: String)
+    func onRejectedConnection(endpointId: String)
 }

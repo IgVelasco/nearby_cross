@@ -53,6 +53,12 @@ class AdvertiserCallbacksImpl: AdvertiserCallbacks {
         hashmap["endpointId"] = endpointId
         channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, arguments: hashmap)
     }
+    
+    func onRejectedConnection(endpointId: String) {
+        var hashmap = [String: Any]()
+        hashmap["endpointId"] = endpointId
+        channel.invokeMethod(ChannelMethods.CONNECTION_REJECTED, arguments: hashmap)
+    }
 
     func onDisconnected(endpointId: String) {
         var hashmap = [String: Any]()
@@ -87,6 +93,12 @@ class DiscovererCallbacksImpl: DiscovererCallbacks {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
         channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, arguments: hashmap)
+    }
+    
+    func onRejectedConnection(endpointId: String) {
+        var hashmap = [String: Any]()
+        hashmap["endpointId"] = endpointId
+        channel.invokeMethod(ChannelMethods.CONNECTION_REJECTED, arguments: hashmap)
     }
 
     func onDisconnected(endpointId: String) {

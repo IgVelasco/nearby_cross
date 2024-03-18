@@ -29,6 +29,7 @@ class ChannelMethods {
         const val ENPOINT_DISCONNECTED = "endpointDisconnected"
         const val CONNECTION_INITIATED = "connectionInitiated"
         const val SUCCESSFUL_CONNECTION = "successfulConnection"
+        const val CONNECTION_REJECTED = "connectionRejected"
         const val PAYLOAD_RECEIVED = "payloadReceived"
     }
 }
