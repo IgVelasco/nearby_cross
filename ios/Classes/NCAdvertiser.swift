@@ -29,6 +29,28 @@ class ConnectionAttempt {
 
 
  class NCAdvertiser: Connector, AdvertiserDelegate {
+
+     var advertiser: Advertiser?
+     var connectionAttempts: [ConnectionAttempt] = []
+    
+     init(serviceId: String,
+          strategy: String,
+          context: UIApplication,
+          callbacks: AdvertiserCallbacks,
+          userName: String = GeneralConstants.DEFAULT_USERNAME,
+          manualAcceptConnections: Bool = false) {
+         self.advertiser = nil
+          super.init(serviceId: serviceId,
+                    strategy: strategy,
+                    context: context,
+                    callbacks: callbacks,
+                    userName: userName,
+                    manualAcceptConnections: manualAcceptConnections)
+        
+         advertiser = Advertiser(connectionManager: connectionManager)
+         advertiser!.delegate = self
+     }
+
      override func connectionManager(_ connectionManager: ConnectionManager, didChangeTo state: ConnectionState, for endpointID: EndpointID) {
          switch state {
              case .connecting:
@@ -66,27 +88,6 @@ class ConnectionAttempt {
          }
          
          callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: connectionAttempt.endpointName, alreadyAcceptedConnection: !manualAcceptConnections)
-     }
-    
-     var advertiser: Advertiser?
-     var connectionAttempts: [ConnectionAttempt] = []
-    
-     init(serviceId: String,
-          strategy: String,
-          context: UIApplication,
-          callbacks: AdvertiserCallbacks,
-          userName: String = GeneralConstants.DEFAULT_USERNAME,
-          manualAcceptConnections: Bool = false) {
-         self.advertiser = nil
-          super.init(serviceId: serviceId,
-                    strategy: strategy,
-                    context: context,
-                    callbacks: callbacks,
-                    userName: userName,
-                    manualAcceptConnections: manualAcceptConnections)
-        
-         advertiser = Advertiser(connectionManager: connectionManager)
-         advertiser!.delegate = self
      }
     
      func startAdvertising() {
