@@ -26,7 +26,7 @@ class ChannelMethods {
         // Connection Callbacks
         const val ON_ENDPOINT_FOUND = "onEndpointFound"
         const val ON_ENDPOINT_LOST = "onEndpointLost"
-        const val ENPOINT_DISCONNECTED = "endpointDisconnected"
+        const val ENDPOINT_DISCONNECTED = "endpointDisconnected"
         const val CONNECTION_INITIATED = "connectionInitiated"
         const val SUCCESSFUL_CONNECTION = "successfulConnection"
         const val CONNECTION_REJECTED = "connectionRejected"

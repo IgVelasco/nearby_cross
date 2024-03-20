@@ -26,7 +26,7 @@ struct ChannelMethods {
     // Connection Callbacks
     static let ON_ENDPOINT_FOUND = "onEndpointFound"
     static let ON_ENDPOINT_LOST = "onEndpointLost"
-    static let ENPOINT_DISCONNECTED = "endpointDisconnected"
+    static let ENDPOINT_DISCONNECTED = "endpointDisconnected"
     static let CONNECTION_INITIATED = "connectionInitiated"
     static let SUCCESSFUL_CONNECTION = "successfulConnection"
     static let CONNECTION_REJECTED = "connectionRejected"

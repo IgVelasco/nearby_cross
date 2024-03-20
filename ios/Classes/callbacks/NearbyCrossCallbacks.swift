@@ -63,7 +63,7 @@ class AdvertiserCallbacksImpl: AdvertiserCallbacks {
     func onDisconnected(endpointId: String) {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
-        channel.invokeMethod(ChannelMethods.ENPOINT_DISCONNECTED, arguments: hashmap)
+        channel.invokeMethod(ChannelMethods.ENDPOINT_DISCONNECTED, arguments: hashmap)
     }
 }
 
@@ -104,7 +104,7 @@ class DiscovererCallbacksImpl: DiscovererCallbacks {
     func onDisconnected(endpointId: String) {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
-        channel.invokeMethod(ChannelMethods.ENPOINT_DISCONNECTED, arguments: hashmap)
+        channel.invokeMethod(ChannelMethods.ENDPOINT_DISCONNECTED, arguments: hashmap)
     }
     
     func onEndpointFound(endpointId: String, endpointName: String) {
