@@ -1,6 +1,7 @@
 name: nearby_cross
 description: A new Flutter plugin project.
 version: 0.0.1
+repository: https://github.com/IgVelasco/nearby_cross
 
 environment:
 
