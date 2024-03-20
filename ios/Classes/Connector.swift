@@ -20,9 +20,7 @@
      }
     
      func connectionManager(_ connectionManager: ConnectionManager, didReceive data: Data, withID payloadID: PayloadID, from endpointID: EndpointID) {
-         // TODO
          // A simple byte payload has been received. This will always include the full data.
-         print(data)
          callbacks.onPayloadReceived(bytesReceived: data, endpointId: endpointID)
      }
     
