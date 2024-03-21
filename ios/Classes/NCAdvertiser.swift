@@ -18,12 +18,8 @@ class ConnectionAttempt {
         self.connectionRequestHandler = connectionRequestHandler
     }
     
-    func acceptConnection() {
-        connectionRequestHandler(true)
-    }
-    
-    func rejectConnection() {
-        connectionRequestHandler(false)
+    func handleConnection(result: Bool) {
+        connectionRequestHandler(result)
     }
 }
 
@@ -84,7 +80,7 @@ class ConnectionAttempt {
          connectionAttempts.append(connectionAttempt)
 
          if (!manualAcceptConnections) {
-             connectionAttempt.acceptConnection()
+             connectionAttempt.handleConnection(result: true)
          }
          
          callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: connectionAttempt.endpointName, alreadyAcceptedConnection: !manualAcceptConnections)
@@ -96,13 +92,13 @@ class ConnectionAttempt {
      
      func acceptConnection(endpointId: String) {
          guard let connectionAttemptIndex = connectionAttempts.firstIndex(where: {$0.endpointId == endpointId} ) else { return }
-         connectionAttempts[connectionAttemptIndex].acceptConnection()
+         connectionAttempts[connectionAttemptIndex].handleConnection(result: true)
          connectionAttempts.remove(at: connectionAttemptIndex)
      }
      
      func rejectConnection(endpointId: String) {
          guard let connectionAttemptIndex = connectionAttempts.firstIndex(where: {$0.endpointId == endpointId} ) else { return }
-         connectionAttempts[connectionAttemptIndex].rejectConnection()
+         connectionAttempts[connectionAttemptIndex].handleConnection(result: false)
          connectionAttempts.remove(at: connectionAttemptIndex)
      }
  }
