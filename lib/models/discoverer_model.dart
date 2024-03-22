@@ -3,6 +3,8 @@ import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
+import '../helpers/platform_utils.dart';
+
 /// Class that represent the Discoverer instance of NearbyCross plugin.
 class Discoverer extends Connector {
   static Discoverer? _singleton;
@@ -48,12 +50,12 @@ class Discoverer extends Connector {
   }
 
   /// Service to start discovering devices using NearbyCross plugin
-  Future<void> startDiscovery(String? username,
+  Future<void> startDiscovery(
       {NearbyStrategies strategy = NearbyStrategies.star}) async {
     listOfDiscoveredDevices.clear();
+    username = this.username ?? await getDeviceName();
     await nearbyCross.startDiscovery(serviceId, username, strategy);
     isDiscovering = true;
-    this.username = username;
   }
 
   Future<void> stopDiscovering() async {

@@ -19,7 +19,7 @@ class DiscovererActions extends StatelessWidget {
         ],
         builder: (context, child) {
           Provider.of<DiscovererViewModel>(context)
-              .setUsername(username!, false);
+              .setUsername(username, false);
 
           return Column(children: [
             ListView(

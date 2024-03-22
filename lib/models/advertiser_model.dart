@@ -15,12 +15,12 @@ class Advertiser extends Connector {
   }
 
   /// Service to start advertising using NearbyCross plugin
-  Future<void> advertise(String? username,
+  Future<void> advertise(
       {bool manualAcceptConnections = false,
       NearbyStrategies strategy = NearbyStrategies.star}) async {
-    this.username = username ?? await getDeviceName();
+    username = this.username ?? await getDeviceName();
     await nearbyCross.advertise(
-        serviceId, this.username, manualAcceptConnections, strategy);
+        serviceId, username, manualAcceptConnections, strategy);
     isAdvertising = true;
   }
 

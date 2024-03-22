@@ -10,13 +10,11 @@ class AdvertiserViewModel with ChangeNotifier {
   late Advertiser advertiser;
 
   late ConnectionsManager connectionsManager;
-  String? _username;
   bool _manualAcceptConnections = false;
   Device? _connectedDevice;
 
   AdvertiserViewModel() {
     advertiser = Advertiser();
-    _username = advertiser.username;
 
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackPendingAcceptConnection(
@@ -55,14 +53,15 @@ class AdvertiserViewModel with ChangeNotifier {
   }
 
   void setUsername(String? username, [bool notify = true]) {
-    _username = username;
+    if (username == null) return;
+    advertiser.username = username;
     if (notify) {
       notifyListeners();
     }
   }
 
-  String getUsername() {
-    return _username ?? advertiser.username ?? "";
+  String? getUsername() {
+    return advertiser.username;
   }
 
   bool get isConnected => advertiser.isConnected;
@@ -73,7 +72,7 @@ class AdvertiserViewModel with ChangeNotifier {
   Future<void> startAdvertising(NearbyStrategies strategy) async {
     await advertiser
         .requestPermissions(); // TODO: move this to the constructor of the plugin
-    await advertiser.advertise(_username,
+    await advertiser.advertise(
         manualAcceptConnections: _manualAcceptConnections, strategy: strategy);
     notifyListeners();
   }
