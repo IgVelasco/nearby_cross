@@ -18,7 +18,7 @@ class Advertiser extends Connector {
   Future<void> advertise(
       {bool manualAcceptConnections = false,
       NearbyStrategies strategy = NearbyStrategies.star}) async {
-    username = this.username ?? await getDeviceName();
+    username = username ?? await getDeviceName();
     await nearbyCross.advertise(
         serviceId, username, manualAcceptConnections, strategy);
     isAdvertising = true;

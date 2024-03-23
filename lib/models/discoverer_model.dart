@@ -53,7 +53,7 @@ class Discoverer extends Connector {
   Future<void> startDiscovery(
       {NearbyStrategies strategy = NearbyStrategies.star}) async {
     listOfDiscoveredDevices.clear();
-    username = this.username ?? await getDeviceName();
+    username = username ?? await getDeviceName();
     await nearbyCross.startDiscovery(serviceId, username, strategy);
     isDiscovering = true;
   }
