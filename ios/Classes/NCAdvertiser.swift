@@ -26,7 +26,11 @@ class ConnectionAttempt {
 
  class NCAdvertiser: Connector, AdvertiserDelegate {
 
-     var advertiser: Advertiser?
+     lazy var advertiser: Advertiser = {
+         let ad = Advertiser(connectionManager: connectionManager)
+         ad.delegate = self
+         return ad
+     }()
      var connectionAttempts: [ConnectionAttempt] = []
     
      init(serviceId: String,
@@ -35,16 +39,12 @@ class ConnectionAttempt {
           callbacks: AdvertiserCallbacks,
           userName: String = GeneralConstants.DEFAULT_USERNAME,
           manualAcceptConnections: Bool = false) {
-         self.advertiser = nil
           super.init(serviceId: serviceId,
                     strategy: strategy,
                     context: context,
                     callbacks: callbacks,
                     userName: userName,
                     manualAcceptConnections: manualAcceptConnections)
-        
-         advertiser = Advertiser(connectionManager: connectionManager)
-         advertiser!.delegate = self
      }
 
      override func connectionManager(_ connectionManager: ConnectionManager, didChangeTo state: ConnectionState, for endpointID: EndpointID) {
@@ -87,7 +87,7 @@ class ConnectionAttempt {
      }
     
      func startAdvertising() {
-         advertiser!.startAdvertising(using: userName)
+         advertiser.startAdvertising(using: userName)
      }
      
      func acceptConnection(endpointId: String) {

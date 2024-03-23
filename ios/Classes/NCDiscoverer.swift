@@ -9,22 +9,23 @@ import Foundation
 
 
 class NCDiscoverer: Connector, DiscovererDelegate {
-    var discoverer: Discoverer?
-
+    lazy var discoverer: Discoverer = {
+        let disc = Discoverer(connectionManager: connectionManager)
+        disc.delegate = self
+        return disc
+    }()
+    
+    
     init(serviceId: String,
          strategy: String,
          context: UIApplication,
          callbacks: DiscovererCallbacks,
          userName: String = GeneralConstants.DEFAULT_USERNAME) {
-         self.discoverer = nil
          super.init(serviceId: serviceId,
                    strategy: strategy,
                    context: context,
                    callbacks: callbacks,
                    userName: userName)
-       
-        discoverer = Discoverer(connectionManager: connectionManager)
-        discoverer!.delegate = self
     }
 
     func discoverer(
@@ -48,7 +49,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
             print(error ?? "Requested connection to \(endpointId)")
         };
         
-        discoverer?.requestConnection(to: endpointId, using: userName, completionHandler: completionHandler)
+        discoverer  .requestConnection(to: endpointId, using: userName, completionHandler: completionHandler)
     }
    
     func startDiscovering() {
@@ -56,6 +57,6 @@ class NCDiscoverer: Connector, DiscovererDelegate {
             print(error ?? "Starting to discover devices in iOS")
         };
 
-        discoverer!.startDiscovery(completionHandler: completionHandler);
+        discoverer.startDiscovery(completionHandler: completionHandler);
     }
 }
