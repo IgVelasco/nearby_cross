@@ -14,7 +14,6 @@
 
 import NearbyCoreAdapter
 
-
 class InternalConnection: GNCConnectionDelegate {
   weak var delegate: InternalConnectionDelegate?
 

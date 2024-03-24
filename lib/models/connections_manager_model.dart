@@ -100,6 +100,16 @@ class ConnectionsManager {
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
+  void _handleRejectedConnection(String endpointId) {
+    var device = _findDevice(pendingAcceptConnections, endpointId);
+    if (device == null) {
+      return;
+    }
+
+    pendingAcceptConnections.remove(device);
+    _executeCallback(callbackConnectionRejected, device);
+  }
+
   /// Handler for [NearbyCrossMethods.payloadReceived] method call.
   /// Adds received message to the corresponding device.
   void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
@@ -130,6 +140,13 @@ class ConnectionsManager {
       var arguments = call.arguments as Map<Object?, Object?>;
       var endpointId = arguments["endpointId"] as String;
       return _handleSuccessfulConnection(endpointId);
+    });
+
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      var endpointId = arguments["endpointId"] as String;
+      return _handleRejectedConnection(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
@@ -177,6 +194,12 @@ class ConnectionsManager {
   void setCallbackReceivedMessage(
       String callbackId, Function(Device) callbackReceivedMessage) {
     this.callbackReceivedMessage[callbackId] = callbackReceivedMessage;
+  }
+
+  /// Sets callbackDisconnectedDevice that executes every time a device is disconnected
+  void setCallbackDisconnectedDevice(
+      String callbackId, Function(Device) callbackDisconnectedDevice) {
+    this.callbackDisconnectedDevice[callbackId] = callbackDisconnectedDevice;
   }
 
   /// Sets callbackReceivedMessage callback for a given device that executes every time a message is received from that device.
@@ -253,7 +276,7 @@ class ConnectionsManager {
   }
 
   Device? removeConnectedDevices(String endpointId) {
-    Device? device = _findDevice(initiatedConnections, endpointId);
+    Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e(
           "Could not find a initiated connection from endpointID $endpointId");
@@ -336,5 +359,15 @@ class ConnectionsManager {
     pendingAcceptConnections.remove(pending);
 
     _executeCallback(callbackConnectionRejected, pending);
+  }
+
+  /// Disconnects from a given device by its endpointId
+  Future<void> disconnectFromEndpoint(String endpointId) async {
+    var connectedDevice = _findDevice(connectedDevices, endpointId);
+    if (connectedDevice == null) {
+      return;
+    }
+
+    await nearbyCross.disconnectFrom(endpointId);
   }
 }

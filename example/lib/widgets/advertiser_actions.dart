@@ -18,7 +18,7 @@ class AdvertiserActions extends StatelessWidget {
       ],
       builder: (context, child) {
         Provider.of<AdvertiserViewModel>(context, listen: false)
-            .setUsername(username!, false);
+            .setUsername(username, false);
 
         return Column(children: [
           ListView(

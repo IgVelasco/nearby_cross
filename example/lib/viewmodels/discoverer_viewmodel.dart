@@ -11,13 +11,11 @@ class DiscovererViewModel with ChangeNotifier {
   late Discoverer discoverer;
 
   late ConnectionsManager connectionsManager;
-  String? _username;
   Device? _connectedDevice;
 
   DiscovererViewModel() {
     discoverer = Discoverer();
     discoverer.setOnDeviceFoundCallback(_commonCallback);
-    _username = discoverer.username;
 
     connectionsManager = ConnectionsManager();
     connectionsManager.setCallbackPendingAcceptConnection(
@@ -61,8 +59,8 @@ class DiscovererViewModel with ChangeNotifier {
 
   bool get isRunning => discoverer.isConnected || discoverer.isDiscovering;
 
-  String getUsername() {
-    return _username ?? discoverer.username ?? "";
+  String? getUsername() {
+    return discoverer.username;
   }
 
   String? getPlatformVersion() {
@@ -77,13 +75,13 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   bool canStartDiscovererFlow() {
-    return _username != null;
+    return getUsername() != null;
   }
 
   Future<void> startDiscovering(NearbyStrategies strategy) async {
     await discoverer
         .requestPermissions(); // TODO: move this to the constructor of the plugin
-    await discoverer.startDiscovery(_username, strategy: strategy);
+    await discoverer.startDiscovery(strategy: strategy);
     notifyListeners();
   }
 
@@ -107,8 +105,9 @@ class DiscovererViewModel with ChangeNotifier {
     }
   }
 
-  void setUsername(String username, [bool notify = true]) {
-    _username = username;
+  void setUsername(String? username, [bool notify = true]) {
+    if (username == null) return;
+    discoverer.username = username;
     if (notify) {
       notifyListeners();
     }

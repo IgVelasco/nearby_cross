@@ -1,11 +1,12 @@
 name: nearby_cross
 description: A new Flutter plugin project.
 version: 0.0.1
+repository: https://github.com/IgVelasco/nearby_cross
 
 environment:
 
   sdk: '>=3.0.0 <4.0.0'
-  flutter: ">=2.5.0 <3.0.0"
+  flutter: ">=2.5.0"
 
 dependencies:
   flutter:
@@ -13,6 +14,7 @@ dependencies:
   permission_handler: ^10.2.0
   plugin_platform_interface: ^2.0.2
   logger: ^2.0.2+1
+  device_info: ^2.0.3
   intl: ^0.19.0
 
 dev_dependencies:

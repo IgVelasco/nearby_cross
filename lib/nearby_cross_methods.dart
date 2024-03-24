@@ -2,6 +2,7 @@ enum NearbyCrossMethods {
   onEndpointFound,
   connectionInitiated,
   successfulConnection,
+  connectionRejected,
   payloadReceived,
   endpointDisconnected,
   onEndpointLost;
@@ -16,6 +17,8 @@ enum NearbyCrossMethods {
         return 'connectionInitiated';
       case NearbyCrossMethods.successfulConnection:
         return 'successfulConnection';
+      case NearbyCrossMethods.connectionRejected:
+        return 'connectionRejected';
       case NearbyCrossMethods.payloadReceived:
         return 'payloadReceived';
       case NearbyCrossMethods.endpointDisconnected:

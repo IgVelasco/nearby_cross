@@ -21,9 +21,8 @@ class SelectInteractionScreen extends StatelessWidget {
         var provider =
             Provider.of<SelectInteractionViewModel>(context, listen: true);
 
-        void disconnectAction(Device device) {
-          // TODO
-          return;
+        void disconnectAction(Device device) async {
+          await provider.disconnectFrom(device);
         }
 
         void interactAction(Device device) async {
