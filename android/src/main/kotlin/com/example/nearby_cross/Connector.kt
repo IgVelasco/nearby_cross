@@ -38,8 +38,8 @@ open class Connector(
         Log.v("INFO", "Stopped all endpoints")
     }
 
-    fun disconnectFromEndpointId(context: Context, endpointsId: String) {
-        Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointsId)
+    fun disconnectFromEndpointId(context: Context, endpointId: String) {
+        Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointId)
     }
 
     fun sendData(context: Context, data: String, endpointId: String) {

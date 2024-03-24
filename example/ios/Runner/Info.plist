@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -26,8 +24,12 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Discovering or advertising devices for later comunication</string>
 	<key>NSBluetoothServices</key>
 	<array/>
 	<key>NSBonjourServices</key>
@@ -36,8 +38,6 @@
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Exchange data with nearby devices running the NearbyConnectionsExmaple app.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Discovering or advertising devices for later comunication</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -65,19 +65,28 @@
              case .disconnected:
                // We've been disconnected from this endpoint. No more data can be sent or received.
                 print("disconnected")
+                callbacks.onDisconnected(endpointId: endpointID)
              break;
              case .rejected:
                // The connection was rejected by one or both sides.
                  print("rejected")
                  callbacks.onRejectedConnection(endpointId: endpointID)
              break;
-             }
+         }
      }
      
      func sendData(data: Data, to endpointId: String) -> CancellationToken {
          return connectionManager.send(data, to: [endpointId], completionHandler: { err in
              print(err ?? "Sent data")
          })
+     }
+     
+     func disconnectFrom(from endpointId: String) {
+         let completionHandler: (Error?) -> Void  = {(error) in
+             print(error ?? "Error while trying to disconnect from \(endpointId)")
+         };
+
+         return connectionManager.disconnect(from: endpointId, completionHandler: completionHandler)
      }
     
      let serviceId: String

@@ -100,6 +100,16 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
             advertiser?.rejectConnection(endpointId: endpointId)
             result(nil)
             break;
+        case ChannelMethods.DISCONNECT_FROM:
+            guard let args = call.arguments as? [String: Any],
+                  let endpointId = args["endpointId"] as? String else {
+                result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
+                return
+            }
+            
+            advertiser?.disconnectFrom(from: endpointId)
+            discoverer?.disconnectFrom(from: endpointId)
+            result(nil)
         default:
           result("Not implemented")
         }

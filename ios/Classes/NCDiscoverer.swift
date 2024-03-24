@@ -49,7 +49,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
             print(error ?? "Requested connection to \(endpointId)")
         };
         
-        discoverer  .requestConnection(to: endpointId, using: userName, completionHandler: completionHandler)
+        discoverer.requestConnection(to: endpointId, using: userName, completionHandler: completionHandler)
     }
    
     func startDiscovering() {

@@ -88,9 +88,9 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(null)
             }
             ChannelMethods.DISCONNECT_FROM -> {
-                val endpointId = call.arguments as String
-                this.advertiser?.disconnectFromEndpointId(context, endpointId)
-                this.discoverer?.disconnectFromEndpointId(context, endpointId)
+                val endpointId = call.argument<String>("endpointId")
+                this.advertiser?.disconnectFromEndpointId(context, endpointId as String)
+                this.discoverer?.disconnectFromEndpointId(context, endpointId as String)
                 result.success(null)
             }
             ChannelMethods.SEND_DATA -> {

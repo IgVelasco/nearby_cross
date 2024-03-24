@@ -50,22 +50,11 @@ class ConnectionAttempt {
      override func connectionManager(_ connectionManager: ConnectionManager, didChangeTo state: ConnectionState, for endpointID: EndpointID) {
          switch state {
              case .connecting:
-                 // A connection to the remote endpoint is currently being established.
-                 print("connecting")
+                 // Bypass super.connectionManager to avoid callback execution
+                 print("connecting as Advertirser to \(endpointID)")
              break;
-             case .connected:
-                // We're connected! Can now start sending and receiving data.
-                print("connected")
-                callbacks.onSuccessfulConnection(endpointId: endpointID)
-             break;
-             case .disconnected:
-                // We've been disconnected from this endpoint. No more data can be sent or received.
-                print("disconnected")
-             break;
-             case .rejected:
-                // The connection was rejected by one or both sides.
-                 print("rejected")
-             callbacks.onRejectedConnection(endpointId: endpointID)
+            default:
+             super.connectionManager(connectionManager, didChangeTo: state, for: endpointID)
              break;
           }
      }
