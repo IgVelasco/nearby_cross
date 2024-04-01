@@ -38,8 +38,8 @@ open class Connector(
         Log.v("INFO", "Stopped all endpoints")
     }
 
-    fun disconnectFromEndpointId(context: Context, endpointsId: String) {
-        Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointsId)
+    fun disconnectFromEndpointId(context: Context, endpointId: String) {
+        Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpointId)
     }
 
     fun sendData(context: Context, data: String, endpointId: String) {
@@ -99,7 +99,7 @@ open class Connector(
                     // The connection request was rejected by the remote endpoint
                     // You may want to notify the user that the connection was rejected
                     Log.d("ERROR", "Connection rejected")
-                    // TODO: Write Connection rejected callback
+                    callbacks.onRejectedConnection(endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
                     // There was an error connecting to the remote endpoint

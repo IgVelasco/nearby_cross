@@ -24,5 +24,5 @@ class MainViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  String get username => _username ?? "";
+  String? get username => _username;
 }

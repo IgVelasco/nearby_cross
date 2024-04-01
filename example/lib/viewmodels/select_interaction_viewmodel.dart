@@ -32,6 +32,9 @@ class SelectInteractionViewModel with ChangeNotifier {
     connectionsManager.setCallbackReceivedMessage(
         "SelectInteractionViewModel:receivedMessage",
         _setCallbackReceivedMessage);
+    connectionsManager.setCallbackDisconnectedDevice(
+        "SelectInteractionViewModel:disconnectedDevice",
+        _setCallbackDisconnectedDevice);
   }
 
   Future<void> afterNavigationPop() async {
@@ -53,11 +56,20 @@ class SelectInteractionViewModel with ChangeNotifier {
     _commonCallback(device);
   }
 
+  void _setCallbackDisconnectedDevice(Device device) {
+    logger.i("Disconnected device ${device.endpointName}");
+    _commonCallback(device);
+  }
+
   int getTotalConnectionsCount() {
     return connectionsManager.connectedDevices.length;
   }
 
   Device getConnectedDeviceByIndex(int index) {
     return connectionsManager.connectedDevices.toList()[index];
+  }
+
+  Future<void> disconnectFrom(Device device) {
+    return connectionsManager.disconnectFromEndpoint(device.endpointId);
   }
 }

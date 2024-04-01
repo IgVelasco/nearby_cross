@@ -3,6 +3,8 @@ import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
+import '../helpers/platform_utils.dart';
+
 /// Class that represent the Discoverer instance of NearbyCross plugin.
 class Discoverer extends Connector {
   static Discoverer? _singleton;
@@ -35,18 +37,25 @@ class Discoverer extends Connector {
     callbackOnDeviceLost(device);
   }
 
+  void _handleConnectionRejected(String endpointId) {
+    var device = listOfDiscoveredDevices
+        .firstWhere((element) => element.endpointId == endpointId);
+
+    listOfDiscoveredDevices.remove(device);
+  }
+
   /// Service to configure callbackOnDeviceFound, that executes every time a new device is found
   void setOnDeviceFoundCallback(Function(Device) callbackOnDeviceFound) {
     this.callbackOnDeviceFound = callbackOnDeviceFound;
   }
 
   /// Service to start discovering devices using NearbyCross plugin
-  Future<void> startDiscovery(String? username,
+  Future<void> startDiscovery(
       {NearbyStrategies strategy = NearbyStrategies.star}) async {
     listOfDiscoveredDevices.clear();
+    username = username ?? await getDeviceName();
     await nearbyCross.startDiscovery(serviceId, username, strategy);
     isDiscovering = true;
-    this.username = username;
   }
 
   Future<void> stopDiscovering() async {
@@ -70,6 +79,12 @@ class Discoverer extends Connector {
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
       return _handleEndpointLost(arguments["endpointId"] as String);
+    });
+
+    nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,
+        (call) async {
+      var arguments = call.arguments as Map<Object?, Object?>;
+      return _handleConnectionRejected(arguments["endpointId"] as String);
     });
   }
 }

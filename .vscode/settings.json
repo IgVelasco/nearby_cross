@@ -2,7 +2,8 @@
     "conventionalCommits.scopes": [
         "android",
         "ios",
-        "flutter"
+        "flutter",
+        "cross"
     ],
     "[dart]": {
         "editor.defaultFormatter": "Dart-Code.dart-code",
