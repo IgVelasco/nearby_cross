@@ -30,3 +30,6 @@ migrate_working_dir/
 build/
 ./vscode
 .vscode/launch.json
+
+coverage
+covhtml

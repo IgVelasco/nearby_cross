@@ -9,15 +9,6 @@ on:
 
 
 jobs:
-  # security_hardening:
-  #   name: Check security hardening
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Clone the repository
-  #     uses: actions/checkout@v4
-  #   # - name: Ensure SHA pinned actions
-  #   #   uses: zgosalvez/github-actions-ensure-sha-pinned-actions@8877889a5717dad0b139f1d2925689aa68f88a43
-
   testing:
     name: Run ${{ matrix.category }} testing
     # needs: security_hardening
@@ -89,3 +80,4 @@ jobs:
         coverage-files: coverage/lcov.*.info
         minimum-coverage: 0
         artifact-name: code-coverage-report
+        github-token: ${{ secrets.GITHUB_TOKEN }}
