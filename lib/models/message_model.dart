@@ -66,8 +66,6 @@ class NearbyMessage {
     message = Uint8List.fromList(messageBytes);
   }
 
-
-
   Uint8List convertToBytes() {
     var messageTypeByte = messageType.toInt8();
     var dateTimeBytes = BytesUtils.int64bytes(dateTime.millisecondsSinceEpoch);
