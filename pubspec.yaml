@@ -21,6 +21,7 @@ dependencies:
   crypto_keys: ^0.3.0+1
   jwk: ^0.2.3
   nanodart: ^2.0.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

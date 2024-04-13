@@ -1,8 +1,10 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:jwk/jwk.dart';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/constants/app.dart';
 import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
@@ -10,6 +12,7 @@ import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/models/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Class to manage conections coming from NearbyCross plugin
 class ConnectionsManager {
@@ -20,6 +23,7 @@ class ConnectionsManager {
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
   late SigningManager signingManager;
+  late AppMode appMode;
 
   HashMap<String, dynamic Function(Device)> callbackPendingAcceptConnection =
       HashMap<String, dynamic Function(Device)>();
@@ -36,8 +40,8 @@ class ConnectionsManager {
 
   /// ConnectionsManager implements the singleton pattern.
   /// There will be only one instance of this class
-  factory ConnectionsManager() {
-    _singleton ??= ConnectionsManager._internal();
+  factory ConnectionsManager({appMode = AppMode.experimental}) {
+    _singleton ??= ConnectionsManager._internal(appMode);
 
     return _singleton!;
   }
@@ -134,14 +138,21 @@ class ConnectionsManager {
 
   /// Internal constructor for class [ConnectionsManager].
   /// Sets method call handlers for [NearbyCrossMethods.connectionInitiated], [NearbyCrossMethods.successfulConnection] and [NearbyCrossMethods.payloadReceived]
-  ConnectionsManager._internal() {
-    signingManager = SigningManager.initialize();
-    // signingManager = SigningManager.initializeFromJwk({
-    //   "kty": "EC",
-    //   "crv": "P-256",
-    //   "x": "c2AdoiZMYErSSz_aJJ6CEjDHYChCocMMhqEB6DBmTtU",
-    //   "y": "LX4X9-MQ3G1NTjluCHLjHtie6Zu7GBvYACC6Z9h8E3w"
-    // });
+  ConnectionsManager._internal(this.appMode) {
+    SharedPreferences.getInstance().then((prefs) async {
+      var jwk = prefs.getString('signing_manager_jwk');
+      if (jwk != null) {
+        logger.i("Found Keys JWK. Starting Signing Manager from old config");
+        var decoded = json.decode(jwk);
+        signingManager = SigningManager.initializeFromJwk(decoded);
+      } else {
+        logger.i(
+            "Old JWK Config not found. Starting a new instance for signing session");
+        signingManager = SigningManager.initialize();
+        var encoded = signingManager.convertToJwk();
+        await prefs.setString('signing_manager_jwk', encoded!);
+      }
+    });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {

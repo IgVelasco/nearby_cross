@@ -73,7 +73,12 @@ class Device {
   }
 
   bool validateMessageOwner(NearbyMessage message) {
-    return verifier!.verifyMessage(message.message, message.signature);
+    try {
+      return verifier!.verifyMessage(message.message, message.signature);
+    } catch (e) {
+      logger.e("Could not validate message owner: $e");
+      return false;
+    }
   }
 
   /// Adds message to received messages list
@@ -82,12 +87,13 @@ class Device {
       var messageIsValid = validateMessageOwner(message);
       if (!messageIsValid) {
         logger.e("Received message is not from an authenticated third-paty!");
+      } else {
+        logger.d("Received message is authenticated!");
       }
 
       messages.add(message);
 
       _executeCallback(callbackReceivedMessage, this);
-
       hasNewMessages = true;
     }
   }
