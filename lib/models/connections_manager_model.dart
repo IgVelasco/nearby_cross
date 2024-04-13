@@ -1,10 +1,13 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:jwk/jwk.dart';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross/models/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
@@ -16,6 +19,7 @@ class ConnectionsManager {
   Set<Device> pendingAcceptConnections = {};
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
+  late SigningManager signingManager;
 
   HashMap<String, dynamic Function(Device)> callbackPendingAcceptConnection =
       HashMap<String, dynamic Function(Device)>();
@@ -97,6 +101,7 @@ class ConnectionsManager {
       return;
     }
 
+    device.sendPublicKey(signingManager.convertPublicToJwk()!);
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
@@ -113,7 +118,13 @@ class ConnectionsManager {
   /// Handler for [NearbyCrossMethods.payloadReceived] method call.
   /// Adds received message to the corresponding device.
   void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
-    var device = addMessageFromDevice(endpointId, messageReceived);
+    var nearbyMessage = NearbyMessage(messageReceived);
+    if (nearbyMessage.messageType == NearbyMessageType.handshake) {
+      addPublicKeyToDevice(endpointId, nearbyMessage);
+      return;
+    }
+
+    var device = addMessageFromDevice(endpointId, nearbyMessage);
     if (device == null) {
       return;
     }
@@ -124,6 +135,14 @@ class ConnectionsManager {
   /// Internal constructor for class [ConnectionsManager].
   /// Sets method call handlers for [NearbyCrossMethods.connectionInitiated], [NearbyCrossMethods.successfulConnection] and [NearbyCrossMethods.payloadReceived]
   ConnectionsManager._internal() {
+    signingManager = SigningManager.initialize();
+    // signingManager = SigningManager.initializeFromJwk({
+    //   "kty": "EC",
+    //   "crv": "P-256",
+    //   "x": "c2AdoiZMYErSSz_aJJ6CEjDHYChCocMMhqEB6DBmTtU",
+    //   "y": "LX4X9-MQ3G1NTjluCHLjHtie6Zu7GBvYACC6Z9h8E3w"
+    // });
+
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
@@ -239,6 +258,7 @@ class ConnectionsManager {
   /// Creates a device in initiatedConnections set.
   Device addInitiatedConnection(String endpointId, String endpointName) {
     var device = Device(endpointId, endpointName);
+    device.setSigner(signingManager);
     initiatedConnections.add(device);
     return device;
   }
@@ -252,6 +272,7 @@ class ConnectionsManager {
   /// Adds a device in pendingAcceptConnections set.
   Device addPendingAcceptConnection(String endpointId, String endpointName) {
     var device = Device.asPendingConnection(endpointId, endpointName);
+    device.setSigner(signingManager);
     pendingAcceptConnections.add(device);
     return device;
   }
@@ -289,26 +310,43 @@ class ConnectionsManager {
   }
 
   /// Adds message received to the device where it comes from.
-  Device? addMessageFromDevice(String endpointId, Uint8List message) {
+  Device? addPublicKeyToDevice(String endpointId, NearbyMessage message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
       return null;
     }
 
-    device.addMessage(NearbyMessage(message));
+    var verifier = SigningManager.initializeFromJwk(
+        Jwk.fromUtf8(message.message).toJson());
+    device.addVerifier(verifier);
+    return device;
+  }
+
+  /// Adds message received to the device where it comes from.
+  Device? addMessageFromDevice(String endpointId, NearbyMessage message) {
+    Device? device = _findDevice(connectedDevices, endpointId);
+    if (device == null) {
+      logger.e("Could not find device $endpointId");
+      return null;
+    }
+
+    device.addMessage(message);
     return device;
   }
 
   /// Sends message to a given device given its endpointId
-  void sendMessageToDevice(String endpointId, NearbyMessage message) {
+  void sendMessageToDevice(String endpointId, String message) async {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
       return;
     }
 
-    device.sendMessage(message);
+    var signature =
+        signingManager.signMessage(BytesUtils.stringToBytesArray(message));
+    var signedMessage = NearbyMessage.fromString(message, signature: signature);
+    device.sendMessage(signedMessage);
   }
 
   /// Broadcasts a message to every connected device

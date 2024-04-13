@@ -47,17 +47,14 @@ class SelectInteractionViewModel with ChangeNotifier {
   }
 
   void _setCallbackSuccessfulConnection(Device device) {
-    logger.i("Device ${device.endpointName} is successfully connected");
     _commonCallback(device);
   }
 
   void _setCallbackReceivedMessage(Device device) {
-    logger.i("New messages from ${device.endpointName}");
     _commonCallback(device);
   }
 
   void _setCallbackDisconnectedDevice(Device device) {
-    logger.i("Disconnected device ${device.endpointName}");
     _commonCallback(device);
   }
 

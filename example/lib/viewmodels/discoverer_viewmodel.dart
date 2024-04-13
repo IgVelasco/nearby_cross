@@ -5,7 +5,6 @@ import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/discoverer_model.dart';
-import 'package:nearby_cross/models/message_model.dart';
 
 class DiscovererViewModel with ChangeNotifier {
   late Discoverer discoverer;
@@ -101,7 +100,7 @@ class DiscovererViewModel with ChangeNotifier {
   Future<void> sendData(String message) async {
     if (_connectedDevice != null) {
       connectionsManager.sendMessageToDevice(
-          _connectedDevice!.endpointId, NearbyMessage.fromString(message));
+          _connectedDevice!.endpointId, message);
     }
   }
 

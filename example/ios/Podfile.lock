@@ -1,4 +1,6 @@
 PODS:
+  - cryptography_flutter (0.2.0):
+    - Flutter
   - device_info (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -8,12 +10,15 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - cryptography_flutter (from `.symlinks/plugins/cryptography_flutter/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - Flutter (from `Flutter`)
   - nearby_cross (from `.symlinks/plugins/nearby_cross/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 EXTERNAL SOURCES:
+  cryptography_flutter:
+    :path: ".symlinks/plugins/cryptography_flutter/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   Flutter:
@@ -24,6 +29,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
+  cryptography_flutter: 381bdacc984abcfbe3ca45ef7c76566ff061614c
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   nearby_cross: 260db67c6c02f00cff62c960dbbf5c58b2593f6c

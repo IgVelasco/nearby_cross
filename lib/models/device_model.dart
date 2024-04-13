@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross/models/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
 
@@ -19,6 +20,8 @@ class Device {
   final NearbyCross _nearbyCross = NearbyCross();
   HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
       HashMap<String, dynamic Function(Device)>();
+  SigningManager? verifier;
+  SigningManager? signer;
 
   Device(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
@@ -31,6 +34,10 @@ class Device {
   Device.asPendingConnection(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
         isPendingConnection = true;
+
+  void setSigner(SigningManager signer) {
+    this.signer = signer;
+  }
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
   void setCallbackReceivedMessage(
@@ -61,9 +68,22 @@ class Device {
     }
   }
 
+  void addVerifier(SigningManager verifier) {
+    this.verifier = verifier;
+  }
+
+  bool validateMessageOwner(NearbyMessage message) {
+    return verifier!.verifyMessage(message.message, message.signature);
+  }
+
   /// Adds message to received messages list
   void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
+      var messageIsValid = validateMessageOwner(message);
+      if (!messageIsValid) {
+        logger.e("Received message is not from an authenticated third-paty!");
+      }
+
       messages.add(message);
 
       _executeCallback(callbackReceivedMessage, this);
@@ -74,7 +94,17 @@ class Device {
 
   /// Sends message to the device identified with endpointId
   void sendMessage(NearbyMessage message) {
+    if (signer != null) {
+      message.signMessage(signer!);
+    }
+
     messagesSent.add(message);
+    _nearbyCross.sendData(message.convertToBytes(), endpointId);
+  }
+
+  // TODO: Only send PK if app is in experimental
+  void sendPublicKey(String publicKeyJwk) {
+    var message = NearbyMessage.handshakeMessage(publicKeyJwk);
     _nearbyCross.sendData(message.convertToBytes(), endpointId);
   }
 
