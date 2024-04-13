@@ -58,11 +58,11 @@ class NearbyMessage {
         pSize = BytesUtils.stringToBytesArray(message).length,
         signature = signature ?? Uint8List(0);
 
-  NearbyMessage.handshakeMessage(String pkJwk, {signature})
+  NearbyMessage.handshakeMessage(String handshakePayload, {signature})
       : messageType = NearbyMessageType.handshake,
         dateTime = DateTime.now(),
-        message = BytesUtils.stringToBytesArray(pkJwk),
-        pSize = BytesUtils.stringToBytesArray(pkJwk).length,
+        message = BytesUtils.stringToBytesArray(handshakePayload),
+        pSize = BytesUtils.stringToBytesArray(handshakePayload).length,
         signature = signature ?? Uint8List(0);
 
   NearbyMessage(Uint8List payload) {

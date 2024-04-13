@@ -6,10 +6,12 @@ import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/models/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
+import 'package:uuid/uuid.dart';
 
 /// Class that represent every connected device with NearbyCross plugin
 class Device {
   Logger logger = Logger();
+  String identifier = const Uuid().v4();
   String endpointId;
   String endpointName;
   bool isEndpointOnly;
@@ -37,6 +39,10 @@ class Device {
 
   void setSigner(SigningManager signer) {
     this.signer = signer;
+  }
+
+  void setIdentifier(String newId) {
+    identifier = newId;
   }
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
@@ -99,18 +105,14 @@ class Device {
   }
 
   /// Sends message to the device identified with endpointId
-  void sendMessage(NearbyMessage message) {
+  void sendMessage(NearbyMessage message, {bool dropMessage = false}) {
     if (signer != null) {
       message.signMessage(signer!);
     }
 
-    messagesSent.add(message);
-    _nearbyCross.sendData(message.convertToBytes(), endpointId);
-  }
-
-  // TODO: Only send PK if app is in experimental
-  void sendPublicKey(String publicKeyJwk) {
-    var message = NearbyMessage.handshakeMessage(publicKeyJwk);
+    if (!dropMessage) {
+      messagesSent.add(message);
+    }
     _nearbyCross.sendData(message.convertToBytes(), endpointId);
   }
 

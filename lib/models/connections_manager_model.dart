@@ -9,14 +9,17 @@ import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross/models/peer_info_manager.dart';
 import 'package:nearby_cross/models/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 /// Class to manage conections coming from NearbyCross plugin
 class ConnectionsManager {
   var logger = Logger();
+  String identifier = const Uuid().v4();
   static ConnectionsManager? _singleton;
   NearbyCross nearbyCross = NearbyCross();
   Set<Device> pendingAcceptConnections = {};
@@ -24,6 +27,7 @@ class ConnectionsManager {
   Set<Device> connectedDevices = {};
   late SigningManager signingManager;
   late AppMode appMode;
+  PeerIdentifications? peerIdentifications;
 
   HashMap<String, dynamic Function(Device)> callbackPendingAcceptConnection =
       HashMap<String, dynamic Function(Device)>();
@@ -40,8 +44,17 @@ class ConnectionsManager {
 
   /// ConnectionsManager implements the singleton pattern.
   /// There will be only one instance of this class
-  factory ConnectionsManager({appMode = AppMode.experimental}) {
-    _singleton ??= ConnectionsManager._internal(appMode);
+  factory ConnectionsManager(
+      {AppMode appMode = AppMode.experimental,
+      PeerIdentifications? peerIdentifications,
+      Map<String, String>? keyPairJwk}) {
+    if (appMode != AppMode.experimental && peerIdentifications == null) {
+      peerIdentifications =
+          PeerIdentifications(); // Generate an empty peer identifications object
+    }
+
+    _singleton ??= ConnectionsManager._internal(appMode, peerIdentifications,
+        keyPairJwk: keyPairJwk);
 
     return _singleton!;
   }
@@ -105,7 +118,19 @@ class ConnectionsManager {
       return;
     }
 
-    device.sendPublicKey(signingManager.convertPublicToJwk()!);
+    if (appMode == AppMode.experimental) {
+      // In experimental mode, the handshake message includes the public key to be used
+      // for this device authentication
+      var message =
+          NearbyMessage.handshakeMessage(signingManager.convertPublicToJwk()!);
+      device.sendMessage(message, dropMessage: true);
+    } else {
+      // If not in experimental mode, the handshake message includes the identifier for this
+      // device, and the peer device must validate the signature of this message using a public
+      // key obtained from a trustworthy source.
+      var message = NearbyMessage.handshakeMessage(identifier);
+      device.sendMessage(message, dropMessage: true);
+    }
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
@@ -138,21 +163,28 @@ class ConnectionsManager {
 
   /// Internal constructor for class [ConnectionsManager].
   /// Sets method call handlers for [NearbyCrossMethods.connectionInitiated], [NearbyCrossMethods.successfulConnection] and [NearbyCrossMethods.payloadReceived]
-  ConnectionsManager._internal(this.appMode) {
-    SharedPreferences.getInstance().then((prefs) async {
-      var jwk = prefs.getString('signing_manager_jwk');
-      if (jwk != null) {
-        logger.i("Found Keys JWK. Starting Signing Manager from old config");
-        var decoded = json.decode(jwk);
-        signingManager = SigningManager.initializeFromJwk(decoded);
-      } else {
-        logger.i(
-            "Old JWK Config not found. Starting a new instance for signing session");
-        signingManager = SigningManager.initialize();
-        var encoded = signingManager.convertToJwk();
-        await prefs.setString('signing_manager_jwk', encoded!);
-      }
-    });
+  ConnectionsManager._internal(this.appMode, this.peerIdentifications,
+      {Map<String, String>? keyPairJwk}) {
+    if (keyPairJwk == null) {
+      // If not receiving a JWK for a Key Pair to use, look for it in the local storage
+      // If not found, generate a random key pair and store it in Local Storage for future use
+      SharedPreferences.getInstance().then((prefs) async {
+        var jwk = prefs.getString('signing_manager_jwk');
+        if (jwk != null) {
+          logger.i("Found Keys JWK. Starting Signing Manager from old config");
+          var decoded = json.decode(jwk);
+          signingManager = SigningManager.initializeFromJwk(decoded);
+        } else {
+          logger.i(
+              "Old JWK Config not found. Starting a new instance for signing session");
+          signingManager = SigningManager.initialize();
+          var encoded = signingManager.convertToJwk();
+          await prefs.setString('signing_manager_jwk', encoded!);
+        }
+      });
+    } else {
+      signingManager = SigningManager.initializeFromJwk(keyPairJwk);
+    }
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {
@@ -328,9 +360,20 @@ class ConnectionsManager {
       return null;
     }
 
-    var verifier = SigningManager.initializeFromJwk(
-        Jwk.fromUtf8(message.message).toJson());
-    device.addVerifier(verifier);
+    if (appMode == AppMode.experimental) {
+      // In experimental mode, this handshake received message contains the public key
+      // of the peer device that is connecting
+      var verifier = SigningManager.initializeFromJwk(
+          Jwk.fromUtf8(message.message).toJson());
+      device.addVerifier(verifier);
+    } else {
+      // If not in experimental mode, this handshake received message contains the identifier
+      // for the peer device. We must obtain its public key from a trustworthy source using this identifier.
+      var peerInfo = peerIdentifications!
+          .getPeerIdentification(BytesUtils.getString(message.message));
+      var verifier = SigningManager.initializeFromJwk(peerInfo!);
+      device.addVerifier(verifier);
+    }
     return device;
   }
 
@@ -418,5 +461,13 @@ class ConnectionsManager {
     }
 
     await nearbyCross.disconnectFrom(endpointId);
+  }
+
+  void setIdentifier(String newId) {
+    identifier = newId;
+  }
+
+  void signingManagerFromJwk(Map<String, String> jwk) {
+    signingManager = SigningManager.initializeFromJwk(jwk);
   }
 }
