@@ -1,5 +1,8 @@
 import 'package:nearby_cross/models/peer_info_manager.dart';
 
+/// This class is intended to be a replacement for a trustworthy source for users' Public Keys
+/// In a more productive platform the users' public keys should be retrieved from a
+/// trustworthy source such as a backend server
 class ExampleInfoManager extends PeerIdentifications {
   static ExampleInfoManager? _singleton;
   Map<String, String> devices = {
