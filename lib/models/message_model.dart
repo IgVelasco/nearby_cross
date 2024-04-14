@@ -42,7 +42,7 @@ extension NearbyMessageTypeInt on NearbyMessageType {
 
 /*
 * Converted:
-* - messageType (1 int 8bit) + dateTime (1 int 64bit) + payloadSize (1 int 64bit) (N) + payload (N int 8bit)
+* - messageType (1 int 8bit) + dateTime (1 int 64bit) + payloadSize (1 int 64bit) (N) + payload (N int 8bit) + signature (M int 64bit)
 */
 class NearbyMessage {
   late NearbyMessageType messageType; // 0 direct, 1 broadcast
