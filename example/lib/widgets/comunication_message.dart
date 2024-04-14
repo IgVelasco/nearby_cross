@@ -4,11 +4,12 @@ class ComunicationMessage extends StatelessWidget {
   final String text;
   final bool received;
   final bool broadcast;
-  const ComunicationMessage(
-      {super.key,
-      required this.text,
-      required this.received,
-      required this.broadcast});
+  const ComunicationMessage({
+    super.key,
+    required this.text,
+    required this.received,
+    required this.broadcast,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +40,11 @@ class ComunicationMessage extends StatelessWidget {
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.7,
                     ),
-                    child: Text(
-                      text,
-                      style: const TextStyle(fontSize: 16),
+                    child: RichText(
+                      text: TextSpan(
+                          text: text,
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black)),
                     ),
                   ),
                 ),

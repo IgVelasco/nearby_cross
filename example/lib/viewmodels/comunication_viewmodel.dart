@@ -20,11 +20,13 @@ class ComunicationViewModel extends ChangeNotifier {
     allMessages = [
       ...connectedDevice
           .getMessagesReceived()
-          .map((nm) => ChatMessage.fromParent(nm, received: true))
+          .map((nm) => ChatMessage.fromParent(nm,
+              received: true, isAuthenticated: nm.isAuthenticated))
           .toList(),
       ...connectedDevice
           .getMessagesSent()
-          .map((nm) => ChatMessage.fromParent(nm, received: false))
+          .map((nm) => ChatMessage.fromParent(nm,
+              received: false, isAuthenticated: nm.isAuthenticated))
           .toList()
     ];
     allMessages.sort(((a, b) => a.dateTime.compareTo(b.dateTime)));
@@ -46,7 +48,8 @@ class ComunicationViewModel extends ChangeNotifier {
   void _callbackReceivedMessage(Device device) {
     NearbyMessage? lastMessage = device.getLastMessage();
     if (lastMessage != null) {
-      allMessages.add(ChatMessage.fromParent(lastMessage, received: true));
+      allMessages.add(ChatMessage.fromParent(lastMessage,
+          received: true, isAuthenticated: lastMessage.isAuthenticated));
     }
     _commonCallback(device);
   }

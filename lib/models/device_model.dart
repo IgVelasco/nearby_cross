@@ -24,6 +24,7 @@ class Device {
       HashMap<String, dynamic Function(Device)>();
   SigningManager? verifier;
   SigningManager? signer;
+  bool isAuthenticated = false;
 
   Device(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
@@ -43,6 +44,10 @@ class Device {
 
   void setIdentifier(String newId) {
     identifier = newId;
+  }
+
+  void setIsAuthenticated(bool isAuth) {
+    isAuthenticated = isAuth;
   }
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
@@ -91,6 +96,7 @@ class Device {
   void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
       var messageIsValid = validateMessageOwner(message);
+      message.setIsAuthenticated(messageIsValid);
       if (!messageIsValid) {
         logger.e("Received message is not from an authenticated third-paty!");
       } else {

@@ -30,7 +30,9 @@ class BroadcastViewModel extends ChangeNotifier {
 
   void _callbackReceivedMessage(Device device) {
     var message = ChatMessage.fromParent(device.getLastMessage()!,
-        received: true, sender: device.endpointName);
+        received: true,
+        sender: device.endpointName,
+        isAuthenticated: device.getLastMessage()!.isAuthenticated);
     allMessages.add(message);
     _commonCallback(device);
   }

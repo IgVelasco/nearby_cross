@@ -50,6 +50,7 @@ class NearbyMessage {
   late int pSize;
   late Uint8List message;
   late Uint8List signature;
+  bool isAuthenticated = false;
 
   NearbyMessage.fromString(String message,
       {this.messageType = NearbyMessageType.direct, signature})
@@ -65,7 +66,7 @@ class NearbyMessage {
         pSize = BytesUtils.stringToBytesArray(handshakePayload).length,
         signature = signature ?? Uint8List(0);
 
-  NearbyMessage(Uint8List payload) {
+  NearbyMessage(Uint8List payload, {this.isAuthenticated = false}) {
     var boundary = 0;
 
     var messageTypeByte = BytesUtils.getBytesRangeAsIntList(
@@ -118,5 +119,9 @@ class NearbyMessage {
     }
 
     this.signature = signature!.data;
+  }
+
+  void setIsAuthenticated(bool isAuth) {
+    isAuthenticated = isAuth;
   }
 }

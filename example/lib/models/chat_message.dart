@@ -13,17 +13,19 @@ class ChatMessage extends NearbyMessage {
     this.sender,
   }) : super.fromString(message, messageType: messageType);
 
-  ChatMessage.fromParent(NearbyMessage nm, {this.received = false, this.sender})
-      : super(nm.convertToBytes());
+  ChatMessage.fromParent(NearbyMessage nm,
+      {this.received = false, this.sender, isAuthenticated = false})
+      : super(nm.convertToBytes(), isAuthenticated: isAuthenticated);
 
   void setReceived(bool value) => received = value;
 
   String format({bool printSender = false}) {
     var inputFormat = DateFormat('dd/MM/yyyy HH:mm');
+    var authBadge = isAuthenticated ? '✅' : '❌';
     if (printSender && sender != null) {
-      return " ${(sender)} ${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
+      return "${received ? authBadge : ''} ${(sender)} ${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
     }
 
-    return "${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
+    return "${received ? authBadge : ''} ${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
   }
 }

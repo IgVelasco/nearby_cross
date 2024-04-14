@@ -149,7 +149,7 @@ class ConnectionsManager {
   void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
     var nearbyMessage = NearbyMessage(messageReceived);
     if (nearbyMessage.messageType == NearbyMessageType.handshake) {
-      addPublicKeyToDevice(endpointId, nearbyMessage);
+      enterHandshakeProcess(endpointId, nearbyMessage);
       return;
     }
 
@@ -219,6 +219,7 @@ class ConnectionsManager {
 
       return _handlePayloadReceived(endpointId, messageReceived);
     });
+
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.endpointDisconnected,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
@@ -352,8 +353,8 @@ class ConnectionsManager {
     return device;
   }
 
-  /// Adds message received to the device where it comes from.
-  Device? addPublicKeyToDevice(String endpointId, NearbyMessage message) {
+  /// Enters into handshaking process. See docs for reference.
+  Device? enterHandshakeProcess(String endpointId, NearbyMessage message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
@@ -366,6 +367,7 @@ class ConnectionsManager {
       var verifier = SigningManager.initializeFromJwk(
           Jwk.fromUtf8(message.message).toJson());
       device.addVerifier(verifier);
+      device.setIsAuthenticated(true);
     } else {
       // If not in experimental mode, this handshake received message contains the identifier
       // for the peer device. We must obtain its public key from a trustworthy source using this identifier.
@@ -373,6 +375,16 @@ class ConnectionsManager {
           .getPeerIdentification(BytesUtils.getString(message.message));
       var verifier = SigningManager.initializeFromJwk(peerInfo!);
       device.addVerifier(verifier);
+
+      var validSignature =
+          verifier.verifyMessage(message.message, message.signature);
+      device.setIsAuthenticated(validSignature);
+
+      if (validSignature) {
+        logger.d("Received handshake is authenticated!");
+      } else {
+        logger.e("Received handshake is not from an authenticated third-paty!");
+      }
     }
     return device;
   }
