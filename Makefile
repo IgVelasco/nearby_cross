@@ -2,10 +2,10 @@ emu:
 	flutter emulators --launch pixel_6
 
 test: 
-	flutter test --coverage
+	flutter test --branch-coverage
 
-covhtml
-	genhtml -o covhtml ./coverage/*.info
+covhtml:
+	genhtml --no-branch-coverage --no-function-coverage -o covhtml ./coverage/*.info
 	xdg-open covhtml/index.html
 
 fmt: 
