@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/message_model.dart';
-import 'package:nearby_cross/models/signing_manager.dart';
+import 'package:nearby_cross/modules/authentication/authentication_manager.dart';
+import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
 import 'package:uuid/uuid.dart';
@@ -22,8 +23,8 @@ class Device {
   final NearbyCross _nearbyCross = NearbyCross();
   HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
       HashMap<String, dynamic Function(Device)>();
+  AuthenticationManager? authManager;
   SigningManager? verifier;
-  SigningManager? signer;
   bool isAuthenticated = false;
 
   Device(this.endpointId, this.endpointName)
@@ -37,10 +38,6 @@ class Device {
   Device.asPendingConnection(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
         isPendingConnection = true;
-
-  void setSigner(SigningManager signer) {
-    this.signer = signer;
-  }
 
   void setIdentifier(String newId) {
     identifier = newId;
@@ -79,6 +76,10 @@ class Device {
     }
   }
 
+  void setAuthManager(AuthenticationManager authManager) {
+    this.authManager = authManager;
+  }
+
   void addVerifier(SigningManager verifier) {
     this.verifier = verifier;
   }
@@ -112,9 +113,7 @@ class Device {
 
   /// Sends message to the device identified with endpointId
   void sendMessage(NearbyMessage message, {bool dropMessage = false}) {
-    if (signer != null) {
-      message.signMessage(signer!);
-    }
+    authManager?.sign(message);
 
     if (!dropMessage) {
       messagesSent.add(message);

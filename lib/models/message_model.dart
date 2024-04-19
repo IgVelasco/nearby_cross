@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:nearby_cross/helpers/bytes_utils.dart';
-import 'package:nearby_cross/models/signing_manager.dart';
+import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 
 enum NearbyMessageType {
   direct,
