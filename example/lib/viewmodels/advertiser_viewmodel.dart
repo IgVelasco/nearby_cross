@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
+import 'package:nearby_cross/helpers/platform_utils.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
@@ -11,6 +15,7 @@ class AdvertiserViewModel with ChangeNotifier {
   late ConnectionsManager connectionsManager;
   bool _manualAcceptConnections = false;
   Device? _connectedDevice;
+  Uint8List rawDeviceInfo = Uint8List(0);
 
   AdvertiserViewModel() {
     advertiser = Advertiser();
@@ -51,16 +56,28 @@ class AdvertiserViewModel with ChangeNotifier {
     _commonCallback(device);
   }
 
-  void setUsername(String? username, [bool notify = true]) {
-    if (username == null) return;
-    advertiser.username = username;
+  void setDeviceInfo(Uint8List deviceInfo, [bool notify = true]) {
+    if (deviceInfo.isEmpty) return;
+    rawDeviceInfo = deviceInfo;
+    BytesBuilder bb = BytesBuilder();
+    bb.add(deviceInfo);
+
+    var signingManger = connectionsManager.getSigningManager();
+    if (signingManger != null) {
+      var deviceInfoSign = signingManger.getSignatureBytes(deviceInfo);
+
+      bb.add(utf8.encode("&"));
+      bb.add(deviceInfoSign);
+    }
+
+    advertiser.deviceInfo = bb.toBytes();
     if (notify) {
       notifyListeners();
     }
   }
 
-  String? getUsername() {
-    return advertiser.username;
+  Uint8List? getDeviceInfo() {
+    return rawDeviceInfo;
   }
 
   bool get isConnected => advertiser.isConnected;
@@ -71,8 +88,16 @@ class AdvertiserViewModel with ChangeNotifier {
   Future<void> startAdvertising(NearbyStrategies strategy) async {
     await advertiser
         .requestPermissions(); // TODO: move this to the constructor of the plugin
+
+    if (advertiser.deviceInfo.isEmpty) {
+      var deviceName = utf8.encode((await getDeviceName()));
+      setDeviceInfo(deviceName, false);
+    }
+
     await advertiser.advertise(
-        manualAcceptConnections: _manualAcceptConnections, strategy: strategy);
+      manualAcceptConnections: _manualAcceptConnections,
+      strategy: strategy,
+    );
     notifyListeners();
   }
 
@@ -97,7 +122,7 @@ class AdvertiserViewModel with ChangeNotifier {
     }
   }
 
-  String? getConnectedDeviceName() {
+  Uint8List? getConnectedDeviceName() {
     if (_connectedDevice != null) {
       return _connectedDevice!.endpointName;
     }

@@ -9,9 +9,11 @@ import '../widgets/nc_app_bar.dart';
 
 class ComunicationScreen extends StatelessWidget {
   final Device device;
+  final String deviceName;
   final TextEditingController _textFieldController = TextEditingController();
 
-  ComunicationScreen({super.key, required this.device});
+  ComunicationScreen(
+      {super.key, required this.device, required this.deviceName});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class ComunicationScreen extends StatelessWidget {
         ],
         child: Scaffold(
             appBar: NCAppBar(
-              title: device.endpointName,
+              title: deviceName,
             ),
             body: LayoutBuilder(
               builder: (context, constraints) {

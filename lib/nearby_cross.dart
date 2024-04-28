@@ -46,21 +46,23 @@ class NearbyCross {
     return version;
   }
 
-  Future<void> startDiscovery(String serviceId, String? username,
+  Future<void> startDiscovery(String serviceId, Uint8List deviceInfo,
       [NearbyStrategies strategy = NearbyStrategies.star]) async {
+    logger.i("Starting discovery with ${deviceInfo.length} bytes");
     await methodChannel.invokeMethod('startDiscovery', {
       'serviceId': serviceId,
-      'username': username ?? 'generic_discoverer_name',
+      'username': deviceInfo, // TODO: username to Device Info
       'strategy': strategy.toStrategyString()
     });
   }
 
   Future<void> advertise(
-      String serviceId, String? username, bool manualAcceptConnections,
+      String serviceId, Uint8List deviceInfo, bool manualAcceptConnections,
       [NearbyStrategies strategy = NearbyStrategies.star]) async {
+    logger.i("Starting advertisement with ${deviceInfo.toList()} bytes");
     await methodChannel.invokeMethod('startAdvertising', {
       'serviceId': serviceId,
-      'username': username ?? 'generic_advertiser_name',
+      'username': deviceInfo,
       'strategy': strategy.toStrategyString(),
       'manualAcceptConnections': manualAcceptConnections ? "1" : "0"
     });

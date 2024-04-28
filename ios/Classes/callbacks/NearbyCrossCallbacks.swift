@@ -40,7 +40,7 @@ class AdvertiserCallbacksImpl: AdvertiserCallbacks {
         channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, arguments: hashmap)
     }
 
-    func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool) {
+    func onConnectionInitiated(endpointId: String, endpointName: Data, alreadyAcceptedConnection: Bool) {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
         hashmap["endpointName"] = endpointName
@@ -81,7 +81,7 @@ class DiscovererCallbacksImpl: DiscovererCallbacks {
         channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, arguments: hashmap)
     }
 
-    func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool) {
+    func onConnectionInitiated(endpointId: String, endpointName: Data, alreadyAcceptedConnection: Bool) {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
         hashmap["endpointName"] = endpointName
@@ -107,7 +107,7 @@ class DiscovererCallbacksImpl: DiscovererCallbacks {
         channel.invokeMethod(ChannelMethods.ENDPOINT_DISCONNECTED, arguments: hashmap)
     }
     
-    func onEndpointFound(endpointId: String, endpointName: String) {
+    func onEndpointFound(endpointId: String, endpointName: Data) {
         var hashmap = [String: Any]()
         hashmap["endpointId"] = endpointId
         hashmap["endpointName"] = endpointName

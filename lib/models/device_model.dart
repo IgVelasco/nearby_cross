@@ -14,7 +14,7 @@ class Device {
   Logger logger = Logger();
   String identifier = const Uuid().v4();
   String endpointId;
-  String endpointName;
+  Uint8List endpointName;
   bool isEndpointOnly;
   bool isPendingConnection;
   bool hasNewMessages = false;

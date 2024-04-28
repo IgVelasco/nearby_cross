@@ -25,10 +25,13 @@ class SelectInteractionScreen extends StatelessWidget {
           await provider.disconnectFrom(device);
         }
 
-        void interactAction(Device device) async {
+        void interactAction(Device device, String deviceName) async {
           await Navigator.of(context)
               .push(MaterialPageRoute(
-                  builder: (context) => ComunicationScreen(device: device)))
+                  builder: (context) => ComunicationScreen(
+                        device: device,
+                        deviceName: deviceName,
+                      )))
               .then((value) {
             return provider.afterNavigationPop();
           });
@@ -80,6 +83,8 @@ class SelectInteractionScreen extends StatelessWidget {
                               viewModel.getConnectedDeviceByIndex(index);
                           return InteractListItem(
                               device: device,
+                              deviceName:
+                                  viewModel.getEndpointNameFromDevice(device),
                               acceptAction: interactAction,
                               rejectAction: disconnectAction);
                         },
@@ -92,12 +97,14 @@ class SelectInteractionScreen extends StatelessWidget {
 
 class InteractListItem extends StatelessWidget {
   final Device device;
-  final Function(Device) acceptAction;
+  final String deviceName;
+  final Function(Device, String) acceptAction;
   final Function(Device) rejectAction;
 
   const InteractListItem(
       {super.key,
       required this.device,
+      required this.deviceName,
       required this.acceptAction,
       required this.rejectAction});
 
@@ -115,7 +122,7 @@ class InteractListItem extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(20.0),
-                    child: Center(child: Text(device.endpointName)),
+                    child: Center(child: Text(deviceName)),
                   ),
                   Container(
                     padding: const EdgeInsets.all(20.0),
@@ -140,7 +147,7 @@ class InteractListItem extends StatelessWidget {
                         FloatingActionButton.small(
                           heroTag: null,
                           onPressed: () {
-                            acceptAction(device);
+                            acceptAction(device, deviceName);
                           },
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.green,

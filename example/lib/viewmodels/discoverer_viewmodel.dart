@@ -1,7 +1,10 @@
 import 'dart:collection';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
+import 'package:nearby_cross/helpers/platform_utils.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/discoverer_model.dart';
@@ -11,6 +14,7 @@ class DiscovererViewModel with ChangeNotifier {
 
   late ConnectionsManager connectionsManager;
   Device? _connectedDevice;
+  Uint8List rawDeviceInfo = Uint8List(0);
 
   DiscovererViewModel() {
     discoverer = Discoverer();
@@ -58,8 +62,8 @@ class DiscovererViewModel with ChangeNotifier {
 
   bool get isRunning => discoverer.isConnected || discoverer.isDiscovering;
 
-  String? getUsername() {
-    return discoverer.username;
+  Uint8List? getDeviceInfo() {
+    return rawDeviceInfo;
   }
 
   String? getPlatformVersion() {
@@ -74,12 +78,19 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   bool canStartDiscovererFlow() {
-    return getUsername() != null;
+    var deviceInfo = getDeviceInfo();
+    return deviceInfo != null && deviceInfo.isNotEmpty;
   }
 
   Future<void> startDiscovering(NearbyStrategies strategy) async {
     await discoverer
         .requestPermissions(); // TODO: move this to the constructor of the plugin
+
+    if (discoverer.deviceInfo.isEmpty) {
+      var deviceName = utf8.encode((await getDeviceName()));
+      setDeviceInfo(deviceName, false);
+    }
+
     await discoverer.startDiscovery(strategy: strategy);
     notifyListeners();
   }
@@ -104,15 +115,27 @@ class DiscovererViewModel with ChangeNotifier {
     }
   }
 
-  void setUsername(String? username, [bool notify = true]) {
-    if (username == null) return;
-    discoverer.username = username;
+  void setDeviceInfo(Uint8List? deviceInfo, [bool notify = true]) {
+    if (deviceInfo == null || deviceInfo.isEmpty) return;
+    rawDeviceInfo = deviceInfo;
+    BytesBuilder bb = BytesBuilder();
+    bb.add(deviceInfo);
+
+    var signingManger = connectionsManager.getSigningManager();
+    if (signingManger != null) {
+      var deviceInfoSign = signingManger.getSignatureBytes(deviceInfo);
+
+      bb.add(utf8.encode("&"));
+      bb.add(deviceInfoSign);
+    }
+
+    discoverer.deviceInfo = bb.toBytes();
     if (notify) {
       notifyListeners();
     }
   }
 
-  String? getConnectedDeviceName() {
+  Uint8List? getConnectedDeviceName() {
     if (_connectedDevice != null) {
       return _connectedDevice!.endpointName;
     }
@@ -146,5 +169,25 @@ class DiscovererViewModel with ChangeNotifier {
   Future<void> stopAllConnections() async {
     await discoverer.stopAllConnections();
     notifyListeners();
+  }
+
+  String getEndpointNameFromDevice(Device device) {
+    var fullDeviceInfo = device.endpointName;
+    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    if (indexSeparator == -1) {
+      return utf8.decode(fullDeviceInfo);
+    }
+    var deviceName = fullDeviceInfo.sublist(0, indexSeparator);
+    return utf8.decode(deviceName);
+  }
+
+  int getSignatureBytes(Device device) {
+    var fullDeviceInfo = device.endpointName;
+    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    if (indexSeparator == -1) {
+      return 0;
+    }
+    var signature = fullDeviceInfo.sublist(indexSeparator + 1);
+    return signature.length;
   }
 }

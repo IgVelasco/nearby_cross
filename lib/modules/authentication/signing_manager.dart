@@ -95,4 +95,9 @@ class SigningManager {
 
     return verifier!.verify(messageBytes, Signature(signature));
   }
+
+  Uint8List getSignatureBytes(Uint8List bytesToSign) {
+    var signature = signMessage(bytesToSign);
+    return signature == null ? Uint8List(0) : signature.data;
+  }
 }

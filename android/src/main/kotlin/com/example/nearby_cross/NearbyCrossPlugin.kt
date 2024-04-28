@@ -41,21 +41,21 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             }
             ChannelMethods.START_DISCOVERY -> {
                 val serviceId = call.argument<String>("serviceId")
-                val userName = call.argument<String>("username")
+                val userName = call.argument<ByteArray>("username") as ByteArray
                 val strategy = call.argument<String>("strategy")
                 this.discoverer = Discoverer(
                     serviceId as String,
                     strategy as String,
                     context,
                     callbacks.discoverer,
-                    userName as String,
+                    userName,
                 )
                 this.discoverer?.startDiscovering(context)
                 result.success(null)
             }
             ChannelMethods.START_ADVERTISING -> {
                 val serviceId = call.argument<String>("serviceId")
-                val userName = call.argument<String>("username")
+                val userName = call.argument<ByteArray>("username") as ByteArray
                 val strategy = call.argument<String>("strategy")
                 val manualAcceptConnections =
                     InterfaceUtils.parseStringAsBoolean(call.argument<String>("manualAcceptConnections") as String)
@@ -64,7 +64,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
                     strategy as String,
                     context,
                     callbacks.advertiser,
-                    userName as String,
+                    userName,
                     manualAcceptConnections
                 )
                 this.advertiser?.startAdvertising(context)

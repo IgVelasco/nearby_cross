@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
@@ -54,7 +56,7 @@ class ComunicationViewModel extends ChangeNotifier {
     _commonCallback(device);
   }
 
-  String? getConnectedDeviceName() {
+  Uint8List? getConnectedDeviceName() {
     return connectedDevice.endpointName;
   }
 

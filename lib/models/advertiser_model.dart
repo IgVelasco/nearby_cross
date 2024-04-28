@@ -1,5 +1,4 @@
 import 'package:nearby_cross/constants/nearby_strategies.dart';
-import 'package:nearby_cross/helpers/platform_utils.dart';
 import 'package:nearby_cross/models/connector_model.dart';
 
 /// Class that represent the Advertiser instance of NearbyCross plugin.
@@ -18,9 +17,8 @@ class Advertiser extends Connector {
   Future<void> advertise(
       {bool manualAcceptConnections = false,
       NearbyStrategies strategy = NearbyStrategies.star}) async {
-    username = username ?? await getDeviceName();
     await nearbyCross.advertise(
-        serviceId, username, manualAcceptConnections, strategy);
+        serviceId, deviceInfo, manualAcceptConnections, strategy);
     isAdvertising = true;
   }
 

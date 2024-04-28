@@ -10,6 +10,6 @@ import Foundation
 protocol DiscovererCallbacks: ConnectionCallbacks {
     // Additional methods specific to DiscovererCallbacks can be defined here
 
-    func onEndpointFound(endpointId: String, endpointName: String)
+    func onEndpointFound(endpointId: String, endpointName: Data)
     func onEndpointLost(endpointId: String)
 }
