@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:nearby_cross/constants/nearby_constraints.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
+import 'package:nearby_cross/errors/device_info_too_large.error.dart';
 import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
@@ -53,6 +55,9 @@ class Discoverer extends Connector {
   /// Service to start discovering devices using NearbyCross plugin
   Future<void> startDiscovery(
       {NearbyStrategies strategy = NearbyStrategies.star}) async {
+    if (deviceInfo.length > NearbyConstraints.deviceInfoMaxBytes) {
+      throw const DeviceInfoTooLarge(NearbyConstraints.deviceInfoMaxBytes);
+    }
     listOfDiscoveredDevices.clear();
     await nearbyCross.startDiscovery(serviceId, deviceInfo, strategy);
     isDiscovering = true;
