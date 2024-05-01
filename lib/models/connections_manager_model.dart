@@ -1,11 +1,15 @@
 import 'dart:collection';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/modules/authentication/authentication_manager.dart';
+import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
@@ -72,8 +76,9 @@ class ConnectionsManager {
 
   /// Handler for [NearbyCrossMethods.connectionInitiated] method call.
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
-  void _handleConnectionInitiated(
-      String endpointId, String endpointName, bool alreadyAcceptedConnection) {
+  void _handleConnectionInitiated(String endpointId, Uint8List endpointName,
+      bool alreadyAcceptedConnection) {
+    logger.i("Connecting endpoint with ${endpointName.length} bytes");
     if (alreadyAcceptedConnection) {
       var device = addInitiatedConnection(endpointId, endpointName);
       _executeCallback(callbackConnectionInitiated, device);
@@ -141,10 +146,11 @@ class ConnectionsManager {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var endpointId = arguments["endpointId"] as String;
-      var endpointName = arguments["endpointName"] as String;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      var endpointName = arguments["endpointName"] as Uint8List;
       var alreadyAcceptedConnection =
-          (arguments["alreadyAcceptedConnection"] as String).parseBool();
+          (utf8.decode(arguments["alreadyAcceptedConnection"] as Uint8List))
+              .parseBool();
       return _handleConnectionInitiated(
           endpointId, endpointName, alreadyAcceptedConnection);
     });
@@ -152,22 +158,22 @@ class ConnectionsManager {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.successfulConnection,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var endpointId = arguments["endpointId"] as String;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
       return _handleSuccessfulConnection(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var endpointId = arguments["endpointId"] as String;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
       return _handleRejectedConnection(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
       var messageReceived = arguments["message"] as Uint8List;
-      var endpointId = arguments["endpointId"] as String;
 
       return _handlePayloadReceived(endpointId, messageReceived);
     });
@@ -175,7 +181,8 @@ class ConnectionsManager {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.endpointDisconnected,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      return _handleEndpointDisconnected(arguments["endpointId"] as String);
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      return _handleEndpointDisconnected(endpointId);
     });
   }
 
@@ -252,7 +259,7 @@ class ConnectionsManager {
   }
 
   /// Creates a device in initiatedConnections set.
-  Device addInitiatedConnection(String endpointId, String endpointName) {
+  Device addInitiatedConnection(String endpointId, Uint8List endpointName) {
     var device = Device(endpointId, endpointName);
     initiatedConnections.add(device);
     return device;
@@ -265,7 +272,7 @@ class ConnectionsManager {
   }
 
   /// Adds a device in pendingAcceptConnections set.
-  Device addPendingAcceptConnection(String endpointId, String endpointName) {
+  Device addPendingAcceptConnection(String endpointId, Uint8List endpointName) {
     var device = Device.asPendingConnection(endpointId, endpointName);
     pendingAcceptConnections.add(device);
     return device;
@@ -399,5 +406,21 @@ class ConnectionsManager {
     }
 
     await nearbyCross.disconnectFrom(endpointId);
+  }
+
+  // TODO Signing: Refactor this
+  Uint8List signDeviceInfo(String deviceInfo) {
+    var signature = authenticationManager!.signingManager
+        .signMessage(BytesUtils.stringToBytesArray(deviceInfo));
+
+    BytesBuilder bb = BytesBuilder();
+    bb.add(BytesUtils.stringToBytesArray(deviceInfo));
+    bb.add(signature!.data);
+
+    return bb.toBytes();
+  }
+
+  SigningManager? getSigningManager() {
+    return authenticationManager?.signingManager;
   }
 }

@@ -1,5 +1,6 @@
+import 'package:nearby_cross/constants/nearby_constraints.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
-import 'package:nearby_cross/helpers/platform_utils.dart';
+import 'package:nearby_cross/errors/device_info_too_large.error.dart';
 import 'package:nearby_cross/models/connector_model.dart';
 
 /// Class that represent the Advertiser instance of NearbyCross plugin.
@@ -18,9 +19,11 @@ class Advertiser extends Connector {
   Future<void> advertise(
       {bool manualAcceptConnections = false,
       NearbyStrategies strategy = NearbyStrategies.star}) async {
-    username = username ?? await getDeviceName();
+    if (deviceInfo.length > NearbyConstraints.deviceInfoMaxBytes) {
+      throw const DeviceInfoTooLarge(NearbyConstraints.deviceInfoMaxBytes);
+    }
     await nearbyCross.advertise(
-        serviceId, username, manualAcceptConnections, strategy);
+        serviceId, deviceInfo, manualAcceptConnections, strategy);
     isAdvertising = true;
   }
 

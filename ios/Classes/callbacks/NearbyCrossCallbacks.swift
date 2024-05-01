@@ -34,35 +34,35 @@ class AdvertiserCallbacksImpl: AdvertiserCallbacks {
     }
     
     func onPayloadReceived(bytesReceived: Data, endpointId: String) {
-        var hashmap = [String: Any]()
+        var hashmap = [String: Data]()
         hashmap["message"] = bytesReceived
-        hashmap["endpointId"] = endpointId
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, arguments: hashmap)
     }
 
-    func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+    func onConnectionInitiated(endpointId: String, endpointName: Data, alreadyAcceptedConnection: Bool) {
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         hashmap["endpointName"] = endpointName
-        hashmap["alreadyAcceptedConnection"] = alreadyAcceptedConnection ? "1" : "0"
+        hashmap["alreadyAcceptedConnection"] = alreadyAcceptedConnection ? "1".data(using: .utf8) : "0".data(using: .utf8)
         channel.invokeMethod(ChannelMethods.CONNECTION_INITIATED, arguments: hashmap)
     }
 
     func onSuccessfulConnection(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, arguments: hashmap)
     }
     
     func onRejectedConnection(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.CONNECTION_REJECTED, arguments: hashmap)
     }
 
     func onDisconnected(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.ENDPOINT_DISCONNECTED, arguments: hashmap)
     }
 }
@@ -75,48 +75,48 @@ class DiscovererCallbacksImpl: DiscovererCallbacks {
     }
     
     func onPayloadReceived(bytesReceived: Data, endpointId: String) {
-        var hashmap = [String: Any]()
+        var hashmap = [String: Data]()
         hashmap["message"] = bytesReceived
-        hashmap["endpointId"] = endpointId
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.PAYLOAD_RECEIVED, arguments: hashmap)
     }
 
-    func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+    func onConnectionInitiated(endpointId: String, endpointName: Data, alreadyAcceptedConnection: Bool) {
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         hashmap["endpointName"] = endpointName
-        hashmap["alreadyAcceptedConnection"] = alreadyAcceptedConnection ? "1" : "0"
+        hashmap["alreadyAcceptedConnection"] = alreadyAcceptedConnection ? "1".data(using: .utf8) : "0".data(using: .utf8)
         channel.invokeMethod(ChannelMethods.CONNECTION_INITIATED, arguments: hashmap)
     }
 
     func onSuccessfulConnection(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.SUCCESSFUL_CONNECTION, arguments: hashmap)
     }
     
     func onRejectedConnection(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.CONNECTION_REJECTED, arguments: hashmap)
     }
 
     func onDisconnected(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.ENDPOINT_DISCONNECTED, arguments: hashmap)
     }
     
-    func onEndpointFound(endpointId: String, endpointName: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+    func onEndpointFound(endpointId: String, endpointName: Data) {
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         hashmap["endpointName"] = endpointName
         channel.invokeMethod(ChannelMethods.ON_ENDPOINT_FOUND, arguments: hashmap)
     }
 
     func onEndpointLost(endpointId: String) {
-        var hashmap = [String: Any]()
-        hashmap["endpointId"] = endpointId
+        var hashmap = [String: Data]()
+        hashmap["endpointId"] = endpointId.data(using: .utf8)
         channel.invokeMethod(ChannelMethods.ON_ENDPOINT_LOST, arguments: hashmap)
     }
 }

@@ -1,9 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:nearby_cross/constants/nearby_constraints.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
+import 'package:nearby_cross/errors/device_info_too_large.error.dart';
 import 'package:nearby_cross/models/connector_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
-
-import '../helpers/platform_utils.dart';
 
 /// Class that represent the Discoverer instance of NearbyCross plugin.
 class Discoverer extends Connector {
@@ -22,7 +25,8 @@ class Discoverer extends Connector {
 
   /// Handler for [NearbyCrossMethods.onEndpointFound] method call
   /// Adds a device as a discovered device in listOfDiscoveredDevices
-  void _handleEndpointFound(String endpointId, String endpointName) {
+  void _handleEndpointFound(String endpointId, Uint8List endpointName) {
+    logger.i("Found endpoint with ${endpointName} bytes");
     var device = Device.asEndpoint(endpointId, endpointName);
     listOfDiscoveredDevices.add(device);
 
@@ -52,9 +56,11 @@ class Discoverer extends Connector {
   /// Service to start discovering devices using NearbyCross plugin
   Future<void> startDiscovery(
       {NearbyStrategies strategy = NearbyStrategies.star}) async {
+    if (deviceInfo.length > NearbyConstraints.deviceInfoMaxBytes) {
+      throw const DeviceInfoTooLarge(NearbyConstraints.deviceInfoMaxBytes);
+    }
     listOfDiscoveredDevices.clear();
-    username = username ?? await getDeviceName();
-    await nearbyCross.startDiscovery(serviceId, username, strategy);
+    await nearbyCross.startDiscovery(serviceId, deviceInfo, strategy);
     isDiscovering = true;
   }
 
@@ -71,14 +77,18 @@ class Discoverer extends Connector {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.onEndpointFound,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      return _handleEndpointFound(arguments["endpointId"] as String,
-          arguments["endpointName"] as String);
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      var endpointName = arguments["endpointName"] as Uint8List;
+      logger.i("Endpoint ID: $endpointId\nEndpoint Name: $endpointName");
+
+      return _handleEndpointFound(endpointId, endpointName);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.onEndpointLost,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      return _handleEndpointLost(arguments["endpointId"] as String);
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      return _handleEndpointLost(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,

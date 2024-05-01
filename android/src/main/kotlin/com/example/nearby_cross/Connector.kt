@@ -4,10 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.example.nearby_cross.callbacks.ConnectionCallbacks
 import com.example.nearby_cross.constants.ConnectionStrategies
-import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import java.nio.charset.Charset
 
 
 // import com.google.android.gms.nearby.connection.AdvertisingOptions;
@@ -19,7 +17,7 @@ open class Connector(
     strategy: String,
     protected val context: Context,
     callbacks: ConnectionCallbacks,
-    userName: String = Constants.DEFAULT_USERNAME,
+    userName: ByteArray,
     manualAcceptConnections: Boolean = false
 ) {
     var userName: ByteArray
@@ -28,7 +26,7 @@ open class Connector(
 
 
     init {
-        this.userName = userName.toByteArray(Charset.forName("UTF-8"))
+        this.userName = userName
         this.strategy = getStrategy(strategy)
         this.manualAcceptConnections = manualAcceptConnections
     }
@@ -67,7 +65,6 @@ open class Connector(
     val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
             Log.v("INFO", connectionInfo.endpointName)
-
             var alreadyAccepted = false
             if (!manualAcceptConnections) {
                 Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
@@ -76,7 +73,7 @@ open class Connector(
 
             callbacks.onConnectionInitiated(
                 endpointId,
-                connectionInfo.endpointName,
+                connectionInfo.endpointInfo, // Endpoint INFO is the byte array version of Endpoint Name
                 alreadyAccepted
             )
             // A connection to another device has been initiated by the remote endpoint

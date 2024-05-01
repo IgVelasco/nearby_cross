@@ -3,7 +3,6 @@ package com.example.nearby_cross
 import android.content.Context
 import android.util.Log
 import com.example.nearby_cross.callbacks.DiscovererCallbacks
-import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.DiscoveryOptions
@@ -15,7 +14,7 @@ class Discoverer(
     strategy: String,
     context: Context,
     callbacks: DiscovererCallbacks,
-    userName: String = Constants.DEFAULT_USERNAME,
+    userName: ByteArray,
 ) : Connector(serviceId, strategy, context, callbacks, userName) {
     private var endpointDiscoveryCallback: EndpointDiscoveryCallback
 
@@ -25,7 +24,7 @@ class Discoverer(
                 // A nearby device with the same service ID was found
                 // You can now initiate a connection with this device using its endpoint ID
                 Log.d("INFO", "A nearby device with the same service ID was found")
-                callbacks.onEndpointFound(endpointId, info.endpointName)
+                callbacks.onEndpointFound(endpointId, info.endpointInfo)
             }
 
             override fun onEndpointLost(endpointId: String) {

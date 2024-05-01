@@ -1,10 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:intl/intl.dart';
 import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/models/message_model.dart';
 
 class ChatMessage extends NearbyMessage {
   bool received;
-  String? sender;
+  Uint8List? sender;
 
   ChatMessage.fromString(
     String message, {
