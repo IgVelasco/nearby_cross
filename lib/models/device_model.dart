@@ -85,6 +85,10 @@ class Device {
   }
 
   bool validateMessageOwner(NearbyMessage message) {
+    if (verifier == null) {
+      return false;
+    }
+
     try {
       return verifier!.verifyMessage(message.message, message.signature);
     } catch (e) {
