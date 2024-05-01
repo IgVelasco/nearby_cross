@@ -26,7 +26,7 @@ class Discoverer extends Connector {
   /// Handler for [NearbyCrossMethods.onEndpointFound] method call
   /// Adds a device as a discovered device in listOfDiscoveredDevices
   void _handleEndpointFound(String endpointId, Uint8List endpointName) {
-    logger.i("Found endpoint with ${endpointName} bytes");
+    logger.d("Found endpoint with $endpointName bytes");
     var device = Device.asEndpoint(endpointId, endpointName);
     listOfDiscoveredDevices.add(device);
 
