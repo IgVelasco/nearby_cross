@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:nearby_cross/constants/nearby_constraints.dart';
@@ -76,14 +77,18 @@ class Discoverer extends Connector {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.onEndpointFound,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      return _handleEndpointFound(arguments["endpointId"] as String,
-          arguments["endpointName"] as Uint8List);
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      var endpointName = arguments["endpointName"] as Uint8List;
+      logger.i("Endpoint ID: $endpointId\nEndpoint Name: $endpointName");
+
+      return _handleEndpointFound(endpointId, endpointName);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.onEndpointLost,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      return _handleEndpointLost(arguments["endpointId"] as String);
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      return _handleEndpointLost(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,

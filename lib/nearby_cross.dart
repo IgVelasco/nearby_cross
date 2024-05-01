@@ -48,7 +48,6 @@ class NearbyCross {
 
   Future<void> startDiscovery(String serviceId, Uint8List deviceInfo,
       [NearbyStrategies strategy = NearbyStrategies.star]) async {
-    logger.i("Starting discovery with ${deviceInfo.length} bytes");
     await methodChannel.invokeMethod('startDiscovery', {
       'serviceId': serviceId,
       'username': deviceInfo, // TODO: username to Device Info
@@ -59,7 +58,6 @@ class NearbyCross {
   Future<void> advertise(
       String serviceId, Uint8List deviceInfo, bool manualAcceptConnections,
       [NearbyStrategies strategy = NearbyStrategies.star]) async {
-    logger.i("Starting advertisement with ${deviceInfo.toList()} bytes");
     await methodChannel.invokeMethod('startAdvertising', {
       'serviceId': serviceId,
       'username': deviceInfo,
