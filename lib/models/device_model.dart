@@ -164,6 +164,15 @@ class Device {
     messagesSent.clear();
   }
 
+  bool lastMassageIsAuthenticated() {
+    var lastMessage = getLastMessage();
+    if (lastMessage == null) {
+      return false;
+    }
+
+    return lastMessage.isAuthenticated;
+  }
+
   @override
   bool operator ==(other) => other is Device && endpointId == other.endpointId;
 
