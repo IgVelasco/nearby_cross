@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_cross/types/item_type.dart';
+import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 
 class DiscoveredListItem extends StatelessWidget {
-  final Item item;
+  final Device device;
   final DiscovererViewModel provider;
-  const DiscoveredListItem(this.item, this.provider, {super.key});
+  const DiscoveredListItem(this.device, this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class DiscoveredListItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Text(
-                      item["endpointName"]!,
+                      provider.getEndpointNameFromDevice(device),
                       textAlign: TextAlign.start,
                       maxLines: 1,
                       overflow: TextOverflow.clip,
@@ -64,7 +64,7 @@ class DiscoveredListItem extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                       child: Text(
-                        item["endpointId"]!,
+                        "${device.endpointId} - ${provider.getSignatureBytes(device)} bytes Signature",
                         textAlign: TextAlign.start,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -90,7 +90,7 @@ class DiscoveredListItem extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    provider.connect(item["endpointId"]!);
+                    provider.connect(device.endpointId);
                     Navigator.pop(context);
                   },
                   icon: const Icon(

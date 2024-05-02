@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Flutter
 
 
 class NCDiscoverer: Connector, DiscovererDelegate {
@@ -20,7 +21,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
          strategy: String,
          context: UIApplication,
          callbacks: DiscovererCallbacks,
-         userName: String = GeneralConstants.DEFAULT_USERNAME) {
+         userName: FlutterStandardTypedData) {
          super.init(serviceId: serviceId,
                    strategy: strategy,
                    context: context,
@@ -30,8 +31,12 @@ class NCDiscoverer: Connector, DiscovererDelegate {
 
     func discoverer(
         _ discoverer: Discoverer, didFind endpointID: EndpointID, with context: Data) {
-            // An endpoint was found.
-            let endpointName = String(decoding: context, as: UTF8.self)
+            // An endpoint was found.x
+            let endpointName = context
+            let endpointFound = ConnectionAttempt(
+                endpointId: endpointID, endpointName: endpointName, connectionRequestHandler: {(a) in }
+            )
+            endpointsFounds.append(endpointFound)
             (callbacks as! any DiscovererCallbacks as DiscovererCallbacks)
                 .onEndpointFound(
                     endpointId: endpointID,
@@ -49,7 +54,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
             print(error ?? "Requested connection to \(endpointId)")
         };
         
-        discoverer.requestConnection(to: endpointId, using: userName, completionHandler: completionHandler)
+        discoverer.requestConnection(to: endpointId, using: userName.data, completionHandler: completionHandler)
     }
    
     func startDiscovering() {

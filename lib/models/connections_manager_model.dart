@@ -1,10 +1,15 @@
 import 'dart:collection';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
+import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/helpers/string_utils.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross/modules/authentication/authentication_manager.dart';
+import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/nearby_cross_methods.dart';
 
@@ -16,6 +21,8 @@ class ConnectionsManager {
   Set<Device> pendingAcceptConnections = {};
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
+
+  AuthenticationManager? authenticationManager;
 
   HashMap<String, dynamic Function(Device)> callbackPendingAcceptConnection =
       HashMap<String, dynamic Function(Device)>();
@@ -32,8 +39,8 @@ class ConnectionsManager {
 
   /// ConnectionsManager implements the singleton pattern.
   /// There will be only one instance of this class
-  factory ConnectionsManager() {
-    _singleton ??= ConnectionsManager._internal();
+  factory ConnectionsManager({AuthenticationManager? authenticationManager}) {
+    _singleton ??= ConnectionsManager._internal(authenticationManager);
 
     return _singleton!;
   }
@@ -69,8 +76,10 @@ class ConnectionsManager {
 
   /// Handler for [NearbyCrossMethods.connectionInitiated] method call.
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
-  void _handleConnectionInitiated(
-      String endpointId, String endpointName, bool alreadyAcceptedConnection) {
+  void _handleConnectionInitiated(String endpointId, Uint8List endpointName,
+      bool alreadyAcceptedConnection) {
+    logger.d(
+        "Connecting endpoint $endpointId with ${endpointName.length} bytes as device info");
     if (alreadyAcceptedConnection) {
       var device = addInitiatedConnection(endpointId, endpointName);
       _executeCallback(callbackConnectionInitiated, device);
@@ -84,6 +93,7 @@ class ConnectionsManager {
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
   void _handleEndpointDisconnected(String endpointId) {
     var device = removeConnectedDevices(endpointId);
+    logger.d("Disconnected endpoint $endpointId");
     if (device != null) {
       _executeCallback(callbackDisconnectedDevice, device);
     }
@@ -97,6 +107,9 @@ class ConnectionsManager {
       return;
     }
 
+    authenticationManager?.startHandshake(device);
+
+    logger.d("Device ${device.endpointName} is successfully connected");
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
@@ -113,7 +126,14 @@ class ConnectionsManager {
   /// Handler for [NearbyCrossMethods.payloadReceived] method call.
   /// Adds received message to the corresponding device.
   void _handlePayloadReceived(String endpointId, Uint8List messageReceived) {
-    var device = addMessageFromDevice(endpointId, messageReceived);
+    var nearbyMessage = NearbyMessage(messageReceived);
+
+    if (nearbyMessage.messageType == NearbyMessageType.handshake) {
+      enterHandshakeProcess(endpointId, nearbyMessage);
+      return;
+    }
+
+    var device = addMessageFromDevice(endpointId, nearbyMessage);
     if (device == null) {
       return;
     }
@@ -123,14 +143,17 @@ class ConnectionsManager {
 
   /// Internal constructor for class [ConnectionsManager].
   /// Sets method call handlers for [NearbyCrossMethods.connectionInitiated], [NearbyCrossMethods.successfulConnection] and [NearbyCrossMethods.payloadReceived]
-  ConnectionsManager._internal() {
+  ConnectionsManager._internal(this.authenticationManager) {
+    authenticationManager?.initialize();
+
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var endpointId = arguments["endpointId"] as String;
-      var endpointName = arguments["endpointName"] as String;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      var endpointName = arguments["endpointName"] as Uint8List;
       var alreadyAcceptedConnection =
-          (arguments["alreadyAcceptedConnection"] as String).parseBool();
+          (utf8.decode(arguments["alreadyAcceptedConnection"] as Uint8List))
+              .parseBool();
       return _handleConnectionInitiated(
           endpointId, endpointName, alreadyAcceptedConnection);
     });
@@ -138,29 +161,31 @@ class ConnectionsManager {
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.successfulConnection,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var endpointId = arguments["endpointId"] as String;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
       return _handleSuccessfulConnection(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionRejected,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      var endpointId = arguments["endpointId"] as String;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
       return _handleRejectedConnection(endpointId);
     });
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.payloadReceived,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
       var messageReceived = arguments["message"] as Uint8List;
-      var endpointId = arguments["endpointId"] as String;
 
       return _handlePayloadReceived(endpointId, messageReceived);
     });
+
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.endpointDisconnected,
         (call) async {
       var arguments = call.arguments as Map<Object?, Object?>;
-      return _handleEndpointDisconnected(arguments["endpointId"] as String);
+      var endpointId = utf8.decode(arguments["endpointId"] as Uint8List);
+      return _handleEndpointDisconnected(endpointId);
     });
   }
 
@@ -237,7 +262,7 @@ class ConnectionsManager {
   }
 
   /// Creates a device in initiatedConnections set.
-  Device addInitiatedConnection(String endpointId, String endpointName) {
+  Device addInitiatedConnection(String endpointId, Uint8List endpointName) {
     var device = Device(endpointId, endpointName);
     initiatedConnections.add(device);
     return device;
@@ -250,7 +275,7 @@ class ConnectionsManager {
   }
 
   /// Adds a device in pendingAcceptConnections set.
-  Device addPendingAcceptConnection(String endpointId, String endpointName) {
+  Device addPendingAcceptConnection(String endpointId, Uint8List endpointName) {
     var device = Device.asPendingConnection(endpointId, endpointName);
     pendingAcceptConnections.add(device);
     return device;
@@ -288,27 +313,42 @@ class ConnectionsManager {
     return device;
   }
 
-  /// Adds message received to the device where it comes from.
-  Device? addMessageFromDevice(String endpointId, Uint8List message) {
+  /// Enters into handshaking process. See docs for reference.
+  Device? enterHandshakeProcess(String endpointId, NearbyMessage message) {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
       return null;
     }
 
-    device.addMessage(NearbyMessage(message));
+    authenticationManager?.processHandshake(device, message);
+
+    return device;
+  }
+
+  /// Adds message received to the device where it comes from.
+  Device? addMessageFromDevice(String endpointId, NearbyMessage message) {
+    Device? device = _findDevice(connectedDevices, endpointId);
+    if (device == null) {
+      logger.e("Could not find device $endpointId");
+      return null;
+    }
+
+    device.addMessage(message);
     return device;
   }
 
   /// Sends message to a given device given its endpointId
-  void sendMessageToDevice(String endpointId, NearbyMessage message) {
+  void sendMessageToDevice(String endpointId, String message) async {
     Device? device = _findDevice(connectedDevices, endpointId);
     if (device == null) {
       logger.e("Could not find device $endpointId");
       return;
     }
 
-    device.sendMessage(message);
+    var nbMessage = NearbyMessage.fromString(message);
+    authenticationManager?.sign(nbMessage);
+    device.sendMessage(nbMessage);
   }
 
   /// Broadcasts a message to every connected device
@@ -369,5 +409,21 @@ class ConnectionsManager {
     }
 
     await nearbyCross.disconnectFrom(endpointId);
+  }
+
+  // TODO Signing: Refactor this
+  Uint8List signDeviceInfo(String deviceInfo) {
+    var signature = authenticationManager!.signingManager
+        .signMessage(BytesUtils.stringToBytesArray(deviceInfo));
+
+    BytesBuilder bb = BytesBuilder();
+    bb.add(BytesUtils.stringToBytesArray(deviceInfo));
+    bb.add(signature!.data);
+
+    return bb.toBytes();
+  }
+
+  SigningManager? getSigningManager() {
+    return authenticationManager?.signingManager;
   }
 }

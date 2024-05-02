@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:nearby_cross/types/item_type.dart';
+import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross_example/viewmodels/discoverer_viewmodel.dart';
 import 'package:nearby_cross_example/widgets/discovered_list_item.dart';
 import 'package:nearby_cross_example/widgets/nc_app_bar.dart';
@@ -44,8 +44,8 @@ class DiscoveredDevicesList extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const ScrollPhysics(),
                   itemBuilder: (context, index) {
-                    Item item = provider.getDiscoveredDevices()[index].toItem();
-                    return DiscoveredListItem(item, provider);
+                    Device device = provider.getDiscoveredDevices()[index];
+                    return DiscoveredListItem(device, provider);
                   }),
             ],
           ),

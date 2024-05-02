@@ -49,7 +49,8 @@ class PendingConnectionsList extends StatelessWidget {
                         var device =
                             provider.getPendingConnectionsDevices()[index];
                         return PendingConnectionListItem(
-                          deviceName: device.endpointName,
+                          deviceName:
+                              provider.getEndpointNameFromDevice(device),
                           acceptAction: () {
                             return provider.acceptConnection(device.endpointId);
                           },

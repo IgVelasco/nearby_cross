@@ -3,14 +3,18 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross/modules/authentication/authentication_manager.dart';
+import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 import 'package:nearby_cross/nearby_cross.dart';
 import 'package:nearby_cross/types/item_type.dart';
+import 'package:uuid/uuid.dart';
 
 /// Class that represent every connected device with NearbyCross plugin
 class Device {
   Logger logger = Logger();
+  String identifier = const Uuid().v4();
   String endpointId;
-  String endpointName;
+  Uint8List endpointName;
   bool isEndpointOnly;
   bool isPendingConnection;
   bool hasNewMessages = false;
@@ -19,6 +23,9 @@ class Device {
   final NearbyCross _nearbyCross = NearbyCross();
   HashMap<String, dynamic Function(Device)> callbackReceivedMessage =
       HashMap<String, dynamic Function(Device)>();
+  AuthenticationManager? authManager;
+  SigningManager? verifier;
+  bool isAuthenticated = false;
 
   Device(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
@@ -31,6 +38,14 @@ class Device {
   Device.asPendingConnection(this.endpointId, this.endpointName)
       : isEndpointOnly = false,
         isPendingConnection = true;
+
+  void setIdentifier(String newId) {
+    identifier = newId;
+  }
+
+  void setIsAuthenticated(bool isAuth) {
+    isAuthenticated = isAuth;
+  }
 
   /// Sets callbackReceivedMessage callback that executes every time a message is received.
   void setCallbackReceivedMessage(
@@ -61,20 +76,58 @@ class Device {
     }
   }
 
+  void setAuthManager(AuthenticationManager authManager) {
+    this.authManager = authManager;
+  }
+
+  void addVerifier(SigningManager verifier) {
+    this.verifier = verifier;
+  }
+
+  bool validateMessageOwner(NearbyMessage message) {
+    if (verifier == null) {
+      return false;
+    }
+
+    try {
+      return verifier!.verifyMessage(message.message, message.signature);
+    } catch (e) {
+      logger.e("Could not validate message owner: $e");
+      return false;
+    }
+  }
+
   /// Adds message to received messages list
   void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
+      if (verifier != null) {
+        try {
+          message.validateAuthenticity(verifier!);
+        } catch (e) {
+          logger.e("Error validating message authenticity: $e");
+        }
+      }
+
+      if (!message.isAuthenticated) {
+        logger.e("Received message is not from an authenticated third-paty!");
+      } else {
+        logger.d("Received message is authenticated!");
+      }
+
       messages.add(message);
 
       _executeCallback(callbackReceivedMessage, this);
-
       hasNewMessages = true;
     }
   }
 
   /// Sends message to the device identified with endpointId
-  void sendMessage(NearbyMessage message) {
-    messagesSent.add(message);
+  void sendMessage(NearbyMessage message, {bool dropMessage = false}) {
+    authManager?.sign(message);
+
+    if (!dropMessage) {
+      messagesSent.add(message);
+    }
     _nearbyCross.sendData(message.convertToBytes(), endpointId);
   }
 
@@ -115,6 +168,15 @@ class Device {
   void clearMessages() {
     messages.clear();
     messagesSent.clear();
+  }
+
+  bool lastMassageIsAuthenticated() {
+    var lastMessage = getLastMessage();
+    if (lastMessage == null) {
+      return false;
+    }
+
+    return lastMessage.isAuthenticated;
   }
 
   @override

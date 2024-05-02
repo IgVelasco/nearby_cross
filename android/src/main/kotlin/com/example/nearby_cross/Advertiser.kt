@@ -3,7 +3,6 @@ package com.example.nearby_cross
 import android.content.Context
 import android.util.Log
 import com.example.nearby_cross.callbacks.AdvertiserCallbacks
-import com.example.nearby_cross.constants.Constants
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 
@@ -13,7 +12,7 @@ class Advertiser(
     strategy: String,
     context: Context,
     callbacks: AdvertiserCallbacks,
-    userName: String = Constants.DEFAULT_USERNAME,
+    userName: ByteArray,
     manualAcceptConnections: Boolean = false
 ) : Connector(serviceId, strategy, context, callbacks, userName, manualAcceptConnections) {
 

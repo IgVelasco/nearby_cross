@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross_example/screens/select_interaction_screen.dart';
@@ -18,8 +21,8 @@ class DiscovererActions extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => DiscovererViewModel())
         ],
         builder: (context, child) {
-          Provider.of<DiscovererViewModel>(context)
-              .setUsername(username, false);
+          Provider.of<DiscovererViewModel>(context).setDeviceInfo(
+              username != null ? utf8.encode(username!) : Uint8List(0), false);
 
           return Column(children: [
             ListView(

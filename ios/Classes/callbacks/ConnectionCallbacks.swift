@@ -10,7 +10,7 @@ import Foundation
 protocol ConnectionCallbacks {
     func onPayloadReceived(bytesReceived: Data, endpointId: String)
     func onDisconnected(endpointId: String)
-    func onConnectionInitiated(endpointId: String, endpointName: String, alreadyAcceptedConnection: Bool)
+    func onConnectionInitiated(endpointId: String, endpointName: Data, alreadyAcceptedConnection: Bool)
     func onSuccessfulConnection(endpointId: String)
     func onRejectedConnection(endpointId: String)
 }

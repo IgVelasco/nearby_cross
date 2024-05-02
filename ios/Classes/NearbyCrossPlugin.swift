@@ -30,7 +30,7 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
         case ChannelMethods.START_ADVERTISING:
             guard let args = call.arguments as? [String: Any],
                   let serviceId = args["serviceId"] as? String,
-                  let userName = args["username"] as? String,
+                  let userName = args["username"] as? FlutterStandardTypedData,
                   let strategy = args["strategy"] as? String,
                   let manualAcceptConnections = args["manualAcceptConnections"] as? String  else {
                       result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
@@ -45,7 +45,7 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
         case ChannelMethods.START_DISCOVERY:
             guard let args = call.arguments as? [String: Any],
                   let serviceId = args["serviceId"] as? String,
-                  let userName = args["username"] as? String,
+                  let userName = args["username"] as? FlutterStandardTypedData,
                   let strategy = args["strategy"] as? String else {
                       result(FlutterError(code: "argument_error", message: "Missing arguments", details: nil))
                       return
