@@ -36,6 +36,7 @@ class ExperimentalAuthManager extends AuthenticationManager {
   void startHandshake(Device device) {
     // In experimental mode, the handshake message includes the public key to be used
     // for this device authentication
+    logger.d("Staring handshake process with device ${device.endpointId}");
     var message =
         NearbyMessage.handshakeMessage(signingManager.convertPublicToJwk()!);
     device.sendMessage(message, dropMessage: true);

@@ -78,7 +78,8 @@ class ConnectionsManager {
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
   void _handleConnectionInitiated(String endpointId, Uint8List endpointName,
       bool alreadyAcceptedConnection) {
-    logger.i("Connecting endpoint with ${endpointName.length} bytes");
+    logger.d(
+        "Connecting endpoint $endpointId with ${endpointName.length} bytes as device info");
     if (alreadyAcceptedConnection) {
       var device = addInitiatedConnection(endpointId, endpointName);
       _executeCallback(callbackConnectionInitiated, device);
@@ -92,6 +93,7 @@ class ConnectionsManager {
   /// Adds a device as a "initiated connection", waiting for the conection to sucess.
   void _handleEndpointDisconnected(String endpointId) {
     var device = removeConnectedDevices(endpointId);
+    logger.d("Disconnected endpoint $endpointId");
     if (device != null) {
       _executeCallback(callbackDisconnectedDevice, device);
     }
@@ -107,6 +109,7 @@ class ConnectionsManager {
 
     authenticationManager?.startHandshake(device);
 
+    logger.d("Device ${device.endpointName} is successfully connected");
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
