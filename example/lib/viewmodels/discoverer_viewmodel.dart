@@ -109,9 +109,10 @@ class DiscovererViewModel with ChangeNotifier {
   }
 
   Future<void> sendData(String message) async {
-    if (_connectedDevice != null) {
+    final deviceConnected = getConnectedDevice();
+    if (deviceConnected != null) {
       connectionsManager.sendMessageToDevice(
-          _connectedDevice!.endpointId, message);
+          deviceConnected.endpointId, message);
     }
   }
 
