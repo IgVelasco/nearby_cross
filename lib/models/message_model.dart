@@ -124,4 +124,9 @@ class NearbyMessage {
   void setIsAuthenticated(bool isAuth) {
     isAuthenticated = isAuth;
   }
+
+  void validateAuthenticity(SigningManager verifier) {
+    var messageIsValid = verifier.verifyMessage(message, signature);
+    setIsAuthenticated(messageIsValid);
+  }
 }

@@ -100,9 +100,15 @@ class Device {
   /// Adds message to received messages list
   void addMessage(NearbyMessage message) {
     if (!isEndpointOnly) {
-      var messageIsValid = validateMessageOwner(message);
-      message.setIsAuthenticated(messageIsValid);
-      if (!messageIsValid) {
+      if (verifier != null) {
+        try {
+          message.validateAuthenticity(verifier!);
+        } catch (e) {
+          logger.e("Error validating message authenticity: $e");
+        }
+      }
+
+      if (!message.isAuthenticated) {
         logger.e("Received message is not from an authenticated third-paty!");
       } else {
         logger.d("Received message is authenticated!");
