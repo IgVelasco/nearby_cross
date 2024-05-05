@@ -1,6 +1,6 @@
 name: nearby_cross
-description: A new Flutter plugin project.
-version: 0.0.1
+description: Flutter plugin that uses Nearby from Google
+version: 0.0.2
 repository: https://github.com/IgVelasco/nearby_cross
 
 environment:
