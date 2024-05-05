@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
@@ -66,5 +68,15 @@ class PendingConnectionsViewModel with ChangeNotifier {
 
   Future<void> rejectConnection(String endpointId) {
     return connectionsManager.rejectConnection(endpointId);
+  }
+
+  String getEndpointNameFromDevice(Device device) {
+    var fullDeviceInfo = device.endpointName;
+    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    if (indexSeparator == -1) {
+      return utf8.decode(fullDeviceInfo);
+    }
+    var deviceName = fullDeviceInfo.sublist(0, indexSeparator);
+    return utf8.decode(deviceName);
   }
 }

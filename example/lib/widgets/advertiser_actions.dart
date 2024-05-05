@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:nearby_cross/constants/nearby_strategies.dart';
 import 'package:nearby_cross_example/screens/pending_connections_list.dart';
@@ -17,8 +20,8 @@ class AdvertiserActions extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AdvertiserViewModel())
       ],
       builder: (context, child) {
-        Provider.of<AdvertiserViewModel>(context, listen: false)
-            .setUsername(username, false);
+        Provider.of<AdvertiserViewModel>(context, listen: false).setDeviceInfo(
+            username != null ? utf8.encode(username!) : Uint8List(0), false);
 
         return Column(children: [
           ListView(

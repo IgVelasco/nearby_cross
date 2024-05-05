@@ -5,24 +5,8 @@
  //  Created by Ignacio Velasco on 29/02/2024.
  //
 
- import Foundation
-
-class ConnectionAttempt {
-    var endpointId: String
-    var endpointName: String
-    var connectionRequestHandler: (Bool) -> Void
-    
-    init(endpointId: String, endpointName: String, connectionRequestHandler: @escaping (Bool) -> Void) {
-        self.endpointId = endpointId
-        self.endpointName = endpointName
-        self.connectionRequestHandler = connectionRequestHandler
-    }
-    
-    func handleConnection(result: Bool) {
-        connectionRequestHandler(result)
-    }
-}
-
+import Foundation
+import Flutter
 
  class NCAdvertiser: Connector, AdvertiserDelegate {
 
@@ -37,7 +21,7 @@ class ConnectionAttempt {
           strategy: String,
           context: UIApplication,
           callbacks: AdvertiserCallbacks,
-          userName: String = GeneralConstants.DEFAULT_USERNAME,
+          userName: FlutterStandardTypedData,
           manualAcceptConnections: Bool = false) {
           super.init(serviceId: serviceId,
                     strategy: strategy,
@@ -62,7 +46,7 @@ class ConnectionAttempt {
      func advertiser(_ advertiser: Advertiser, didReceiveConnectionRequestFrom endpointID: EndpointID, with context: Data, connectionRequestHandler: @escaping (Bool) -> Void) {
          // Accept or reject any incoming connection requests. The connection will still need to
          // be verified in the connection manager delegate.
-         let endpointName = String(decoding: context, as: UTF8.self)
+         let endpointName = context
          let connectionAttempt = ConnectionAttempt(
             endpointId: endpointID, endpointName: endpointName, connectionRequestHandler: connectionRequestHandler
          )
@@ -76,7 +60,7 @@ class ConnectionAttempt {
      }
     
      func startAdvertising() {
-         advertiser.startAdvertising(using: userName)
+         advertiser.startAdvertising(using: userName.data)
      }
      
      func acceptConnection(endpointId: String) {

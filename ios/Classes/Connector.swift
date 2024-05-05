@@ -5,12 +5,28 @@
  //  Created by Ignacio Velasco on 29/02/2024.
  //
 
- import Foundation
+import Foundation
+import Flutter
 
-
- import Foundation
+class ConnectionAttempt {
+    var endpointId: String
+    var endpointName: Data
+    var connectionRequestHandler: (Bool) -> Void
+    
+    init(endpointId: String, endpointName: Data, connectionRequestHandler: @escaping (Bool) -> Void) {
+        self.endpointId = endpointId
+        self.endpointName = endpointName
+        self.connectionRequestHandler = connectionRequestHandler
+    }
+    
+    func handleConnection(result: Bool) {
+        connectionRequestHandler(result)
+    }
+}
 
  class Connector: ConnectionManagerDelegate {
+     var endpointsFounds: [ConnectionAttempt] = []
+     
      func connectionManager(_ connectionManager: ConnectionManager, didReceive verificationCode: String, from endpointID: EndpointID, verificationHandler: @escaping (Bool) -> Void) {
          // TODO
          // Optionally show the user the verification code. Your app should call this handler
@@ -55,7 +71,15 @@
              case .connecting:
                // A connection to the remote endpoint is currently being established.
                  print("connecting")
-                 callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: "TODO connecting state", alreadyAcceptedConnection: true)
+                 let endpointName: Data;
+                 if let endpointFoundIndex = endpointsFounds.firstIndex(where: {$0.endpointId == endpointID} ) {
+                     endpointName = endpointsFounds[endpointFoundIndex].endpointName
+                     endpointsFounds.remove(at: endpointFoundIndex)
+                 } else {
+                     endpointName = "TODO connecting state".data(using: .utf8)!
+                 }
+             
+                callbacks.onConnectionInitiated(endpointId: endpointID, endpointName: endpointName, alreadyAcceptedConnection: true)
              break;
              case .connected:
                // We're connected! Can now start sending and receiving data.
@@ -92,7 +116,7 @@
      let serviceId: String
      let context: UIApplication
      let callbacks: ConnectionCallbacks
-     let userName: Data
+     let userName: FlutterStandardTypedData
      let strategy: Strategy
      let connectionManager: ConnectionManager
      var manualAcceptConnections: Bool
@@ -101,12 +125,12 @@
           strategy: String,
           context: UIApplication,
           callbacks: ConnectionCallbacks,
-          userName: String = GeneralConstants.DEFAULT_USERNAME,
+          userName: FlutterStandardTypedData,
           manualAcceptConnections: Bool = false) {
          self.serviceId = serviceId
          self.context = context
          self.callbacks = callbacks
-         self.userName = userName.data(using: .utf8) ?? GeneralConstants.DEFAULT_USERNAME.data(using: .utf8)!
+         self.userName = userName
          self.strategy = Connector.getStrategy(strategy)
          self.manualAcceptConnections = manualAcceptConnections
          connectionManager = ConnectionManager(serviceID: serviceId, strategy: self.strategy)

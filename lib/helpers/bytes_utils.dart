@@ -48,4 +48,38 @@ abstract class BytesUtils {
       Uint8List bytesList, int start, int bytesAmount) {
     return bytesList.getRange(start, start + bytesAmount).toList();
   }
+
+  static BigInt readBytes(Uint8List bytes) {
+    BigInt result = BigInt.zero;
+
+    if (Endian.host == Endian.big) {
+      for (final byte in bytes) {
+        result = (result << 8) | BigInt.from(byte);
+      }
+    } else {
+      for (final byte in bytes) {
+        result = (result << 8) | BigInt.from(byte & 0xff);
+      }
+    }
+    return result;
+  }
+
+  static Uint8List writeBigInt(BigInt number) {
+    // Not handling negative numbers. Decide how you want to do that.
+    int bytes = (number.bitLength + 7) >> 3;
+    var b256 = BigInt.from(256);
+    var result = Uint8List(bytes);
+    if (Endian.host == Endian.big) {
+      for (int i = 0; i < bytes; i++) {
+        result[i] = number.remainder(b256).toInt();
+        number = number >> 8;
+      }
+    } else {
+      for (int i = 0; i < bytes; i++) {
+        result[bytes - 1 - i] = number.remainder(b256).toInt();
+        number = number >> 8;
+      }
+    }
+    return result;
+  }
 }
