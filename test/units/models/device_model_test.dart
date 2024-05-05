@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
 import 'package:mockito/mockito.dart';
