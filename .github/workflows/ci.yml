@@ -1,12 +1,7 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - main
-      - release/v*
-      - develop
-
+  workflow_call:
 
 jobs:
   testing:
