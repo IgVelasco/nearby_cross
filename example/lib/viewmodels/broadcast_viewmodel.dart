@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
@@ -28,10 +31,20 @@ class BroadcastViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Uint8List getEndpointNameFromDevice(Device device) {
+    var fullDeviceInfo = device.endpointName;
+    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    if (indexSeparator == -1) {
+      return fullDeviceInfo;
+    }
+    var deviceName = fullDeviceInfo.sublist(0, indexSeparator);
+    return deviceName;
+  }
+
   void _callbackReceivedMessage(Device device) {
     var message = ChatMessage.fromParent(device.getLastMessage()!,
         received: true,
-        sender: device.endpointName,
+        sender: getEndpointNameFromDevice(device),
         isAuthenticated: device.lastMassageIsAuthenticated());
     allMessages.add(message);
     _commonCallback(device);

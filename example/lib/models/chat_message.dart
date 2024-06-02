@@ -25,7 +25,7 @@ class ChatMessage extends NearbyMessage {
     var inputFormat = DateFormat('dd/MM/yyyy HH:mm');
     var authBadge = isAuthenticated ? '✅' : '❌';
     if (printSender && sender != null) {
-      return "${received ? authBadge : ''} ${(sender)} ${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
+      return "${received ? authBadge : ''} ${BytesUtils.getString(sender!)} ${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
     }
 
     return "${received ? authBadge : ''} ${inputFormat.format(dateTime)} - ${BytesUtils.getString(message)}";
