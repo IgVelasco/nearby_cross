@@ -4,10 +4,14 @@ import 'dart:typed_data';
 import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 
-enum NearbyMessageType {
-  direct,
-  broadcast,
-  handshake;
+class NearbyMessageType {
+  static const NearbyMessageType direct = NearbyMessageType._(0);
+  static const NearbyMessageType broadcast = NearbyMessageType._(1);
+  static const NearbyMessageType handshake = NearbyMessageType._(2);
+
+  final int type;
+
+  const NearbyMessageType._(this.type);
 
   static fromInt8(int value) {
     switch (value) {
@@ -21,22 +25,11 @@ enum NearbyMessageType {
         throw UnimplementedError();
     }
   }
-}
 
-extension NearbyMessageTypeInt on NearbyMessageType {
   Uint8List toInt8() {
     var aux = Uint8List(1)..buffer.asInt8List();
-    switch (this) {
-      case NearbyMessageType.direct:
-        aux[0] = 0;
-        return aux;
-      case NearbyMessageType.broadcast:
-        aux[0] = 1;
-        return aux;
-      case NearbyMessageType.handshake:
-        aux[0] = 2;
-        return aux;
-    }
+    aux[0] = type;
+    return aux;
   }
 }
 
