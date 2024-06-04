@@ -5,13 +5,13 @@ import 'package:nearby_cross/helpers/bytes_utils.dart';
 import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 
 class NearbyMessageType {
-  static const NearbyMessageType direct = NearbyMessageType._(0);
-  static const NearbyMessageType broadcast = NearbyMessageType._(1);
-  static const NearbyMessageType handshake = NearbyMessageType._(2);
+  static const NearbyMessageType direct = NearbyMessageType(0);
+  static const NearbyMessageType broadcast = NearbyMessageType(1);
+  static const NearbyMessageType handshake = NearbyMessageType(2);
 
   final int type;
 
-  const NearbyMessageType._(this.type);
+  const NearbyMessageType(this.type);
 
   static fromInt8(int value) {
     switch (value) {
