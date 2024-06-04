@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  workflow_call:
+
+jobs:
+  testing:
+    name: Run ${{ matrix.category }} testing
+    # needs: security_hardening
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        category: [static, unit]
+      fail-fast: false
+    steps:
+    - name: Clone the repository
+      uses: actions/checkout@v4
+      with:
+        path: code
+    - name: Get Flutter version
+      id: get-flutter-version
+      uses: zgosalvez/github-actions-get-flutter-version-env@v3
+      with:
+        pubspec-file-path: code/pubspec.yaml
+    - name: Cache Flutter
+      id: flutter-cache
+      uses: actions/cache@v4
+      with:
+        path: flutter
+        key: ${{ env.cache-name }}-ubuntu-latest-${{ steps.get-flutter-version.outputs.version }}-${{ hashFiles('code/pubspec.lock') }}
+        restore-keys: |
+          ${{ env.cache-name }}-ubuntu-latest-${{ steps.get-flutter-version.outputs.version }}-
+          ${{ env.cache-name }}-ubuntu-latest-
+          ${{ env.cache-name }}-
+      env:
+        cache-name: flutter-cache
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+    - run: flutter pub get
+      working-directory: code
+    - name: Analyze Flutter
+      if: matrix.category == 'static'
+      uses: zgosalvez/github-actions-analyze-dart@v3
+      with:
+        fail-on-warnings: true
+        working-directory: code
+    - name: Run Flutter ${{ matrix.category }} tests
+      if: matrix.category != 'static'
+      run: flutter test --no-pub --coverage --coverage-path=./coverage/lcov.${{ matrix.category }}.info test/${{ matrix.category }}s
+      working-directory: code
+    - name: Upload code coverage to GitHub
+      if: matrix.category != 'static'
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage
+        path: code/coverage/lcov.${{ matrix.category }}.info
+
+  coverage_report:
+    name: Generate coverage report
+    needs: testing
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone the repository
+      uses: actions/checkout@v4
+    - name: Download code coverage from GitHub
+      uses: actions/download-artifact@v4
+      with:
+        name: code-coverage
+        path: coverage
+    - name: Setup LCOV
+      uses: hrishikesh-kadam/setup-lcov@v1
+    - name: Report code coverage
+      uses: zgosalvez/github-actions-report-lcov@v4
+      with:
+        coverage-files: coverage/lcov.*.info
+        minimum-coverage: 0
+        artifact-name: code-coverage-report
+        github-token: ${{ secrets.GITHUB_TOKEN }}

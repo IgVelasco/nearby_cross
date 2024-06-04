@@ -105,6 +105,11 @@ class NearbyMessage {
     return bb.toBytes();
   }
 
+  @override
+  String toString() {
+    return String.fromCharCodes(message);
+  }
+
   void signMessage(SigningManager signer) {
     var signature = signer.signMessage(message);
     if (signature == null) {
