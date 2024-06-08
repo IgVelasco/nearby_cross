@@ -22,7 +22,7 @@ class NearbyMessageType {
       case 2:
         return NearbyMessageType.handshake;
       default:
-        throw UnimplementedError();
+        return NearbyMessageType(value);
     }
   }
 
@@ -31,6 +31,16 @@ class NearbyMessageType {
     aux[0] = type;
     return aux;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is NearbyMessageType && other.type == type;
+  }
+
+  @override
+  int get hashCode => type.hashCode;
 }
 
 /*
