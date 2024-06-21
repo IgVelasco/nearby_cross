@@ -45,15 +45,21 @@ class NearbyMessageType {
 
 /*
 * Converted:
-* - messageType (1 int 8bit) + dateTime (1 int 64bit) + payloadSize (1 int 64bit) (N) + payload (N int 8bit) + signature (M int 64bit)
+* - messageType (1 int 8bit) + dateTime (1 int 64bit) + payloadSize (1 int 64bit) (N) + payload (N int 8bit) + signature (64 bytes)
 */
 class NearbyMessage {
-  late NearbyMessageType messageType; // 0 direct, 1 broadcast
+  late NearbyMessageType messageType;
   late DateTime dateTime;
   late int pSize;
   late Uint8List message;
   late Uint8List signature;
   bool isAuthenticated = false;
+
+  NearbyMessage.fromBytes(this.message,
+      {this.messageType = NearbyMessageType.direct, signature})
+      : dateTime = DateTime.now(),
+        pSize = message.length,
+        signature = signature ?? Uint8List(0);
 
   NearbyMessage.fromString(String message,
       {this.messageType = NearbyMessageType.direct, signature})

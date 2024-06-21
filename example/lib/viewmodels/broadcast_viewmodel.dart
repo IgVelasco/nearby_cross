@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/message_model.dart';
+import 'package:nearby_cross_example/constants/app.constants.dart';
 import 'package:nearby_cross_example/models/chat_message.dart';
 
 class BroadcastViewModel extends ChangeNotifier {
@@ -33,7 +33,7 @@ class BroadcastViewModel extends ChangeNotifier {
 
   Uint8List getEndpointNameFromDevice(Device device) {
     var fullDeviceInfo = device.endpointName;
-    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    var indexSeparator = fullDeviceInfo.indexOf(AppConstants.separatorByte);
     if (indexSeparator == -1) {
       return fullDeviceInfo;
     }

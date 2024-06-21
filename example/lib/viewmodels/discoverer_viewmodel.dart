@@ -8,6 +8,7 @@ import 'package:nearby_cross/helpers/platform_utils.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/discoverer_model.dart';
+import 'package:nearby_cross_example/constants/app.constants.dart';
 
 class DiscovererViewModel with ChangeNotifier {
   late Discoverer discoverer;
@@ -126,7 +127,7 @@ class DiscovererViewModel with ChangeNotifier {
     if (signingManger != null) {
       var deviceInfoSign = signingManger.getSignatureBytes(deviceInfo);
 
-      bb.add(utf8.encode("&"));
+      bb.add(AppConstants.separator);
       bb.add(deviceInfoSign);
     }
 
@@ -174,7 +175,7 @@ class DiscovererViewModel with ChangeNotifier {
 
   String getEndpointNameFromDevice(Device device) {
     var fullDeviceInfo = device.endpointName;
-    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    var indexSeparator = fullDeviceInfo.indexOf(AppConstants.separatorByte);
     if (indexSeparator == -1) {
       return utf8.decode(fullDeviceInfo);
     }
@@ -184,7 +185,7 @@ class DiscovererViewModel with ChangeNotifier {
 
   int getSignatureBytes(Device device) {
     var fullDeviceInfo = device.endpointName;
-    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    var indexSeparator = fullDeviceInfo.indexOf(AppConstants.separatorByte);
     if (indexSeparator == -1) {
       return 0;
     }

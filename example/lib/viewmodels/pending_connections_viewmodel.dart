@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
+import 'package:nearby_cross_example/constants/app.constants.dart';
 
 class PendingConnectionsViewModel with ChangeNotifier {
   Logger logger = Logger();
@@ -72,7 +73,7 @@ class PendingConnectionsViewModel with ChangeNotifier {
 
   String getEndpointNameFromDevice(Device device) {
     var fullDeviceInfo = device.endpointName;
-    var indexSeparator = fullDeviceInfo.indexOf(utf8.encode("&")[0]);
+    var indexSeparator = fullDeviceInfo.indexOf(AppConstants.separatorByte);
     if (indexSeparator == -1) {
       return utf8.decode(fullDeviceInfo);
     }
