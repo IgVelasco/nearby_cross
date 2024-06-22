@@ -1,12 +1,12 @@
 name: nearby_cross
 description: Flutter plugin that uses Nearby from Google
-version: 0.0.4
+version: 0.0.6
 repository: https://github.com/IgVelasco/nearby_cross
 
 environment:
 
   sdk: '>=3.0.0 <4.0.0'
-  flutter: ">=2.5.0"
+  flutter: ">=3.22.0"
 
 dependencies:
   flutter:

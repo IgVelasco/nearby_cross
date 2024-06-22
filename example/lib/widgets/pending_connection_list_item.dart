@@ -14,7 +14,7 @@ class PendingConnectionListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         child: SizedBox(
           height: 100,
           child: Row(
