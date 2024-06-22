@@ -8,6 +8,7 @@ import 'package:nearby_cross/helpers/platform_utils.dart';
 import 'package:nearby_cross/models/connections_manager_model.dart';
 import 'package:nearby_cross/models/device_model.dart';
 import 'package:nearby_cross/models/advertiser_model.dart';
+import 'package:nearby_cross_example/constants/app.constants.dart';
 
 class AdvertiserViewModel with ChangeNotifier {
   late Advertiser advertiser;
@@ -66,7 +67,7 @@ class AdvertiserViewModel with ChangeNotifier {
     if (signingManger != null) {
       var deviceInfoSign = signingManger.getSignatureBytes(deviceInfo);
 
-      bb.add(utf8.encode("&"));
+      bb.add(AppConstants.separator);
       bb.add(deviceInfoSign);
     }
 
