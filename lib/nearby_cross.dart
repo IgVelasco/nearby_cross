@@ -36,6 +36,10 @@ class NearbyCross {
     });
   }
 
+  static destroy() {
+    _singleton = null;
+  }
+
   static Future<void> requestPermissions() async {
     await PermissionManager.requestPermissions();
   }

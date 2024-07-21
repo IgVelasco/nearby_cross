@@ -81,6 +81,7 @@ class NearbyCrossPlugin : FlutterPlugin, MethodCallHandler {
             ChannelMethods.CONNECT -> {
                 val endpointId = call.argument<String>("endpointId")
                 this.discoverer?.connect(endpointId as String)
+                result.success(null)
             }
             ChannelMethods.STOP_ALL_CONNECTIONS -> {
                 this.advertiser?.stopAllConnections(context)
