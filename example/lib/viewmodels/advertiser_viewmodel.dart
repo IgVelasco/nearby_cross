@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -96,6 +97,7 @@ class AdvertiserViewModel with ChangeNotifier {
     }
 
     await advertiser.advertise(
+      AppConstants.serviceId,
       manualAcceptConnections: _manualAcceptConnections,
       strategy: strategy,
     );
@@ -103,6 +105,7 @@ class AdvertiserViewModel with ChangeNotifier {
   }
 
   Future<void> stopAdvertising() async {
+    log("Stopping advertising");
     await advertiser.stopAdvertising();
     notifyListeners();
   }

@@ -14,8 +14,6 @@ class Connector {
   ConnectionsManager connectionsManager = ConnectionsManager();
   bool get isConnected => connectionsManager.connectedDevices.isNotEmpty;
 
-  String serviceId = 'com.example.nearbyCrossExample';
-
   Future<void> requestPermissions() async {
     await PermissionManager.requestPermissions();
   }

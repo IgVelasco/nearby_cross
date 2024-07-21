@@ -63,6 +63,17 @@ import Flutter
          advertiser.startAdvertising(using: userName.data)
      }
      
+
+     func stopAdvertising() {
+         advertiser.stopAdvertising()
+         NSLog("Device stopped advertising")
+     }
+     
+     func stopAllConnections() {
+         advertiser.stopAdvertising()
+         disconnectFromAll()
+     }
+     
      func acceptConnection(endpointId: String) {
          guard let connectionAttemptIndex = connectionAttempts.firstIndex(where: {$0.endpointId == endpointId} ) else { return }
          connectionAttempts[connectionAttemptIndex].handleConnection(result: true)
