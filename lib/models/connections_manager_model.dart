@@ -17,7 +17,7 @@ import 'package:nearby_cross/nearby_cross_methods.dart';
 class ConnectionsManager {
   var logger = Logger();
   static ConnectionsManager? _singleton;
-  NearbyCross nearbyCross = NearbyCross();
+  late NearbyCross nearbyCross;
   Set<Device> pendingAcceptConnections = {};
   Set<Device> initiatedConnections = {};
   Set<Device> connectedDevices = {};
@@ -43,6 +43,12 @@ class ConnectionsManager {
     _singleton ??= ConnectionsManager._internal(authenticationManager);
 
     return _singleton!;
+  }
+
+  /// Destroys the singleton instance, allowing to create a new one
+  static void destroy() {
+    NearbyCross.destroy();
+    _singleton = null;
   }
 
   /// Removes a named callback in all callback collections
@@ -145,6 +151,7 @@ class ConnectionsManager {
   /// Sets method call handlers for [NearbyCrossMethods.connectionInitiated], [NearbyCrossMethods.successfulConnection] and [NearbyCrossMethods.payloadReceived]
   ConnectionsManager._internal(this.authenticationManager) {
     authenticationManager?.initialize();
+    nearbyCross = NearbyCross();
 
     nearbyCross.setMethodCallHandler(NearbyCrossMethods.connectionInitiated,
         (call) async {
