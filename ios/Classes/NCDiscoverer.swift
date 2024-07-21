@@ -31,7 +31,7 @@ class NCDiscoverer: Connector, DiscovererDelegate {
 
     func discoverer(
         _ discoverer: Discoverer, didFind endpointID: EndpointID, with context: Data) {
-            // An endpoint was found.x
+            // An endpoint was found.
             let endpointName = context
             let endpointFound = ConnectionAttempt(
                 endpointId: endpointID, endpointName: endpointName, connectionRequestHandler: {(a) in }
