@@ -16,7 +16,7 @@ class Advertiser extends Connector {
   }
 
   /// Service to start advertising using NearbyCross plugin
-  Future<void> advertise(
+  Future<void> advertise(String serviceId,
       {bool manualAcceptConnections = false,
       NearbyStrategies strategy = NearbyStrategies.star}) async {
     if (deviceInfo.length > NearbyConstraints.deviceInfoMaxBytes) {

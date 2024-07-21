@@ -53,7 +53,7 @@ class Discoverer extends Connector {
   }
 
   /// Service to start discovering devices using NearbyCross plugin
-  Future<void> startDiscovery(
+  Future<void> startDiscovery(String serviceId,
       {NearbyStrategies strategy = NearbyStrategies.star}) async {
     if (deviceInfo.length > NearbyConstraints.deviceInfoMaxBytes) {
       throw const DeviceInfoTooLarge(NearbyConstraints.deviceInfoMaxBytes);

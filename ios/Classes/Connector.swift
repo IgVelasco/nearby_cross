@@ -12,6 +12,7 @@ class ConnectionAttempt {
     var endpointId: String
     var endpointName: Data
     var connectionRequestHandler: (Bool) -> Void
+    var connected: Bool?
     
     init(endpointId: String, endpointName: Data, connectionRequestHandler: @escaping (Bool) -> Void) {
         self.endpointId = endpointId
@@ -21,6 +22,7 @@ class ConnectionAttempt {
     
     func handleConnection(result: Bool) {
         connectionRequestHandler(result)
+        connected = result
     }
 }
 
@@ -148,6 +150,12 @@ class ConnectionAttempt {
                  return .star
              case .P2P_POINT_TO_POINT:
              return .pointToPoint
+         }
+     }
+
+     func disconnectFromAll() {
+         endpointsFounds.forEach { connectionAttempt in
+             disconnectFrom(from: connectionAttempt.endpointId)
          }
      }
  }

@@ -64,4 +64,15 @@ class NCDiscoverer: Connector, DiscovererDelegate {
 
         discoverer.startDiscovery(completionHandler: completionHandler);
     }
+
+    func stopDiscovering() {
+        discoverer.stopDiscovery()
+        NSLog("Device stopped discovering")
+    }
+
+    func stopAllConnections() {
+        stopDiscovering()
+        disconnectFromAll()
+        NSLog("All Connections stopped")
+    }
 }

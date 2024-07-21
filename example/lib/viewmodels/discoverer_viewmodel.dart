@@ -92,7 +92,7 @@ class DiscovererViewModel with ChangeNotifier {
       setDeviceInfo(deviceName, false);
     }
 
-    await discoverer.startDiscovery(strategy: strategy);
+    await discoverer.startDiscovery(AppConstants.serviceId, strategy: strategy);
     notifyListeners();
   }
 

@@ -110,6 +110,16 @@ public class NearbyCrossPlugin: NSObject, FlutterPlugin {
             advertiser?.disconnectFrom(from: endpointId)
             discoverer?.disconnectFrom(from: endpointId)
             result(nil)
+        case ChannelMethods.STOP_DISCOVERING:
+            discoverer?.stopDiscovering()
+            result(nil)
+        case ChannelMethods.STOP_ADVERTISING:
+            advertiser?.stopAdvertising()
+            result(nil)
+        case ChannelMethods.STOP_ALL_CONNECTIONS:
+           advertiser?.stopAllConnections()
+           discoverer?.stopAllConnections()
+           result(nil)
         default:
           result("Not implemented")
         }
