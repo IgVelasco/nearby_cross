@@ -1,11 +1,32 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:nearby_cross/nearby_cross.dart';
+import 'package:logger/logger.dart';
+import 'package:nearby_cross/constants/app.dart';
+import 'package:nearby_cross/models/connections_manager_model.dart';
+import 'package:nearby_cross/modules/authentication/experimental/experimental_auth_manager.dart';
+import 'package:nearby_cross_example/models/example_authentication_manager.dart';
+import 'package:nearby_cross_example/screens/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
+  const appMode =
+      String.fromEnvironment("APP_MODE", defaultValue: 'experimental');
+  Logger().i("Starting app in $appMode mode");
+
+  if (AppMode.values.byName(appMode) == AppMode.experimental) {
+    // In experimental mode we let the devices create/retrieve their own Public/Private Keys
+    var experimentalAuthManager = ExperimentalAuthManager();
+    experimentalAuthManager.setIdentifier('test_experimental');
+    ConnectionsManager(authenticationManager: experimentalAuthManager);
+  } else {
+    // If we are not in experimental mode, we will force devices to use a Public/Private Keys
+    // declared in ExampleAuthenticationManager
+    const profile = String.fromEnvironment("PROFILE", defaultValue: 'DOCENTE');
+    Logger().i("Setting profile: $profile");
+
+    var exampleAuthManager = ExampleAuthenticationManager();
+    exampleAuthManager.setIdentifier(exampleAuthManager.devices[profile]!);
+    ConnectionsManager(authenticationManager: exampleAuthManager);
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -16,158 +37,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final TextEditingController _textFieldController = TextEditingController();
-  bool _isDiscovering = false;
-  String _platformVersion = 'Unknown';
-  String _endpointId = 'Unknown 2';
-  Color _bgColor = Colors.white;
-  final _nearbyCrossPlugin = NearbyCross();
-
-  String serviceId = 'com.example.nearbyCrossExample';
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await _nearbyCrossPlugin.getPlatformVersion() ??
-          'Unknown platform version';
-
-      _nearbyCrossPlugin.methodChannel.setMethodCallHandler((call) async {
-        if (call.method == 'onEndpointFound') {
-          setState(() {
-            _endpointId = call.arguments;
-          });
-          print('Endpoint found: $_endpointId');
-        }
-      });
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-          backgroundColor: _bgColor,
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Running on: $_platformVersion\n found: $_endpointId'),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Type something...',
-              ),
-              controller: _textFieldController, // Add this line
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String inputData = _textFieldController.text;
-                sendData(inputData);
-              },
-              child: const Text('Send'),
-            ),
-          ],
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: _advertise,
-                child: const Text('Advertise'),
-              ),
-              ElevatedButton(
-                onPressed: _disconnect,
-                child: const Text('Disconnect'),
-              ),
-              ElevatedButton(
-                onPressed: _startDiscovery,
-                child: const Text('Discovery'),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      ),
-    );
-  }
-
-  void _handleGenerateColorPressed() async {
-    final randomColor = await _nearbyCrossPlugin.generateColor();
-    setState(() {
-      _bgColor = randomColor;
-    });
-  }
-
-  void _startDiscovery() async {
-    setState(() {
-      _isDiscovering = true;
-    });
-
-    try {
-      await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.startDiscovery(serviceId);
-    } catch (e) {
-      print('Error starting discovery: $e');
-    }
-
-    setState(() {
-      _isDiscovering = false;
-    });
-  }
-
-  void _advertise() async {
-    setState(() {
-      _isDiscovering = true;
-    });
-
-    try {
-      await NearbyCross.requestPermissions();
-      await _nearbyCrossPlugin.advertise(serviceId);
-    } catch (e) {
-      print('Error starting discovery: $e');
-    }
-
-    setState(() {
-      _isDiscovering = false;
-    });
-  }
-
-  void _disconnect() async {
-    try {
-      await _nearbyCrossPlugin.disconnect(serviceId);
-    } catch (e) {
-      print('Error disconnecting: $e');
-    }
-  }
-
-  void sendData(String data) async {
-    try {
-      await _nearbyCrossPlugin.sendData(data);
-    } catch (e) {
-      print('Error disconnecting: $e');
-    }
+    return const MaterialApp(home: MainScreen());
   }
 }

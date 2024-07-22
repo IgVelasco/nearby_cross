@@ -1,0 +1,25 @@
+name: Flutter Plugin CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    steps:
+      - name: Build and test
+        uses: ./.github/workflows/build_test.yml
+
+      - name: Build Android app
+        run: |
+          cd example
+          flutter build apk
+
+
+# Broken since NearbyCoreAdapter needs to be installed manually with SPM 
+      # - name: Build iOS app
+      #   run: |
+      #     cd example
+      #     flutter build ios --no-codesign

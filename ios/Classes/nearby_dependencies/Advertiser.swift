@@ -67,7 +67,6 @@ public class Advertiser {
   }
 
   deinit {
-    print("INFO: Advertiser deinitiado")
     stopAdvertising()
   }
 }
