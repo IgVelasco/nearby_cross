@@ -1,5 +1,6 @@
 on:
   release:
+    types: [published]
     branches:
       - main
 jobs:
@@ -37,3 +38,4 @@ jobs:
           credentialJson: ${{ secrets.CREDENTIAL_JSON }}
           flutter: true
           skipTests: true
+
