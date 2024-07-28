@@ -4,9 +4,8 @@ version: 0.0.11
 repository: https://github.com/IgVelasco/nearby_cross
 
 environment:
-
   sdk: '>=2.19.6 <4.0.0'
-  flutter: ">=3.22.0"
+  flutter: "3.22.2"
 
 dependencies:
   flutter:
