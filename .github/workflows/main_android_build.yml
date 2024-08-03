@@ -7,10 +7,14 @@ on:
 
 jobs:
   build:
+    runs-on: macos-latest
 
     steps:
       - name: Build and test
         uses: ./.github/workflows/build_test.yml
+
+      - name: Check publish is possible
+        run: flutter pub publish --dry-run
 
       - name: Build Android app
         run: |
