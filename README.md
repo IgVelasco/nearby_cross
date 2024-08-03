@@ -113,7 +113,7 @@ abstract class AuthenticationManager {
 ### Example for authentication flow
 `ExperimentalAuthManager` is an example that implements a possible authentication flow using ECDSA and Handshake protocol:
 
-![](./docs/images/ecdsa-auth-flow.png)
+![](./doc/images/ecdsa-auth-flow.png)
 
 In experimental mode, public keys are being shared in handshake process during device connection. These public keys are being loaded before stablishing connection and sending messages, and it is later used to verify messages signatures. More complex flows can be implemented using this interface and implementing other types of trustworthy sources to store public keys.
 
