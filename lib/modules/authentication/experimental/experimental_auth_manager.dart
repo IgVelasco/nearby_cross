@@ -7,13 +7,15 @@ import 'package:nearby_cross/models/message_model.dart';
 import 'package:nearby_cross/modules/authentication/authentication_manager.dart';
 import 'package:nearby_cross/modules/authentication/signing_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class ExperimentalAuthManager extends AuthenticationManager {
   Logger logger = Logger();
-  String? identifier;
 
   @override
   void initialize() {
+    identifier = const Uuid().v4();
+
     // If not receiving a JWK for a Key Pair to use, look for it in the local storage
     // If not found, generate a random key pair and store it in Local Storage for future use
     SharedPreferences.getInstance().then((prefs) async {

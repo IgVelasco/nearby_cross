@@ -6,6 +6,8 @@ import 'package:nearby_cross/models/connector_model.dart';
 /// Class that represent the Advertiser instance of NearbyCross plugin.
 class Advertiser extends Connector {
   static Advertiser? _singleton;
+
+  /// Flag to check if the device is advertising
   bool isAdvertising = false;
 
   /// Implements singleton pattern
@@ -27,6 +29,7 @@ class Advertiser extends Connector {
     isAdvertising = true;
   }
 
+  // Service to start advertising using NearbyCross plugin
   Future<void> stopAdvertising() async {
     await nearbyCross.stopAdvertising();
     isAdvertising = false;

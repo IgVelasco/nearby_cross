@@ -11,9 +11,17 @@ import 'package:nearby_cross/nearby_cross_methods.dart';
 /// Class that represent the Discoverer instance of NearbyCross plugin.
 class Discoverer extends Connector {
   static Discoverer? _singleton;
+
+  /// List of devices discovered by the Discoverer
   Set<Device> listOfDiscoveredDevices = {};
+
+  /// Custom callback to execute when a device is found
   Function(Device) callbackOnDeviceFound = (_) => {};
+
+  /// Custom callback to execute when a device is lost
   Function(Device) callbackOnDeviceLost = (_) => {};
+
+  /// Boolean value that returns if the device is discovering other devices
   bool isDiscovering = false;
 
   /// Implements singleton pattern
@@ -24,7 +32,8 @@ class Discoverer extends Connector {
   }
 
   /// Handler for [NearbyCrossMethods.onEndpointFound] method call
-  /// Adds a device as a discovered device in listOfDiscoveredDevices
+  /// - Adds a device as a discovered device in listOfDiscoveredDevices
+  /// - Executes callbackOnDeviceFound
   void _handleEndpointFound(String endpointId, Uint8List endpointName) {
     var device = Device.asEndpoint(endpointId, endpointName);
     listOfDiscoveredDevices.add(device);
@@ -32,6 +41,9 @@ class Discoverer extends Connector {
     callbackOnDeviceFound(device);
   }
 
+  /// Handler for [NearbyCrossMethods.onEndpointLost] method call
+  /// - Removes a device from listOfDiscoveredDevices
+  /// - Executes callbackOnDeviceLost
   void _handleEndpointLost(String endpointId) {
     var device = listOfDiscoveredDevices
         .firstWhere((element) => element.endpointId == endpointId);
@@ -40,6 +52,8 @@ class Discoverer extends Connector {
     callbackOnDeviceLost(device);
   }
 
+  /// Handler for [NearbyCrossMethods.connectionRejected] method call
+  /// - Removes a device from listOfDiscoveredDevices
   void _handleConnectionRejected(String endpointId) {
     var device = listOfDiscoveredDevices
         .firstWhere((element) => element.endpointId == endpointId);
