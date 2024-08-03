@@ -9,21 +9,18 @@ Add the dependency:
 flutter pub get nearby_cross
 ```
 
-And follow the steps for working in iOS
+And follow the steps to make it work in iOS
 
 1. You need to request the access to protected resources in the following [link](https://developers.google.com/nearby/connections/swift/get-started#request_access_to_protected_resources)
-2. Run pod install inside the `ios` folder
-3. Open XCode and install nearby using SPM
+2. Run `pod install` inside the `ios` folder
+3. Open XCode and install nearby using SPM and add all packages to the plugin nearby_cross
 4. Done!
 
 
 ## Models
 
 ### Connector
-- functions that are shared between discoverer and advertiser
-- Main model managing advertiser and discoverer
-- Multiple callbacks define for when an action like a connection or data is being received
-
+- Functions that are shared between discoverer and advertiser
 
 ```
 ```
@@ -54,6 +51,16 @@ advertiser.stopAdvertising()
 
 ### Discoverer
 - The discoverer that connects to the advertiser, its the one connecting to the advertiser
+
+
+  You can set the following callbacks:
+  ```dart
+  Function(Device) callbackOnDeviceFound = (_) => {};
+  Function(Device) callbackOnDeviceLost = (_) => {};
+  ```
+
+  That will run the function that you pass it through when those actions happen
+
 
 
 ### ConnectionManager

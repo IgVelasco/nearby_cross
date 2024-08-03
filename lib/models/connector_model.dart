@@ -35,6 +35,7 @@ class Connector {
     return platformVersion;
   }
 
+  /// Connect to an endpoint
   Future<void> connect(String endpointId) async {
     await nearbyCross.connect(endpointId);
   }
