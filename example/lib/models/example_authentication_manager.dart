@@ -37,8 +37,6 @@ class ExampleAuthenticationManager extends AuthenticationManager {
     },
   };
 
-  String identifier = const Uuid().v4();
-
   @override
   void setIdentifier(String newId) {
     identifier = newId;
@@ -47,7 +45,7 @@ class ExampleAuthenticationManager extends AuthenticationManager {
   @override
   void initialize() {
     const profile = String.fromEnvironment("PROFILE", defaultValue: 'DOCENTE');
-    var identifier = devices[profile];
+    var identifier = devices[profile] ?? const Uuid().v4();
     var keyPairJwk = keyPairs[identifier];
     signingManager = SigningManager.initializeFromJwk(keyPairJwk!);
   }

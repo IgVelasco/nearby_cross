@@ -119,6 +119,13 @@ class ConnectionsManager {
     _executeCallback(callbackSuccessfulConnection, device);
   }
 
+  /// Handler for [NearbyCrossMethods.connectionRejected] method call.
+  ///
+  /// This method is called when a connection request is rejected. It
+  /// performs necessary cleanup and informs the user about the rejection.
+  ///
+  /// - Parameters:
+  ///   - endpointId: The ID of the rejected connection request.
   void _handleRejectedConnection(String endpointId) {
     var device = _findDevice(pendingAcceptConnections, endpointId);
     if (device == null) {

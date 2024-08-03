@@ -1,3 +1,6 @@
-## 0.0.14
+Initial release version:
+- Full functionality of advertising, discovering and choosing topology.
+- Symmetric encryption to ensure im connecting to desired endpoint
+- Manual accept to connection
 
-* TODO: Describe initial release.
+Working on iOS and Android
