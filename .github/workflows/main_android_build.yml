@@ -7,19 +7,39 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Build and test
-        uses: ./.github/workflows/build_test.yml
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Check publish is possible
-        run: flutter pub publish --dry-run
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.2'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Lint code
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
 
       - name: Build Android app
         run: |
           cd example
           flutter build apk
+
+      - name: Check publish is possible
+        run: flutter pub publish --dry-run
 
 
 # Broken since NearbyCoreAdapter needs to be installed manually with SPM 
