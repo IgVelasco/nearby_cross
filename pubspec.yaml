@@ -1,6 +1,6 @@
 name: nearby_cross
 description: Flutter plugin for Android and iOS to use Nearby Connections API and send messages between devices.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/IgVelasco/nearby_cross
 
 environment:
@@ -12,8 +12,8 @@ dependencies:
     sdk: flutter
   permission_handler: ^11.3.1 
   plugin_platform_interface: ^2.0.2
+  device_info_plus: ^10.1.2
   logger: ^2.0.2+1
-  device_info: ^2.0.3
   intl: ^0.19.0
   crypto_keys: ^0.3.0+1
   jwk: ^0.2.3
