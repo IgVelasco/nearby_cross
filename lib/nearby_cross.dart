@@ -54,7 +54,7 @@ class NearbyCross {
       [NearbyStrategies strategy = NearbyStrategies.star]) async {
     await methodChannel.invokeMethod('startDiscovery', {
       'serviceId': serviceId,
-      'username': deviceInfo, // TODO: username to Device Info
+      'username': deviceInfo,
       'strategy': strategy.toStrategyString()
     });
   }

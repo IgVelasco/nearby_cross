@@ -8,3 +8,6 @@ Initial release version:
 Working on iOS and Android
 
 
+## 1.0.1
+Change dependency of device_info to device_info_plus
+
