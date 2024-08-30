@@ -37,12 +37,13 @@ abstract class BytesUtils {
       Uint8List.fromList(value).buffer.asByteData().getInt8(0);
 
   static Uint8List stringToBytesArray(String value) =>
-      Uint8List.fromList(value.codeUnits);
+      Uint8List.fromList(utf8.encode(value));
 
   static int getInt64(List<int> value) =>
       Uint8List.fromList(value).buffer.asByteData().getInt64(0, Endian.host);
 
-  static String getString(List<int> value) => utf8.decode(value);
+  static String getString(List<int> value) =>
+      utf8.decode(value, allowMalformed: true);
 
   static List<int> getBytesRangeAsIntList(
       Uint8List bytesList, int start, int bytesAmount) {
